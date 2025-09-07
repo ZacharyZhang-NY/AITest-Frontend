@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN" data-fontscale="base">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>首页 · 无障碍社区</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="../styles/global.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style> body { font-family: Inter, ui-sans-serif, system-ui; } .icon-btn{ display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px; } .like.active i{ color:#ef4444 } .collect.active i{ color:#f59e0b } </style>
+</head>
+<body data-theme="light" data-current-tab="home" class="bg-[color:var(--bg)] text-[color:var(--fg)]">
+  <div class="device" role="application" aria-label="首页">
+    <div class="dynamic-island" aria-hidden="true"></div>
+    <div class="status-bar"><div>9:41</div><div class="right">📶 📡 🔋</div></div>
+
+    <header class="title-bar">
+      <a class="btn" aria-label="返回" href="javascript:history.back()"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title">首页</div>
+      <div class="flex items-center gap-1 justify-end">
+        <a class="btn" href="notifications.html" aria-label="通知"><i class="fa-regular fa-bell"></i></a>
+        <a class="btn" href="explore.html" aria-label="搜索"><i class="fa-solid fa-magnifying-glass"></i></a>
+      </div>
+    </header>
+
+    <main class="content" data-pull-refresh>
+      <div class="px-4 pt-2 pb-3 flex items-center justify-center">
+        <div class="segment" data-index="0" role="tablist" aria-label="推荐切换">
+          <div class="thumb" aria-hidden="true"></div>
+          <button role="tab" aria-selected="true">推荐</button>
+          <button role="tab">关注</button>
+          <button role="tab">附近</button>
+        </div>
+      </div>
+
+      <section class="px-4 grid gap-4" aria-label="混合流">
+        <!-- Skeletons appear first, hide after load -->
+        <div class="card skeleton h-56 rounded-2xl" aria-hidden="true"></div>
+        <div class="card skeleton h-72 rounded-2xl" aria-hidden="true"></div>
+
+        <!-- Video card -->
+        <article class="card overflow-hidden">
+          <div class="relative">
+            <video data-auto playsinline muted preload="metadata" class="w-full h-72 object-cover" poster="https://source.unsplash.com/800x600/?city,metro">
+              <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4" />
+            </video>
+            <div class="absolute bottom-2 right-2 flex gap-2">
+              <button class="icon-btn like border bg-white/80 backdrop-blur rounded-xl ripple" aria-label="点赞" data-like-button><i class="fa-regular fa-heart"></i></button>
+              <button class="icon-btn collect border bg-white/80 backdrop-blur rounded-xl ripple" aria-label="收藏" data-collect-button><i class="fa-regular fa-bookmark"></i></button>
+            </div>
+          </div>
+          <div class="p-3 text-sm">
+            <div class="font-semibold">🛗 地铁站无障碍电梯可用</div>
+            <div class="text-[color:var(--muted)]">坡度 ≤ 6% · 盲道连续 · 门宽 90cm</div>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span class="badge">🛗 电梯</span>
+              <span class="badge">🦽 轮椅友好</span>
+              <span class="badge">🚻 卫生间</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Image card -->
+        <article class="card overflow-hidden">
+          <img class="w-full h-64 object-cover" src="https://source.unsplash.com/800x600/?wheelchair,ramp" alt="轮椅坡道" />
+          <div class="p-3 text-sm">
+            <div class="font-semibold">↗ 商场入口坡道平缓</div>
+            <div class="text-[color:var(--muted)]">门宽 100cm · 无门槛</div>
+            <div class="mt-2 flex items-center gap-2">
+              <button class="icon-btn like border ripple" aria-label="点赞" data-like-button><i class="fa-regular fa-heart"></i></button>
+              <button class="icon-btn collect border ripple" aria-label="收藏" data-collect-button><i class="fa-regular fa-bookmark"></i></button>
+              <a class="ml-auto text-[color:var(--accent)] underline" href="post_detail.html">查看详情</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Second video card -->
+        <article class="card overflow-hidden">
+          <div class="relative">
+            <video data-auto playsinline muted preload="metadata" class="w-full h-72 object-cover" poster="https://source.unsplash.com/800x600/?metro,elevator">
+              <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/beer.mp4" type="video/mp4" />
+            </video>
+            <div class="absolute bottom-2 right-2 flex gap-2">
+              <button class="icon-btn like border bg-white/80 backdrop-blur rounded-xl ripple" aria-label="点赞" data-like-button><i class="fa-regular fa-heart"></i></button>
+              <button class="icon-btn collect border bg-white/80 backdrop-blur rounded-xl ripple" aria-label="收藏" data-collect-button><i class="fa-regular fa-bookmark"></i></button>
+            </div>
+          </div>
+          <div class="p-3 text-sm">
+            <div class="font-semibold">🚧 站外临时坡道施工中</div>
+            <div class="text-[color:var(--muted)]">避坑提醒：绕行北口更顺畅</div>
+          </div>
+        </article>
+
+      </section>
+    </main>
+
+    <nav class="tab-bar" aria-label="底部导航">
+      <a class="tab-item active" data-tab="home" href="home.html" aria-current="page"><i class="fa-solid fa-house"></i><span>Home</span><span class="dot" aria-hidden="true"></span></a>
+      <a class="tab-item" data-tab="explore" href="explore.html"><i class="fa-regular fa-compass"></i><span>Explore</span></a>
+      <a class="tab-item" data-tab="create" href="create_post.html" aria-label="发布"><i class="fa-solid fa-circle-plus"></i><span>Create</span></a>
+      <a class="tab-item has-unread" data-tab="inbox" href="messages.html"><i class="fa-regular fa-message"></i><span>Inbox</span><span class="dot" aria-hidden="true"></span></a>
+      <a class="tab-item" data-tab="profile" href="profile.html"><i class="fa-regular fa-user"></i><span>Profile</span></a>
+    </nav>
+  </div>
+
+  <script>
+    // Hide skeleton once media likely loaded
+    window.addEventListener('load', ()=>{ document.querySelectorAll('.skeleton').forEach(s => s.remove()); });
+  </script>
+  <script src="../scripts/observer.js" defer></script>
+  <script src="../scripts/waapi.js" defer></script>
+  <script src="../scripts/app.js" defer></script>
+</body>
+</html>
+

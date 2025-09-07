@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 - Accessibility Navigator</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .settings-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .content-wrapper {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            right: 0;
+            bottom: 83px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+        
+        .settings-section {
+            margin-bottom: 24px;
+        }
+        
+        .section-header {
+            padding: 16px 20px 8px;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .settings-group {
+            background: var(--card-bg);
+            border-radius: 0;
+            margin-bottom: 1px;
+        }
+        
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-item:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .setting-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .setting-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 16px;
+        }
+        
+        .setting-info {
+            flex: 1;
+        }
+        
+        .setting-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        
+        .setting-description {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .setting-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .setting-toggle {
+            position: relative;
+            width: 48px;
+            height: 28px;
+            background: var(--border-color);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .setting-toggle.active {
+            background: var(--accent);
+        }
+        
+        .setting-toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .setting-toggle.active .setting-toggle-slider {
+            transform: translateX(20px);
+        }
+        
+        .setting-value {
+            font-size: 14px;
+            color: var(--text-secondary);
+            min-width: 60px;
+            text-align: right;
+        }
+        
+        .setting-chevron {
+            color: var(--text-tertiary);
+            font-size: 14px;
+        }
+        
+        .theme-selector {
+            display: flex;
+            gap: 12px;
+            padding: 4px;
+        }
+        
+        .theme-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-option:hover {
+            border-color: var(--accent);
+        }
+        
+        .theme-option.active {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+        
+        .theme-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .theme-name {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .font-size-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .font-size-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .font-size-option:hover {
+            border-color: var(--accent);
+        }
+        
+        .font-size-option.active {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+        
+        .font-size-preview {
+            font-size: 14px;
+        }
+        
+        .font-size-option.small .font-size-preview {
+            font-size: 12px;
+        }
+        
+        .font-size-option.medium .font-size-preview {
+            font-size: 16px;
+        }
+        
+        .font-size-option.large .font-size-preview {
+            font-size: 20px;
+        }
+        
+        .font-size-option.x-large .font-size-preview {
+            font-size: 24px;
+        }
+        
+        .about-section {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .app-logo {
+            width: 80px;
+            height: 80px;
+            background: var(--accent);
+            border-radius: 20px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+        }
+        
+        .app-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .app-version {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-bottom: 24px;
+        }
+        
+        .app-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+        }
+        
+        .app-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .app-link:hover {
+            text-decoration: underline;
+        }
+        
+        .danger-zone {
+            margin-top: 32px;
+            padding: 20px;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 16px;
+        }
+        
+        .danger-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--danger);
+            margin-bottom: 12px;
+        }
+        
+        .danger-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .danger-btn {
+            padding: 12px 16px;
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        
+        .danger-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .logout-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 24px;
+        }
+        
+        .logout-btn:hover {
+            background: #dc3545;
+            transform: translateY(-1px);
+        }
+        
+        @media (max-width: 393px) {
+            .content-wrapper {
+                padding-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="status-bar">
+            <div class="status-time">9:41</div>
+            <div class="status-icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="dynamic-island"></div>
+        
+        <div class="header">
+            <button class="header-back" onclick="goBack()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h1 class="header-title">设置</h1>
+            <div style="width: 40px;"></div>
+        </div>
+        
+        <div class="settings-container">
+            <div class="content-wrapper">
+                <!-- 外观设置 -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h2 class="section-title">外观</h2>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-palette"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">主题</div>
+                                    <div class="setting-description">选择应用主题</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="theme-selector">
+                                    <div class="theme-option active" onclick="selectTheme('light')">
+                                        <div class="theme-icon">☀️</div>
+                                        <div class="theme-name">浅色</div>
+                                    </div>
+                                    <div class="theme-option" onclick="selectTheme('dark')">
+                                        <div class="theme-icon">🌙</div>
+                                        <div class="theme-name">深色</div>
+                                    </div>
+                                    <div class="theme-option" onclick="selectTheme('auto')">
+                                        <div class="theme-icon">🌗</div>
+                                        <div class="theme-name">自动</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-text-height"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">字体大小</div>
+                                    <div class="setting-description">调整文字大小</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="font-size-selector">
+                                    <div class="font-size-option small" onclick="selectFontSize('small')">
+                                        <span>小</span>
+                                        <span class="font-size-preview">Aa</span>
+                                    </div>
+                                    <div class="font-size-option medium active" onclick="selectFontSize('medium')">
+                                        <span>标准</span>
+                                        <span class="font-size-preview">Aa</span>
+                                    </div>
+                                    <div class="font-size-option large" onclick="selectFontSize('large')">
+                                        <span>大</span>
+                                        <span class="font-size-preview">Aa</span>
+                                    </div>
+                                    <div class="font-size-option x-large" onclick="selectFontSize('x-large')">
+                                        <span>特大</span>
+                                        <span class="font-size-preview">Aa</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 无障碍设置 -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h2 class="section-title">无障碍</h2>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-adjust"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">高对比度</div>
+                                    <div class="setting-description">增强颜色对比度</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="setting-toggle" onclick="toggleSetting(this, 'highContrast')">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-eye-slash"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">减少动效</div>
+                                    <div class="setting-description">关闭动画效果</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="setting-toggle" onclick="toggleSetting(this, 'reduceMotion')">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-bold"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">粗体文本</div>
+                                    <div class="setting-description">增加文本粗细</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="setting-toggle" onclick="toggleSetting(this, 'boldText')">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-volume-up"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">语音提示</div>
+                                    <div class="setting-description">开启语音反馈</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="setting-toggle" onclick="toggleSetting(this, 'voiceFeedback')">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 隐私设置 -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h2 class="section-title">隐私</h2>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">位置服务</div>
+                                    <div class="setting-description">允许应用访问位置</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="setting-toggle active" onclick="toggleSetting(this, 'location')">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">相机权限</div>
+                                    <div class="setting-description">允许访问相机</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="setting-toggle active" onclick="toggleSetting(this, 'camera')">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">通知权限</div>
+                                    <div class="setting-description">允许发送通知</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="setting-toggle active" onclick="toggleSetting(this, 'notifications')">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-user-secret"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">隐私模式</div>
+                                    <div class="setting-description">隐藏个人信息</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="setting-toggle" onclick="toggleSetting(this, 'privacyMode')">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 通知设置 -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h2 class="section-title">通知</h2>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-comment"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">评论通知</div>
+                                    <div class="setting-description">新评论时通知</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="setting-toggle active" onclick="toggleSetting(this, 'commentNotifications')">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">点赞通知</div>
+                                    <div class="setting-description">收到点赞时通知</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="setting-toggle active" onclick="toggleSetting(this, 'likeNotifications')">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">关注通知</div>
+                                    <div class="setting-description">新关注者通知</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="setting-toggle" onclick="toggleSetting(this, 'followNotifications')">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">系统通知</div>
+                                    <div class="setting-description">重要更新通知</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <div class="setting-toggle active" onclick="toggleSetting(this, 'systemNotifications')">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 其他设置 -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h2 class="section-title">其他</h2>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <div class="setting-item" onclick="navigateToPage('cache')">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-broom"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">清除缓存</div>
+                                    <div class="setting-description">释放存储空间</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <i class="fas fa-chevron-right setting-chevron"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item" onclick="navigateToPage('language')">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-language"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">语言</div>
+                                    <div class="setting-description">简体中文</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <i class="fas fa-chevron-right setting-chevron"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item" onclick="navigateToPage('about')">
+                            <div class="setting-left">
+                                <div class="setting-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="setting-info">
+                                    <div class="setting-title">关于</div>
+                                    <div class="setting-description">版本 1.0.0</div>
+                                </div>
+                            </div>
+                            <div class="setting-right">
+                                <i class="fas fa-chevron-right setting-chevron"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 关于应用 -->
+                <div class="about-section">
+                    <div class="app-logo">
+                        <i class="fas fa-universal-access"></i>
+                    </div>
+                    <div class="app-name">Accessibility Navigator</div>
+                    <div class="app-version">版本 1.0.0</div>
+                    <div class="app-links">
+                        <a href="#" class="app-link">用户协议</a>
+                        <a href="#" class="app-link">隐私政策</a>
+                        <a href="#" class="app-link">开放源码</a>
+                    </div>
+                </div>
+                
+                <!-- 危险区域 -->
+                <div class="danger-zone">
+                    <div class="danger-title">危险操作</div>
+                    <div class="danger-actions">
+                        <button class="danger-btn" onclick="resetSettings()">
+                            <i class="fas fa-undo"></i>
+                            重置设置
+                        </button>
+                        <button class="danger-btn" onclick="clearData()">
+                            <i class="fas fa-trash"></i>
+                            清除数据
+                        </button>
+                        <button class="danger-btn" onclick="deleteAccount()">
+                            <i class="fas fa-user-times"></i>
+                            删除账户
+                        </button>
+                    </div>
+                    
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        退出登录
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <a href="home.html" class="tab-item">
+                    <i class="fas fa-home tab-icon"></i>
+                    <span class="tab-label">首页</span>
+                </a>
+                <a href="explore.html" class="tab-item">
+                    <i class="fas fa-compass tab-icon"></i>
+                    <span class="tab-label">发现</span>
+                </a>
+                <a href="create_post.html" class="tab-item">
+                    <i class="fas fa-plus-square tab-icon"></i>
+                    <span class="tab-label">发布</span>
+                </a>
+                <a href="notifications.html" class="tab-item">
+                    <i class="fas fa-bell tab-icon"></i>
+                    <span class="tab-label">通知</span>
+                </a>
+                <a href="profile.html" class="tab-item">
+                    <i class="fas fa-user tab-icon"></i>
+                    <span class="tab-label">我的</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize settings
+        let settings = {
+            theme: 'light',
+            fontSize: 'medium',
+            highContrast: false,
+            reduceMotion: false,
+            boldText: false,
+            voiceFeedback: false,
+            location: true,
+            camera: true,
+            notifications: true,
+            privacyMode: false,
+            commentNotifications: true,
+            likeNotifications: true,
+            followNotifications: false,
+            systemNotifications: true
+        };
+        
+        // Load settings from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+            applySettings();
+        });
+        
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('appSettings');
+            if (savedSettings) {
+                settings = { ...settings, ...JSON.parse(savedSettings) };
+            }
+        }
+        
+        function saveSettings() {
+            localStorage.setItem('appSettings', JSON.stringify(settings));
+        }
+        
+        function applySettings() {
+            // Apply theme
+            document.documentElement.setAttribute('data-theme', settings.theme);
+            
+            // Apply font size
+            if (settings.fontSize !== 'medium') {
+                document.documentElement.setAttribute('data-font-size', settings.fontSize);
+            }
+            
+            // Apply high contrast
+            if (settings.highContrast) {
+                document.body.classList.add('high-contrast');
+            }
+            
+            // Apply reduce motion
+            if (settings.reduceMotion) {
+                document.body.style.setProperty('--transition-duration', '0.01ms');
+            }
+            
+            // Update UI
+            updateSettingUI();
+        }
+        
+        function updateSettingUI() {
+            // Update theme selector
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.toggle('active', option.getAttribute('onclick').includes(settings.theme));
+            });
+            
+            // Update font size selector
+            document.querySelectorAll('.font-size-option').forEach(option => {
+                option.classList.toggle('active', option.getAttribute('onclick').includes(settings.fontSize));
+            });
+            
+            // Update toggles
+            Object.keys(settings).forEach(key => {
+                const toggle = document.querySelector(`[onclick="toggleSetting(this, '${key}')"]`);
+                if (toggle && typeof settings[key] === 'boolean') {
+                    toggle.classList.toggle('active', settings[key]);
+                }
+            });
+        }
+        
+        function selectTheme(theme) {
+            settings.theme = theme;
+            saveSettings();
+            applySettings();
+            showToast(`已切换到${theme === 'light' ? '浅色' : theme === 'dark' ? '深色' : '自动'}主题`);
+        }
+        
+        function selectFontSize(size) {
+            settings.fontSize = size;
+            saveSettings();
+            applySettings();
+            showToast(`字体大小已设置为${size === 'small' ? '小' : size === 'medium' ? '标准' : size === 'large' ? '大' : '特大'}`);
+        }
+        
+        function toggleSetting(toggle, settingName) {
+            toggle.classList.toggle('active');
+            settings[settingName] = toggle.classList.contains('active');
+            saveSettings();
+            applySettings();
+            
+            // Show feedback for certain settings
+            if (settingName === 'reduceMotion') {
+                showToast(settings[settingName] ? '已减少动效' : '已开启动效');
+            } else if (settingName === 'highContrast') {
+                showToast(settings[settingName] ? '已开启高对比度' : '已关闭高对比度');
+            } else if (settingName === 'voiceFeedback') {
+                showToast(settings[settingName] ? '已开启语音提示' : '已关闭语音提示');
+            }
+        }
+        
+        function navigateToPage(page) {
+            showToast(`跳转到${page}页面`);
+            // In real app, this would navigate to the specific page
+        }
+        
+        function resetSettings() {
+            if (confirm('确定要重置所有设置吗？此操作不可撤销。')) {
+                // Reset to defaults
+                settings = {
+                    theme: 'light',
+                    fontSize: 'medium',
+                    highContrast: false,
+                    reduceMotion: false,
+                    boldText: false,
+                    voiceFeedback: false,
+                    location: true,
+                    camera: true,
+                    notifications: true,
+                    privacyMode: false,
+                    commentNotifications: true,
+                    likeNotifications: true,
+                    followNotifications: false,
+                    systemNotifications: true
+                };
+                
+                saveSettings();
+                applySettings();
+                showToast('设置已重置');
+            }
+        }
+        
+        function clearData() {
+            if (confirm('确定要清除所有数据吗？这将删除缓存、历史记录等数据。')) {
+                // Clear various data
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                // Clear caches if available
+                if ('caches' in window) {
+                    caches.keys().then(names => {
+                        names.forEach(name => {
+                            caches.delete(name);
+                        });
+                    });
+                }
+                
+                showToast('数据已清除');
+            }
+        }
+        
+        function deleteAccount() {
+            if (confirm('确定要删除账户吗？此操作不可撤销，所有数据将被永久删除。')) {
+                if (confirm('请再次确认：您确定要删除账户吗？')) {
+                    // In real app, this would call API to delete account
+                    showToast('账户删除请求已提交');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                }
+            }
+        }
+        
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                // Clear user data
+                localStorage.removeItem('userData');
+                localStorage.removeItem('userToken');
+                
+                // Navigate to login
+                window.location.href = 'login.html';
+            }
+        }
+        
+        function goBack() {
+            window.history.back();
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 2000);
+        }
+        
+        // Listen for system theme changes
+        if (window.matchMedia) {
+            const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            colorSchemeQuery.addListener((e) => {
+                if (settings.theme === 'auto') {
+                    applySettings();
+                }
+            });
+        }
+        
+        // Listen for reduce motion preference
+        if (window.matchMedia) {
+            const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+            reduceMotionQuery.addListener((e) => {
+                if (e.matches) {
+                    settings.reduceMotion = true;
+                    saveSettings();
+                    applySettings();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

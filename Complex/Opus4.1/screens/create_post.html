@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>发布 - Accessibility Navigator</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="../scripts/app.js"></script>
+  <style>
+    .create-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+    }
+
+    .create-form {
+      padding: 16px;
+    }
+
+    .media-upload {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .upload-box {
+      aspect-ratio: 1;
+      background: var(--bg-tertiary);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .upload-box:hover {
+      background: var(--bg-secondary);
+      border-color: var(--accent);
+    }
+
+    .upload-box i {
+      font-size: 28px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .upload-text {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .preview-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .remove-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 24px;
+      height: 24px;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .text-input {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      background: var(--bg-secondary);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      color: var(--text-primary);
+      resize: vertical;
+      margin-bottom: 16px;
+    }
+
+    .location-section {
+      margin-bottom: 20px;
+    }
+
+    .location-input-wrapper {
+      display: flex;
+      gap: 12px;
+    }
+
+    .location-input {
+      flex: 1;
+    }
+
+    .location-btn {
+      padding: 12px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .facility-section {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .required {
+      color: var(--danger);
+    }
+
+    .facility-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .facility-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+    }
+
+    .facility-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .facility-input {
+      width: 80px;
+      padding: 6px 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      text-align: right;
+    }
+
+    .template-section {
+      margin-bottom: 20px;
+    }
+
+    .template-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .template-chip {
+      padding: 8px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      font-size: 14px;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .template-chip.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .privacy-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+    }
+
+    .privacy-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .publish-actions {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      background: var(--bg-primary);
+      border-top: 0.5px solid var(--border-light);
+    }
+
+    .draft-btn {
+      flex: 1;
+      padding: 14px;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .publish-btn {
+      flex: 2;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .publish-btn:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <div class="notch"></div>
+    <div class="status-bar">
+      <div class="time">9:41</div>
+      <div class="status-icons">
+        <i class="fas fa-signal"></i>
+        <i class="fas fa-wifi"></i>
+        <i class="fas fa-battery-full"></i>
+      </div>
+    </div>
+
+    <div class="nav-header">
+      <span onclick="goBack()" style="cursor: pointer;">取消</span>
+      <span style="font-size: 18px; font-weight: 600;">发布内容</span>
+      <span style="opacity: 0;">占位</span>
+    </div>
+
+    <div class="content-area">
+      <div class="create-form">
+        <div class="media-upload">
+          <div class="upload-box">
+            <input type="file" accept="image/*,video/*" style="display: none;" id="file1">
+            <i class="fas fa-camera"></i>
+            <span class="upload-text">添加照片</span>
+          </div>
+          <div class="upload-box">
+            <i class="fas fa-video"></i>
+            <span class="upload-text">添加视频</span>
+          </div>
+          <div class="upload-box">
+            <i class="fas fa-plus"></i>
+            <span class="upload-text">更多</span>
+          </div>
+        </div>
+
+        <textarea class="text-input" placeholder="分享你的无障碍体验..."></textarea>
+
+        <div class="location-section">
+          <div class="section-title">
+            <i class="fas fa-map-marker-alt" style="color: var(--accent);"></i>
+            <span>添加位置</span>
+            <span class="required">*</span>
+          </div>
+          <div class="location-input-wrapper">
+            <input type="text" class="input-field location-input" placeholder="搜索地点...">
+            <button class="location-btn">
+              <i class="fas fa-location-arrow"></i> 当前位置
+            </button>
+          </div>
+        </div>
+
+        <div class="template-section">
+          <div class="section-title">
+            <i class="fas fa-bolt" style="color: var(--warning);"></i>
+            <span>快速模板</span>
+          </div>
+          <div class="template-chips">
+            <div class="template-chip">地铁站通行</div>
+            <div class="template-chip">商场入口</div>
+            <div class="template-chip">医院就诊</div>
+            <div class="template-chip">公园游览</div>
+            <div class="template-chip">餐厅用餐</div>
+          </div>
+        </div>
+
+        <div class="facility-section">
+          <div class="section-title">
+            <i class="fas fa-tags" style="color: var(--success);"></i>
+            <span>设施标签</span>
+          </div>
+          <div class="facility-grid">
+            <div class="facility-item">
+              <div class="facility-label">
+                <i class="fas fa-ramp-loading"></i>
+                <span>坡度</span>
+              </div>
+              <input type="text" class="facility-input" placeholder="例: 5%">
+            </div>
+            <div class="facility-item">
+              <div class="facility-label">
+                <i class="fas fa-door-open"></i>
+                <span>门宽</span>
+              </div>
+              <input type="text" class="facility-input" placeholder="例: 90cm">
+            </div>
+            <div class="facility-item">
+              <div class="facility-label">
+                <i class="fas fa-elevator"></i>
+                <span>电梯</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" checked>
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <div class="facility-item">
+              <div class="facility-label">
+                <i class="fas fa-restroom"></i>
+                <span>卫生间</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" checked>
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <div class="facility-item">
+              <div class="facility-label">
+                <i class="fas fa-braille"></i>
+                <span>盲道</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <div class="facility-item">
+              <div class="facility-label">
+                <i class="fas fa-parking"></i>
+                <span>停车位</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="privacy-section">
+          <div class="privacy-label">
+            <i class="fas fa-user-secret"></i>
+            <span>匿名发布</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox">
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="publish-actions">
+        <button class="draft-btn">存草稿</button>
+        <button class="publish-btn" onclick="publish()">
+          <i class="fas fa-paper-plane"></i> 立即发布
+        </button>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <a href="home.html" class="tab-item">
+        <i class="fas fa-home"></i>
+        <span class="tab-label">首页</span>
+      </a>
+      <a href="explore.html" class="tab-item">
+        <i class="fas fa-compass"></i>
+        <span class="tab-label">发现</span>
+      </a>
+      <a href="create_post.html" class="tab-item active">
+        <i class="fas fa-plus-square"></i>
+        <span class="tab-label">发布</span>
+      </a>
+      <a href="notifications.html" class="tab-item">
+        <i class="fas fa-bell"></i>
+        <span class="tab-label">通知</span>
+      </a>
+      <a href="profile.html" class="tab-item">
+        <i class="fas fa-user"></i>
+        <span class="tab-label">我的</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function goBack() {
+      window.history.back();
+    }
+
+    function publish() {
+      const btn = document.querySelector('.publish-btn');
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发布中...';
+      
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-check"></i> 发布成功';
+        setTimeout(() => {
+          window.location.href = 'home.html';
+        }, 1000);
+      }, 1500);
+    }
+
+    document.querySelectorAll('.template-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('active');
+      });
+    });
+
+    document.querySelectorAll('.upload-box').forEach(box => {
+      box.addEventListener('click', () => {
+        const input = box.querySelector('input');
+        if (input) input.click();
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>私信 - Accessibility Navigator</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="../scripts/app.js"></script>
+  <style>
+    .messages-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+    }
+    .message-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+    .message-item {
+      display: flex;
+      padding: 16px;
+      border-bottom: 0.5px solid var(--border-light);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .message-item:active {
+      background: var(--bg-tertiary);
+    }
+    .message-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      margin-right: 12px;
+      object-fit: cover;
+    }
+    .message-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .message-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .message-time {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .message-preview {
+      font-size: 14px;
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .unread-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <div class="notch"></div>
+    <div class="status-bar">
+      <div class="time">9:41</div>
+      <div class="status-icons">
+        <i class="fas fa-signal"></i>
+        <i class="fas fa-wifi"></i>
+        <i class="fas fa-battery-full"></i>
+      </div>
+    </div>
+    <div class="nav-header">
+      <span style="font-size: 18px; font-weight: 600;">私信</span>
+      <i class="fas fa-edit" style="font-size: 20px; color: var(--text-secondary); cursor: pointer;"></i>
+    </div>
+    <div class="content-area">
+      <div class="message-list">
+        <div class="message-item">
+          <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop" alt="" class="message-avatar">
+          <div class="message-content">
+            <div class="message-header">
+              <span class="message-name">无障碍达人</span>
+              <span class="message-time">刚刚</span>
+            </div>
+            <p class="message-preview">你好，看到你分享的地铁站信息很有用！</p>
+          </div>
+          <span class="unread-dot"></span>
+        </div>
+        <div class="message-item">
+          <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="" class="message-avatar">
+          <div class="message-content">
+            <div class="message-header">
+              <span class="message-name">轮椅使用者小王</span>
+              <span class="message-time">2小时前</span>
+            </div>
+            <p class="message-preview">谢谢你的帮助，已经顺利到达了</p>
+          </div>
+        </div>
+        <div class="message-item">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="" class="message-avatar">
+          <div class="message-content">
+            <div class="message-header">
+              <span class="message-name">志愿者协会</span>
+              <span class="message-time">昨天</span>
+            </div>
+            <p class="message-preview">欢迎加入我们的志愿者团队！</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <a href="home.html" class="tab-item">
+        <i class="fas fa-home"></i>
+        <span class="tab-label">首页</span>
+      </a>
+      <a href="explore.html" class="tab-item">
+        <i class="fas fa-compass"></i>
+        <span class="tab-label">发现</span>
+      </a>
+      <a href="create_post.html" class="tab-item">
+        <i class="fas fa-plus-square"></i>
+        <span class="tab-label">发布</span>
+      </a>
+      <a href="notifications.html" class="tab-item">
+        <i class="fas fa-bell"></i>
+        <span class="tab-label">通知</span>
+      </a>
+      <a href="profile.html" class="tab-item">
+        <i class="fas fa-user"></i>
+        <span class="tab-label">我的</span>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

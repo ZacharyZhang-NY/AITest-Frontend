@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问题上报 - 无障碍社区</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #1a1a1a;
+            --card: #f8fafc;
+            --accent: #3b82f6;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --success: #10b981;
+        }
+        
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --fg: #f1f5f9;
+            --card: #1e293b;
+            --accent: #60a5fa;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --warning: #fbbf24;
+            --error: #f87171;
+            --success: #34d399;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        .device-container {
+            width: 393px;
+            height: 852px;
+            margin: 0 auto;
+            background: var(--bg);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            background: var(--bg);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-left { font-weight: 600; }
+        .status-right { display: flex; gap: 6px; align-items: center; }
+        
+        .nav-header {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-back {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-back:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .nav-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .content-area {
+            height: calc(852px - 44px - 56px - 83px);
+            overflow-y: auto;
+            background: var(--bg);
+        }
+        
+        .issue-header {
+            padding: 24px 16px 16px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--warning), #f97316);
+            color: white;
+        }
+        
+        .issue-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .issue-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .issue-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .form-section {
+            padding: 16px;
+        }
+        
+        .issue-type-selector {
+            margin-bottom: 24px;
+        }
+        
+        .type-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .type-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .type-option {
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--card);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .type-option:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .type-option.selected {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .type-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+        
+        .type-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .type-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .input-label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            background: var(--card);
+            color: var(--fg);
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .location-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        
+        .location-input {
+            flex: 1;
+        }
+        
+        .location-btn {
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .location-btn:hover {
+            background: #2563eb;
+        }
+        
+        .description-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .media-upload {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+        
+        .media-upload:hover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 32px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .upload-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .upload-hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .urgency-selector {
+            margin-bottom: 24px;
+        }
+        
+        .urgency-options {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .urgency-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--card);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .urgency-option:hover {
+            border-color: var(--accent);
+        }
+        
+        .urgency-option.selected {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .urgency-option.low {
+            border-color: var(--success);
+        }
+        
+        .urgency-option.medium {
+            border-color: var(--warning);
+        }
+        
+        .urgency-option.high {
+            border-color: var(--error);
+        }
+        
+        .urgency-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+        
+        .urgency-name {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .privacy-notice {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .privacy-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--accent);
+        }
+        
+        .submit-section {
+            padding: 16px;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover:not(:disabled) {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .bottom-nav {
+            height: 83px;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .nav-item.active {
+            color: var(--accent);
+        }
+        
+        .nav-item:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="device-container">
+        <div class="status-bar">
+            <div class="status-left">9:41</div>
+            <div class="status-right">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="nav-header">
+            <div class="nav-back" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="nav-title">问题上报</div>
+            <div></div>
+        </div>
+        
+        <div class="content-area">
+            <!-- Issue Header -->
+            <div class="issue-header">
+                <div class="issue-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <h2 class="issue-title">上报无障碍问题</h2>
+                <p class="issue-subtitle">帮助我们发现并解决无障碍设施问题</p>
+            </div>
+            
+            <!-- Form Section -->
+            <div class="form-section">
+                <form id="issueForm" onsubmit="submitIssue(event)">
+                    <!-- Issue Type Selection -->
+                    <div class="issue-type-selector">
+                        <label class="type-title">问题类型</label>
+                        <div class="type-options">
+                            <div class="type-option" onclick="selectIssueType(this, 'elevator')">
+                                <div class="type-icon"><i class="fas fa-elevator"></i></div>
+                                <div class="type-name">电梯故障</div>
+                                <div class="type-desc">电梯无法使用</div>
+                            </div>
+                            
+                            <div class="type-option" onclick="selectIssueType(this, 'ramp')">
+                                <div class="type-icon"><i class="fas fa-wheelchair"></i></div>
+                                <div class="type-name">坡道问题</div>
+                                <div class="type-desc">坡道损坏或太陡</div>
+                            </div>
+                            
+                            <div class="type-option" onclick="selectIssueType(this, 'toilet')">
+                                <div class="type-icon"><i class="fas fa-restroom"></i></div>
+                                <div class="type-name">无障碍厕所</div>
+                                <div class="type-desc">厕所无法使用</div>
+                            </div>
+                            
+                            <div class="type-option" onclick="selectIssueType(this, 'parking')">
+                                <div class="type-icon"><i class="fas fa-parking"></i></div>
+                                <div class="type-name">专用停车位</div>
+                                <div class="type-desc">停车位被占用</div>
+                            </div>
+                            
+                            <div class="type-option" onclick="selectIssueType(this, 'tactile')">
+                                <div class="type-icon"><i class="fas fa-hand-paper"></i></div>
+                                <div class="type-name">盲道设施</div>
+                                <div class="type-desc">盲道损坏或中断</div>
+                            </div>
+                            
+                            <div class="type-option" onclick="selectIssueType(this, 'other')">
+                                <div class="type-icon"><i class="fas fa-question"></i></div>
+                                <div class="type-name">其他问题</div>
+                                <div class="type-desc">其他无障碍问题</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Location Input -->
+                    <div class="input-group">
+                        <label class="input-label">问题地点 *</label>
+                        <div class="location-input-group">
+                            <input type="text" class="input-field location-input" placeholder="请输入具体地址或地点名称" id="locationInput" required>
+                            <button type="button" class="location-btn" onclick="getCurrentLocation()" title="获取当前位置">
+                                <i class="fas fa-location-arrow"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="input-group">
+                        <label class="input-label">问题描述 *</label>
+                        <textarea class="input-field description-textarea" placeholder="请详细描述遇到的问题，包括具体情况、影响范围等..." maxlength="500" id="descriptionInput" required></textarea>
+                        <div style="text-align: right; font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                            <span id="charCount">0/500</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Urgency Level -->
+                    <div class="urgency-selector">
+                        <label class="type-title">紧急程度</label>
+                        <div class="urgency-options">
+                            <div class="urgency-option low" onclick="selectUrgency(this, 'low')">
+                                <div class="urgency-icon"><i class="fas fa-clock"></i></div>
+                                <div class="urgency-name">一般</div>
+                            </div>
+                            
+                            <div class="urgency-option medium" onclick="selectUrgency(this, 'medium')">
+                                <div class="urgency-icon"><i class="fas fa-exclamation"></i></div>
+                                <div class="urgency-name">重要</div>
+                            </div>
+                            
+                            <div class="urgency-option high" onclick="selectUrgency(this, 'high')">
+                                <div class="urgency-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div class="urgency-name">紧急</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Photo Upload --
+                    <div class="input-group">
+                        <label class="input-label">现场照片（可选）</label>
+                        <div class="media-upload" onclick="selectPhotos()">
+                            <div class="upload-icon"><i class="fas fa-camera"></i></div>
+                            <div class="upload-text">点击上传现场照片</div>
+                            <div class="upload-hint">最多5张照片，帮助我们更好地了解问题</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Privacy Notice --
+                    <div class="privacy-notice">
+                        <div class="privacy-title"><i class="fas fa-shield-alt"></i> 隐私保护</div>
+                        <div>您提交的信息将仅用于问题处理和跟进，我们会严格保护您的隐私安全。</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Submit Section --
+        <div class="submit-section">
+            <button class="btn-submit" onclick="submitIssue()" id="submitBtn" disabled>
+                <i class="fas fa-paper-plane"></i> 提交问题
+            </button>
+        </div>
+        
+        <!-- Bottom Navigation --
+        <div class="bottom-nav">
+            <button class="nav-item" onclick="window.location.href='home.html'">
+                <i class="fas fa-home nav-icon"></i>
+                <span>首页</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='explore.html'">
+                <i class="fas fa-compass nav-icon"></i>
+                <span>发现</span>
+            </button>
+            
+            <button class="nav-item ripple-btn" onclick="window.location.href='create_post.html'" data-ripple="true">
+                <i class="fas fa-plus-circle nav-icon"></i>
+                <span>发布</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='notifications.html'">
+                <i class="fas fa-bell nav-icon"></i>
+                <span>通知</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user nav-icon"></i>
+                <span>我的</span>
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        let selectedIssueType = '';
+        let selectedUrgency = '';
+        
+        function selectIssueType(element, type) {
+            // Remove selected class from all options
+            document.querySelectorAll('.type-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            selectedIssueType = type;
+            validateForm();
+        }
+        
+        function selectUrgency(element, urgency) {
+            // Remove selected class from all options
+            document.querySelectorAll('.urgency-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            selectedUrgency = urgency;
+            validateForm();
+        }
+        
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        // Simulate getting location name from coordinates
+                        const mockLocations = [
+                            '地铁2号线汉口火车站A出口',
+                            '万达广场江汉路店一楼',
+                            '市民中心大楼东侧',
+                            '中山公园南门',
+                            '市人民医院门诊楼'
+                        ];
+                        
+                        const randomLocation = mockLocations[Math.floor(Math.random() * mockLocations.length)];
+                        document.getElementById('locationInput').value = randomLocation;
+                        validateForm();
+                    },
+                    (error) => {
+                        alert('无法获取位置信息，请手动输入地点');
+                    }
+                );
+            } else {
+                alert('您的浏览器不支持位置服务');
+            }
+        }
+        
+        function selectPhotos() {
+            // Simulate file selection
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.multiple = true;
+            input.onchange = function(e) {
+                const files = e.target.files;
+                if (files.length > 5) {
+                    alert('最多只能上传5张照片');
+                    return;
+                }
+                alert(`已选择 ${files.length} 张照片`);
+            };
+            input.click();
+        }
+        
+        function updateCharCount() {
+            const content = document.getElementById('descriptionInput').value;
+            const count = content.length;
+            document.getElementById('charCount').textContent = `${count}/500`;
+            
+            // Limit to 500 characters
+            if (count > 500) {
+                document.getElementById('descriptionInput').value = content.substring(0, 500);
+                document.getElementById('charCount').textContent = '500/500';
+            }
+            
+            validateForm();
+        }
+        
+        function validateForm() {
+            const location = document.getElementById('locationInput').value.trim();
+            const description = document.getElementById('descriptionInput').value.trim();
+            
+            const isValid = selectedIssueType && selectedUrgency && location.length >= 2 && description.length >= 10;
+            document.getElementById('submitBtn').disabled = !isValid;
+        }
+        
+        function submitIssue(event) {
+            if (event) event.preventDefault();
+            
+            if (!selectedIssueType || !selectedUrgency) {
+                alert('请选择问题类型和紧急程度');
+                return;
+            }
+            
+            const location = document.getElementById('locationInput').value.trim();
+            const description = document.getElementById('descriptionInput').value.trim();
+            
+            if (!location || !description) {
+                alert('请填写必填信息');
+                return;
+            }
+            
+            if (description.length < 10) {
+                alert('问题描述至少需要10个字符');
+                return;
+            }
+            
+            // Simulate submission
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                alert('问题上报成功！我们会尽快处理您的反馈。');
+                // Reset form
+                document.getElementById('issueForm').reset();
+                selectedIssueType = '';
+                selectedUrgency = '';
+                document.querySelectorAll('.type-option').forEach(option => option.classList.remove('selected'));
+                document.querySelectorAll('.urgency-option').forEach(option => option.classList.remove('selected'));
+                updateCharCount();
+                validateForm();
+                
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 提交问题';
+            }, 2000);
+        }
+        
+        // Event listeners
+        document.getElementById('locationInput').addEventListener('input', validateForm);
+        document.getElementById('descriptionInput').addEventListener('input', updateCharCount);
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCharCount();
+            validateForm();
+        });
+    </script>
+</body>
+</html>

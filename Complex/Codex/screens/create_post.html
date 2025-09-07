@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN" data-fontscale="base">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>发布 · 无障碍社区</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="../styles/global.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style> body { font-family: Inter, ui-sans-serif, system-ui; } .thumb{width:72px;height:72px;border-radius:12px;object-fit:cover;border:1px solid var(--border);} .switch{appearance:none;width:40px;height:24px;border-radius:9999px;background:#e5e7eb;position:relative;outline:none;border:1px solid var(--border);} .switch:checked{background:var(--accent);} .switch:before{content:"";position:absolute;width:18px;height:18px;background:white;border-radius:9999px;left:3px;top:2.5px;transition:transform .2s;} .switch:checked:before{transform:translateX(16px);} </style>
+</head>
+<body data-theme="light" data-current-tab="create" class="bg-[color:var(--bg)] text-[color:var(--fg)]">
+  <div class="device" role="form" aria-label="发布帖子">
+    <div class="dynamic-island" aria-hidden="true"></div>
+    <div class="status-bar"><div>9:41</div><div class="right">📶 📡 🔋</div></div>
+
+    <header class="title-bar">
+      <a class="btn" aria-label="返回" href="home.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title">发布</div>
+      <div class="flex items-center gap-1 justify-end">
+        <button id="publishBtn" class="btn ripple" aria-label="发布"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </header>
+
+    <main class="content p-3 space-y-3">
+      <section aria-label="媒体选择" class="card p-3">
+        <div class="flex items-center gap-3 overflow-x-auto">
+          <label class="px-3 py-2 border rounded-xl ripple cursor-pointer">
+            <i class="fa-solid fa-image"></i> 选择图片
+            <input id="pickImages" type="file" accept="image/*" multiple class="hidden" />
+          </label>
+          <label class="px-3 py-2 border rounded-xl ripple cursor-pointer">
+            <i class="fa-solid fa-video"></i> 选择视频
+            <input id="pickVideo" type="file" accept="video/*" class="hidden" />
+          </label>
+          <button class="px-3 py-2 border rounded-xl ripple">使用当前位置</button>
+        </div>
+        <div id="mediaPreview" class="mt-3 flex items-center gap-2 overflow-x-auto" aria-live="polite"></div>
+      </section>
+
+      <section class="card p-3 space-y-2" aria-label="地点与标签">
+        <input class="w-full px-3 py-2 border rounded-xl bg-[color:var(--bg)]" placeholder="输入地点名称，如：××地铁站南口" />
+        <input class="w-full px-3 py-2 border rounded-xl bg-[color:var(--bg)]" placeholder="添加标签：电梯/坡度/卫生间…" />
+        <div class="text-xs text-[color:var(--muted)]">建议：写清楚入口、坡度、门宽、盲道状态等要素</div>
+      </section>
+
+      <section class="card p-3 space-y-2" aria-label="设施参数">
+        <div class="grid grid-cols-2 gap-2">
+          <label class="block text-sm">坡度（%）<input id="slope" type="number" step="0.1" class="mt-1 w-full px-3 py-2 border rounded-xl bg-[color:var(--bg)]" placeholder="如 5"/></label>
+          <label class="block text-sm">门宽（cm）<input id="door" type="number" class="mt-1 w-full px-3 py-2 border rounded-xl bg-[color:var(--bg)]" placeholder="如 90"/></label>
+        </div>
+        <div class="flex items-center justify-between">
+          <label class="flex items-center gap-2">电梯 <input type="checkbox" class="switch"/></label>
+          <label class="flex items-center gap-2">卫生间 <input type="checkbox" class="switch"/></label>
+          <label class="flex items-center gap-2">匿名 <input type="checkbox" class="switch"/></label>
+        </div>
+        <div>
+          <label class="block text-sm">盲道状态</label>
+          <select class="mt-1 w-full px-3 py-2 border rounded-xl bg-[color:var(--bg)]">
+            <option>连续</option>
+            <option>被占用</option>
+            <option>损坏</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="card p-3" aria-label="快捷模板">
+        <div class="text-sm mb-2">可达性模板：</div>
+        <div class="flex flex-wrap gap-2">
+          <button class="badge ripple" data-template='{"tags":["地铁站通行","电梯","盲道连续"],"slope":5,"door":90}'>地铁站通行</button>
+          <button class="badge ripple" data-template='{"tags":["商场入口","坡度≤8%","卫生间"],"slope":8,"door":100}'>商场入口</button>
+        </div>
+      </section>
+
+      <section class="card p-3" aria-label="发布操作">
+        <button id="publishAction" class="w-full py-2 rounded-xl bg-[color:var(--accent)] text-white ripple">发布</button>
+        <div class="h-1 mt-2 bg-gray-200 rounded overflow-hidden"><div id="publishProgress" class="h-full bg-[color:var(--accent)]" style="width:0%"></div></div>
+        <div id="publishDone" class="mt-2 hidden text-[color:var(--accent)]"><i class="fa-solid fa-circle-check"></i> 已发布</div>
+      </section>
+    </main>
+
+    <nav class="tab-bar" aria-label="底部导航">
+      <a class="tab-item" data-tab="home" href="home.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+      <a class="tab-item" data-tab="explore" href="explore.html"><i class="fa-regular fa-compass"></i><span>Explore</span></a>
+      <a class="tab-item active" data-tab="create" href="create_post.html" aria-current="page"><i class="fa-solid fa-circle-plus"></i><span>Create</span></a>
+      <a class="tab-item" data-tab="inbox" href="messages.html"><i class="fa-regular fa-message"></i><span>Inbox</span></a>
+      <a class="tab-item" data-tab="profile" href="profile.html"><i class="fa-regular fa-user"></i><span>Profile</span></a>
+    </nav>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const imgInput = document.getElementById('pickImages');
+      const vidInput = document.getElementById('pickVideo');
+      const preview = document.getElementById('mediaPreview');
+      imgInput?.addEventListener('change', () => {
+        [...imgInput.files].forEach(f => { const url = URL.createObjectURL(f); const img = new Image(); img.src = url; img.className = 'thumb'; img.alt = f.name; preview.appendChild(img); });
+      });
+      vidInput?.addEventListener('change', () => {
+        const f = vidInput.files[0]; if (!f) return; const url = URL.createObjectURL(f); const el = document.createElement('video'); el.src = url; el.className = 'thumb'; el.muted = true; el.playsInline = true; preview.appendChild(el); el.play().catch(()=>{});
+      });
+      document.querySelectorAll('[data-template]').forEach(btn => btn.addEventListener('click', () => {
+        const data = JSON.parse(btn.dataset.template); document.getElementById('slope').value = data.slope; document.getElementById('door').value = data.door;
+      }));
+      const action = document.getElementById('publishAction');
+      const bar = document.getElementById('publishProgress');
+      const done = document.getElementById('publishDone');
+      action.addEventListener('click', async () => { action.disabled = true; await Motion.progressBar(bar, 1200); done.classList.remove('hidden'); setTimeout(()=>{ window.location.href='post_detail.html'; }, 600); });
+    });
+  </script>
+  <script src="../scripts/observer.js" defer></script>
+  <script src="../scripts/waapi.js" defer></script>
+  <script src="../scripts/app.js" defer></script>
+</body>
+</html>
+

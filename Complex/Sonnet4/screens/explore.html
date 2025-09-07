@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>发现 - Accessibility Navigator</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  
+  <style>
+    .explore-header {
+      position: sticky;
+      top: var(--status-bar-height);
+      z-index: 90;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(20px);
+    }
+    
+    .search-container {
+      padding: var(--space-md);
+      display: flex;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+    
+    .search-input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: var(--space-md) var(--space-lg) var(--space-md) 48px;
+      border: 2px solid var(--border-color);
+      border-radius: 24px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: var(--font-size-md);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      background: var(--bg-primary);
+      box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: var(--space-md);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-tertiary);
+      font-size: var(--font-size-md);
+    }
+    
+    .filter-button {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .filter-button.active {
+      background: var(--accent-blue);
+      color: white;
+      border-color: var(--accent-blue);
+    }
+    
+    .search-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 8px 30px var(--shadow-color);
+      border: 1px solid var(--border-color);
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+    }
+    
+    .search-suggestions.show {
+      display: block;
+    }
+    
+    .suggestion-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      cursor: pointer;
+      transition: background var(--duration-fast) var(--ease-out);
+    }
+    
+    .suggestion-item:hover {
+      background: var(--bg-secondary);
+    }
+    
+    .suggestion-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    
+    .suggestion-text {
+      flex: 1;
+    }
+    
+    .suggestion-title {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .suggestion-desc {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+    
+    .filter-chips {
+      padding: 0 var(--space-md) var(--space-md);
+      display: flex;
+      gap: var(--space-sm);
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    
+    .filter-chips::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .filter-chip {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .filter-chip.active {
+      background: var(--accent-blue);
+      color: white;
+      border-color: var(--accent-blue);
+    }
+    
+    .filter-chip::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transition: width 0.6s, height 0.6s;
+      z-index: 1;
+    }
+    
+    .filter-chip:active::before {
+      width: 100px;
+      height: 100px;
+    }
+    
+    .waterfall-container {
+      padding: var(--space-md);
+      padding-bottom: calc(var(--tab-bar-height) + var(--space-md));
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+    }
+    
+    .topic-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      transition: all var(--duration-normal) var(--ease-out);
+      position: relative;
+      cursor: pointer;
+    }
+    
+    .topic-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px var(--shadow-color);
+    }
+    
+    .topic-image {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .topic-video {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .topic-content {
+      padding: var(--space-md);
+    }
+    
+    .topic-title {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-xs);
+      line-height: var(--line-height-normal);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .topic-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+    
+    .topic-stats {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    
+    .topic-stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .topic-tags {
+      position: absolute;
+      top: var(--space-sm);
+      left: var(--space-sm);
+      right: var(--space-sm);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    
+    .topic-tag {
+      background: rgba(0,0,0,0.7);
+      color: white;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+    
+    .hot-topics {
+      margin: var(--space-lg) var(--space-md);
+    }
+    
+    .section-title {
+      font-size: var(--font-size-lg);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .hot-topic-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--card-bg);
+      border-radius: 12px;
+      margin-bottom: var(--space-sm);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .hot-topic-item:hover {
+      background: var(--bg-secondary);
+    }
+    
+    .topic-rank {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+    }
+    
+    .topic-rank.gold {
+      background: linear-gradient(135deg, #ffd700, #ffb700);
+      color: white;
+    }
+    
+    .topic-rank.silver {
+      background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
+      color: white;
+    }
+    
+    .topic-rank.bronze {
+      background: linear-gradient(135deg, #cd7f32, #b8751a);
+      color: white;
+    }
+    
+    .topic-rank.normal {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+    }
+    
+    .hot-topic-info {
+      flex: 1;
+    }
+    
+    .hot-topic-title {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    
+    .hot-topic-count {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+    
+    .trending-icon {
+      color: var(--accent-red);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: var(--space-xl);
+      color: var(--text-secondary);
+    }
+    
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: var(--space-md);
+      color: var(--text-tertiary);
+    }
+    
+    .parallax-item {
+      transform: translateY(var(--scroll-offset, 0));
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-indicators">
+        <i class="fas fa-signal" style="font-size: 12px;"></i>
+        <i class="fas fa-wifi" style="font-size: 12px;"></i>
+        <i class="fas fa-battery-three-quarters" style="font-size: 12px;"></i>
+      </div>
+    </div>
+    
+    <!-- Header -->
+    <header class="explore-header">
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <i class="fas fa-search search-icon"></i>
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="搜索无障碍设施、地点或用户..."
+            oninput="handleSearch(this.value)"
+            onfocus="showSuggestions()"
+            onblur="hideSuggestions()"
+          >
+          <div class="search-suggestions" id="searchSuggestions">
+            <div class="suggestion-item" onclick="searchFor('坡度')">
+              <div class="suggestion-icon"><i class="fas fa-angle-double-down"></i></div>
+              <div class="suggestion-text">
+                <div class="suggestion-title">坡度 ≤ 8%</div>
+                <div class="suggestion-desc">缓坡设施</div>
+              </div>
+            </div>
+            <div class="suggestion-item" onclick="searchFor('电梯')">
+              <div class="suggestion-icon"><i class="fas fa-elevator"></i></div>
+              <div class="suggestion-text">
+                <div class="suggestion-title">电梯停运</div>
+                <div class="suggestion-desc">设施维护信息</div>
+              </div>
+            </div>
+            <div class="suggestion-item" onclick="searchFor('卫生间')">
+              <div class="suggestion-icon"><i class="fas fa-restroom"></i></div>
+              <div class="suggestion-text">
+                <div class="suggestion-title">无障碍卫生间</div>
+                <div class="suggestion-desc">便民设施</div>
+              </div>
+            </div>
+            <div class="suggestion-item" onclick="searchFor('地铁站')">
+              <div class="suggestion-icon"><i class="fas fa-subway"></i></div>
+              <div class="suggestion-text">
+                <div class="suggestion-title">地铁站通道</div>
+                <div class="suggestion-desc">公共交通</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="filter-button" onclick="toggleFilters()" aria-label="筛选选项">
+          <i class="fas fa-sliders-h"></i>
+        </button>
+      </div>
+      
+      <!-- Filter Chips -->
+      <div class="filter-chips" id="filterChips">
+        <button class="filter-chip active" onclick="toggleChip(this)" data-filter="all">
+          <i class="fas fa-globe"></i>
+          <span>全部</span>
+        </button>
+        <button class="filter-chip" onclick="toggleChip(this)" data-filter="slope">
+          <i class="fas fa-angle-double-down"></i>
+          <span>坡度友好</span>
+        </button>
+        <button class="filter-chip" onclick="toggleChip(this)" data-filter="elevator">
+          <i class="fas fa-elevator"></i>
+          <span>电梯设施</span>
+        </button>
+        <button class="filter-chip" onclick="toggleChip(this)" data-filter="restroom">
+          <i class="fas fa-restroom"></i>
+          <span>无障碍卫生间</span>
+        </button>
+        <button class="filter-chip" onclick="toggleChip(this)" data-filter="width">
+          <i class="fas fa-arrows-alt-h"></i>
+          <span>门宽充足</span>
+        </button>
+        <button class="filter-chip" onclick="toggleChip(this)" data-filter="tactile">
+          <i class="fas fa-road"></i>
+          <span>盲道完善</span>
+        </button>
+      </div>
+    </header>
+    
+    <!-- Content -->
+    <div class="content">
+      <!-- Hot Topics -->
+      <section class="hot-topics">
+        <h2 class="section-title">
+          <i class="fas fa-fire trending-icon"></i>
+          热门话题
+        </h2>
+        
+        <div class="hot-topic-item" onclick="openTopic('metro-upgrade')">
+          <div class="topic-rank gold">1</div>
+          <div class="hot-topic-info">
+            <div class="hot-topic-title">#地铁站无障碍升级#</div>
+            <div class="hot-topic-count">1.2万 讨论</div>
+          </div>
+          <i class="fas fa-chevron-right" style="color: var(--text-tertiary);"></i>
+        </div>
+        
+        <div class="hot-topic-item" onclick="openTopic('slope-standard')">
+          <div class="topic-rank silver">2</div>
+          <div class="hot-topic-info">
+            <div class="hot-topic-title">#坡道标准化建设#</div>
+            <div class="hot-topic-count">8.5千 讨论</div>
+          </div>
+          <i class="fas fa-chevron-right" style="color: var(--text-tertiary);"></i>
+        </div>
+        
+        <div class="hot-topic-item" onclick="openTopic('smart-guidance')">
+          <div class="topic-rank bronze">3</div>
+          <div class="hot-topic-info">
+            <div class="hot-topic-title">#智能语音导航#</div>
+            <div class="hot-topic-count">6.1千 讨论</div>
+          </div>
+          <i class="fas fa-chevron-right" style="color: var(--text-tertiary);"></i>
+        </div>
+      </section>
+      
+      <!-- Waterfall Feed -->
+      <div class="waterfall-container" id="waterfallContainer">
+        <!-- Topic Card 1 -->
+        <div class="topic-card parallax-item" onclick="openPost(1)">
+          <div class="topic-tags">
+            <span class="topic-tag">轮椅通行</span>
+            <span class="topic-tag">新建设施</span>
+          </div>
+          <img 
+            src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=300&h=200&fit=crop" 
+            alt="商场无障碍入口"
+            class="topic-image"
+          >
+          <div class="topic-content">
+            <h3 class="topic-title">万达广场新建无障碍通道体验</h3>
+            <div class="topic-meta">
+              <div class="topic-stats">
+                <div class="topic-stat">
+                  <i class="fas fa-heart"></i>
+                  <span>234</span>
+                </div>
+                <div class="topic-stat">
+                  <i class="fas fa-comment"></i>
+                  <span>67</span>
+                </div>
+              </div>
+              <span>2小时前</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Topic Card 2 (Video) -->
+        <div class="topic-card parallax-item" onclick="openPost(2)">
+          <div class="topic-tags">
+            <span class="topic-tag">视频</span>
+            <span class="topic-tag">盲道</span>
+          </div>
+          <video 
+            class="topic-video" 
+            poster="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop"
+            muted
+            data-autoplay
+          >
+            <source src="https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_1mb.mp4" type="video/mp4">
+          </video>
+          <div class="topic-content">
+            <h3 class="topic-title">地铁站盲道规范化改造进度更新</h3>
+            <div class="topic-meta">
+              <div class="topic-stats">
+                <div class="topic-stat">
+                  <i class="fas fa-heart"></i>
+                  <span>456</span>
+                </div>
+                <div class="topic-stat">
+                  <i class="fas fa-comment"></i>
+                  <span>89</span>
+                </div>
+              </div>
+              <span>4小时前</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Topic Card 3 -->
+        <div class="topic-card parallax-item" onclick="openPost(3)">
+          <div class="topic-tags">
+            <span class="topic-tag">卫生间</span>
+            <span class="topic-tag">医院</span>
+          </div>
+          <img 
+            src="https://images.unsplash.com/photo-1551076805-e1869033e561?w=300&h=200&fit=crop" 
+            alt="医院无障碍设施"
+            class="topic-image"
+          >
+          <div class="topic-content">
+            <h3 class="topic-title">三甲医院无障碍设施全面升级完成</h3>
+            <div class="topic-meta">
+              <div class="topic-stats">
+                <div class="topic-stat">
+                  <i class="fas fa-heart"></i>
+                  <span>178</span>
+                </div>
+                <div class="topic-stat">
+                  <i class="fas fa-comment"></i>
+                  <span>45</span>
+                </div>
+              </div>
+              <span>1天前</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Topic Card 4 -->
+        <div class="topic-card parallax-item" onclick="openPost(4)">
+          <div class="topic-tags">
+            <span class="topic-tag">公园</span>
+            <span class="topic-tag">步道</span>
+          </div>
+          <img 
+            src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop" 
+            alt="公园无障碍步道"
+            class="topic-image"
+          >
+          <div class="topic-content">
+            <h3 class="topic-title">中山公园新增无障碍游览路线</h3>
+            <div class="topic-meta">
+              <div class="topic-stats">
+                <div class="topic-stat">
+                  <i class="fas fa-heart"></i>
+                  <span>312</span>
+                </div>
+                <div class="topic-stat">
+                  <i class="fas fa-comment"></i>
+                  <span>78</span>
+                </div>
+              </div>
+              <span>1天前</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Topic Card 5 -->
+        <div class="topic-card parallax-item" onclick="openPost(5)">
+          <div class="topic-tags">
+            <span class="topic-tag">学校</span>
+            <span class="topic-tag">坡道</span>
+          </div>
+          <img 
+            src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=300&h=200&fit=crop" 
+            alt="学校无障碍设施"
+            class="topic-image"
+          >
+          <div class="topic-content">
+            <h3 class="topic-title">大学校园无障碍环境建设成果展示</h3>
+            <div class="topic-meta">
+              <div class="topic-stats">
+                <div class="topic-stat">
+                  <i class="fas fa-heart"></i>
+                  <span>267</span>
+                </div>
+                <div class="topic-stat">
+                  <i class="fas fa-comment"></i>
+                  <span>52</span>
+                </div>
+              </div>
+              <span>2天前</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Topic Card 6 -->
+        <div class="topic-card parallax-item" onclick="openPost(6)">
+          <div class="topic-tags">
+            <span class="topic-tag">图书馆</span>
+            <span class="topic-tag">智能</span>
+          </div>
+          <img 
+            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop" 
+            alt="图书馆无障碍设施"
+            class="topic-image"
+          >
+          <div class="topic-content">
+            <h3 class="topic-title">市图书馆智能无障碍导航系统上线</h3>
+            <div class="topic-meta">
+              <div class="topic-stats">
+                <div class="topic-stat">
+                  <i class="fas fa-heart"></i>
+                  <span>189</span>
+                </div>
+                <div class="topic-stat">
+                  <i class="fas fa-comment"></i>
+                  <span>34</span>
+                </div>
+              </div>
+              <span>2天前</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab Bar -->
+    <nav class="tab-bar" role="tablist" aria-label="主导航">
+      <a href="home.html" class="tab-item" role="tab">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+      </a>
+      <a href="explore.html" class="tab-item active" role="tab">
+        <i class="fas fa-compass"></i>
+        <span>发现</span>
+      </a>
+      <a href="create_post.html" class="tab-item" role="tab">
+        <i class="fas fa-plus-circle"></i>
+        <span>发布</span>
+      </a>
+      <a href="notifications.html" class="tab-item" role="tab">
+        <i class="fas fa-bell"></i>
+        <span>通知</span>
+      </a>
+      <a href="profile.html" class="tab-item" role="tab">
+        <i class="fas fa-user"></i>
+        <span>我的</span>
+      </a>
+    </nav>
+  </div>
+  
+  <script src="../scripts/app.js"></script>
+  <script>
+    let isFiltersExpanded = false;
+    let activeFilters = new Set(['all']);
+    let searchTimeout;
+    
+    // Search functionality
+    function handleSearch(query) {
+      clearTimeout(searchTimeout);
+      
+      searchTimeout = setTimeout(() => {
+        if (query.length >= 2) {
+          console.log('Searching for:', query);
+          // In real app, would perform search API call
+          filterContent(query);
+        }
+      }, 300);
+    }
+    
+    function showSuggestions() {
+      const suggestions = document.getElementById('searchSuggestions');
+      suggestions.classList.add('show');
+    }
+    
+    function hideSuggestions() {
+      setTimeout(() => {
+        const suggestions = document.getElementById('searchSuggestions');
+        suggestions.classList.remove('show');
+      }, 200);
+    }
+    
+    function searchFor(term) {
+      const searchInput = document.querySelector('.search-input');
+      searchInput.value = term;
+      handleSearch(term);
+      hideSuggestions();
+    }
+    
+    // Filter functionality
+    function toggleFilters() {
+      const button = event.currentTarget;
+      button.classList.toggle('active');
+      isFiltersExpanded = !isFiltersExpanded;
+      
+      // In real app, would show additional filter options
+      console.log('Filters expanded:', isFiltersExpanded);
+    }
+    
+    function toggleChip(chip) {
+      const filter = chip.dataset.filter;
+      
+      if (filter === 'all') {
+        // Clear other filters when 'all' is selected
+        document.querySelectorAll('.filter-chip').forEach(c => {
+          c.classList.remove('active');
+        });
+        chip.classList.add('active');
+        activeFilters.clear();
+        activeFilters.add('all');
+      } else {
+        // Remove 'all' filter when specific filter is selected
+        const allChip = document.querySelector('[data-filter="all"]');
+        allChip.classList.remove('active');
+        activeFilters.delete('all');
+        
+        chip.classList.toggle('active');
+        
+        if (chip.classList.contains('active')) {
+          activeFilters.add(filter);
+        } else {
+          activeFilters.delete(filter);
+        }
+        
+        // If no filters active, activate 'all'
+        if (activeFilters.size === 0) {
+          allChip.classList.add('active');
+          activeFilters.add('all');
+        }
+      }
+      
+      // Apply ripple effect
+      if (window.accessibilityApp) {
+        // Simulate ripple
+        chip.style.animation = 'none';
+        chip.offsetHeight; // Trigger reflow
+        chip.style.animation = 'ripple-effect 0.6s ease-out';
+      }
+      
+      applyFilters();
+    }
+    
+    function applyFilters() {
+      console.log('Active filters:', Array.from(activeFilters));
+      // In real app, would filter the waterfall content
+      filterWaterfallContent();
+    }
+    
+    function filterContent(query) {
+      const cards = document.querySelectorAll('.topic-card');
+      cards.forEach(card => {
+        const title = card.querySelector('.topic-title').textContent.toLowerCase();
+        const tags = Array.from(card.querySelectorAll('.topic-tag')).map(tag => tag.textContent.toLowerCase());
+        
+        const matches = title.includes(query.toLowerCase()) || 
+                       tags.some(tag => tag.includes(query.toLowerCase()));
+        
+        if (matches) {
+          card.style.display = 'block';
+          card.style.animation = 'fadeIn 0.3s ease-out';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+    
+    function filterWaterfallContent() {
+      if (activeFilters.has('all')) {
+        document.querySelectorAll('.topic-card').forEach(card => {
+          card.style.display = 'block';
+        });
+        return;
+      }
+      
+      const filterMap = {
+        'slope': ['坡道', '坡度'],
+        'elevator': ['电梯'],
+        'restroom': ['卫生间'],
+        'width': ['门宽', '通道'],
+        'tactile': ['盲道', '导航']
+      };
+      
+      document.querySelectorAll('.topic-card').forEach(card => {
+        const title = card.querySelector('.topic-title').textContent;
+        const tags = Array.from(card.querySelectorAll('.topic-tag')).map(tag => tag.textContent);
+        
+        let matches = false;
+        
+        for (const filter of activeFilters) {
+          if (filterMap[filter]) {
+            const keywords = filterMap[filter];
+            if (keywords.some(keyword => 
+              title.includes(keyword) || tags.some(tag => tag.includes(keyword))
+            )) {
+              matches = true;
+              break;
+            }
+          }
+        }
+        
+        card.style.display = matches ? 'block' : 'none';
+      });
+    }
+    
+    // Topic interactions
+    function openTopic(topicId) {
+      console.log('Opening topic:', topicId);
+      // In real app, would navigate to topic detail page
+    }
+    
+    function openPost(postId) {
+      console.log('Opening post:', postId);
+      // Navigate to post detail
+      window.location.href = `post_detail.html?id=${postId}`;
+    }
+    
+    // Parallax scrolling effect
+    let ticking = false;
+    
+    function updateParallax() {
+      const scrollTop = document.querySelector('.content').scrollTop;
+      const parallaxItems = document.querySelectorAll('.parallax-item');
+      
+      parallaxItems.forEach((item, index) => {
+        const rate = scrollTop * -0.1 * (index % 3 + 1);
+        item.style.setProperty('--scroll-offset', `${rate}px`);
+      });
+      
+      ticking = false;
+    }
+    
+    document.querySelector('.content').addEventListener('scroll', () => {
+      if (!ticking && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    });
+    
+    // Infinite scroll
+    let isLoading = false;
+    let page = 1;
+    
+    document.querySelector('.content').addEventListener('scroll', (e) => {
+      const { scrollTop, scrollHeight, clientHeight } = e.target;
+      
+      if (scrollTop + clientHeight >= scrollHeight - 200 && !isLoading) {
+        loadMoreTopics();
+      }
+    });
+    
+    function loadMoreTopics() {
+      if (isLoading) return;
+      
+      isLoading = true;
+      page++;
+      
+      // Show loading indicator
+      const loadingDiv = document.createElement('div');
+      loadingDiv.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--text-secondary);">
+          <div class="loading-spinner" style="margin: 0 auto 10px;"></div>
+          加载更多话题...
+        </div>
+      `;
+      loadingDiv.id = 'loading-more';
+      
+      document.getElementById('waterfallContainer').appendChild(loadingDiv);
+      
+      // Simulate API call
+      setTimeout(() => {
+        document.getElementById('loading-more').remove();
+        
+        // Add new topic cards (simulated)
+        const newCards = generateTopicCards(6);
+        const container = document.getElementById('waterfallContainer');
+        
+        newCards.forEach(card => {
+          container.appendChild(card);
+        });
+        
+        isLoading = false;
+      }, 1500);
+    }
+    
+    function generateTopicCards(count) {
+      const cards = [];
+      const images = [
+        'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=300&h=200&fit=crop',
+        'https://images.unsplash.com/photo-1519167758481-83f29c7c9369?w=300&h=200&fit=crop',
+        'https://images.unsplash.com/photo-1564221710304-0b37c8b5d73b?w=300&h=200&fit=crop'
+      ];
+      
+      for (let i = 0; i < count; i++) {
+        const card = document.createElement('div');
+        card.className = 'topic-card parallax-item';
+        card.onclick = () => openPost(100 + i);
+        
+        card.innerHTML = `
+          <div class="topic-tags">
+            <span class="topic-tag">新内容</span>
+          </div>
+          <img 
+            src="${images[i % images.length]}" 
+            alt="无障碍设施"
+            class="topic-image"
+          >
+          <div class="topic-content">
+            <h3 class="topic-title">新发现的无障碍设施 #${page}-${i + 1}</h3>
+            <div class="topic-meta">
+              <div class="topic-stats">
+                <div class="topic-stat">
+                  <i class="fas fa-heart"></i>
+                  <span>${Math.floor(Math.random() * 200) + 50}</span>
+                </div>
+                <div class="topic-stat">
+                  <i class="fas fa-comment"></i>
+                  <span>${Math.floor(Math.random() * 50) + 10}</span>
+                </div>
+              </div>
+              <span>${Math.floor(Math.random() * 5) + 1}天前</span>
+            </div>
+          </div>
+        `;
+        
+        cards.push(card);
+      }
+      
+      return cards;
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Setup initial animations
+      const cards = document.querySelectorAll('.topic-card');
+      cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.style.animation = 'fadeInUp 0.6s ease-out both';
+      });
+      
+      // Add fade in animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+    });
+  </script>
+</body>
+</html>

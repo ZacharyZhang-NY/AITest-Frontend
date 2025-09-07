@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帖子详情 - Accessibility Navigator</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .post-detail-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .content-wrapper {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            right: 0;
+            bottom: 83px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+        
+        .media-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: var(--bg-tertiary);
+            overflow: hidden;
+        }
+        
+        .media-container video,
+        .media-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .media-controls {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 24px;
+            padding: 8px 16px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .play-pause-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .play-pause-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.1);
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .volume-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .volume-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .post-info {
+            padding: 24px;
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .author-info {
+            flex: 1;
+        }
+        
+        .author-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        
+        .post-time {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+        
+        .follow-btn {
+            padding: 8px 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .follow-btn:hover {
+            background: var(--accent-hover);
+        }
+        
+        .follow-btn.following {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .post-content {
+            margin-bottom: 24px;
+        }
+        
+        .post-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .post-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+        
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .accessibility-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .rating-section {
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .rating-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .rating-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .overall-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .rating-stars {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .rating-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .rating-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .rating-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .rating-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            flex: 1;
+        }
+        
+        .rating-bar {
+            flex: 2;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 0 12px;
+        }
+        
+        .rating-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+        }
+        
+        .rating-score {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 30px;
+            text-align: right;
+        }
+        
+        .actions-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .action-btn:hover {
+            color: var(--accent);
+        }
+        
+        .action-btn.liked {
+            color: var(--danger);
+        }
+        
+        .action-btn.saved {
+            color: var(--accent);
+        }
+        
+        .action-btn i {
+            font-size: 20px;
+        }
+        
+        .route-btn {
+            padding: 12px 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .route-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+        
+        .comments-section {
+            margin-bottom: 24px;
+        }
+        
+        .comments-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .comments-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .sort-comments {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .comment-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+        }
+        
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .comment-input-field {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 14px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .comment-submit {
+            padding: 8px 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .comment-submit:hover {
+            background: var(--accent-hover);
+        }
+        
+        .comment-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+        
+        .comment-content {
+            flex: 1;
+        }
+        
+        .comment-author {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        
+        .comment-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .comment-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .comment-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .comment-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .comment-action {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .comment-action:hover {
+            color: var(--accent);
+        }
+        
+        .related-posts {
+            margin-bottom: 24px;
+        }
+        
+        .related-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+        
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .related-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .related-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+        
+        .related-image {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+        
+        .related-info {
+            padding: 12px;
+        }
+        
+        .related-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        
+        .related-location {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .loading-skeleton {
+            background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-color) 50%, var(--bg-tertiary) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        
+        @media (max-width: 393px) {
+            .media-container {
+                height: 300px;
+            }
+            
+            .post-title {
+                font-size: 20px;
+            }
+            
+            .related-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="status-bar">
+            <div class="status-time">9:41</div>
+            <div class="status-icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="dynamic-island"></div>
+        
+        <div class="header">
+            <button class="header-back" onclick="goBack()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h1 class="header-title">帖子详情</h1>
+            <button class="header-action" onclick="sharePost()">
+                <i class="fas fa-share-alt"></i>
+            </button>
+        </div>
+        
+        <div class="post-detail-container">
+            <div class="content-wrapper">
+                <div class="media-container">
+                    <video id="postVideo" muted loop playsinline>
+                        <source src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" type="video/mp4">
+                    </video>
+                    <div class="media-controls">
+                        <button class="play-pause-btn" onclick="togglePlayPause()">
+                            <i class="fas fa-play" id="playPauseIcon"></i>
+                        </button>
+                        <div class="progress-bar" onclick="seekVideo(event)">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="volume-control">
+                            <button class="volume-btn" onclick="toggleMute()">
+                                <i class="fas fa-volume-up" id="volumeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="post-info">
+                    <div class="post-header">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop" alt="作者头像" class="author-avatar">
+                        <div class="author-info">
+                            <div class="author-name">城市无障碍</div>
+                            <div class="post-time">2小时前</div>
+                        </div>
+                        <button class="follow-btn" onclick="toggleFollow(this)">关注</button>
+                    </div>
+                    
+                    <div class="post-content">
+                        <h1 class="post-title">人民广场地铁站新增的无障碍电梯</h1>
+                        <p class="post-description">
+                            地铁3号线新增的无障碍电梯真的太方便了！空间很大，操作简单，按钮高度合适，还有语音提示。电梯内部干净整洁，照明充足，紧急呼叫按钮位置明显。对于轮椅用户和推婴儿车的家庭来说，这是一个很大的进步。
+                        </p>
+                        <div class="location-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>人民广场地铁站 3号线</span>
+                        </div>
+                        
+                        <div class="accessibility-tags">
+                            <span class="accessibility-tag positive">🛗 电梯</span>
+                            <span class="accessibility-tag positive">🚇 地铁</span>
+                            <span class="accessibility-tag positive">♿ 无障碍</span>
+                            <span class="accessibility-tag positive">🔊 语音提示</span>
+                            <span class="accessibility-tag positive">🆘 紧急呼叫</span>
+                        </div>
+                    </div>
+                    
+                    <div class="rating-section">
+                        <div class="rating-header">
+                            <h3 class="rating-title">无障碍评分</h3>
+                            <div class="overall-rating">
+                                <div class="rating-stars">
+                                    <i class="fas fa-star star"></i>
+                                    <i class="fas fa-star star"></i>
+                                    <i class="fas fa-star star"></i>
+                                    <i class="fas fa-star star"></i>
+                                    <i class="fas fa-star-half-alt star"></i>
+                                </div>
+                                <span class="rating-value">4.5</span>
+                            </div>
+                        </div>
+                        
+                        <div class="rating-details">
+                            <div class="rating-item">
+                                <span class="rating-label">坡度平缓度</span>
+                                <div class="rating-bar">
+                                    <div class="rating-bar-fill" style="width: 90%"></div>
+                                </div>
+                                <span class="rating-score">9.0</span>
+                            </div>
+                            <div class="rating-item">
+                                <span class="rating-label">通道宽度</span>
+                                <div class="rating-bar">
+                                    <div class="rating-bar-fill" style="width: 95%"></div>
+                                </div>
+                                <span class="rating-score">9.5</span>
+                            </div>
+                            <div class="rating-item">
+                                <span class="rating-label">照明亮度</span>
+                                <div class="rating-bar">
+                                    <div class="rating-bar-fill" style="width: 85%"></div>
+                                </div>
+                                <span class="rating-score">8.5</span>
+                            </div>
+                            <div class="rating-item">
+                                <span class="rating-label">标识清晰度</span>
+                                <div class="rating-bar">
+                                    <div class="rating-bar-fill" style="width: 88%"></div>
+                                </div>
+                                <span class="rating-score">8.8</span>
+                            </div>
+                            <div class="rating-item">
+                                <span class="rating-label">紧急设施</span>
+                                <div class="rating-bar">
+                                    <div class="rating-bar-fill" style="width: 92%"></div>
+                                </div>
+                                <span class="rating-score">9.2</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="actions-section">
+                        <div class="action-buttons">
+                            <button class="action-btn liked" onclick="toggleLike()">
+                                <i class="fas fa-heart"></i>
+                                <span>128</span>
+                            </button>
+                            <button class="action-btn" onclick="scrollToComments()">
+                                <i class="fas fa-comment"></i>
+                                <span>23</span>
+                            </button>
+                            <button class="action-btn saved" onclick="toggleSave()">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                            <button class="action-btn" onclick="reportIssue()">
+                                <i class="fas fa-flag"></i>
+                            </button>
+                        </div>
+                        <button class="route-btn" onclick="navigateToRoute()">
+                            <i class="fas fa-route"></i>
+                            <span>去这里</span>
+                        </button>
+                    </div>
+                    
+                    <div class="comments-section" id="commentsSection">
+                        <div class="comments-header">
+                            <h3 class="comments-title">评论 (23)</h3>
+                            <div class="sort-comments">
+                                <span>最热</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="comment-input">
+                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=64&h=64&fit=crop" alt="我的头像" class="comment-avatar">
+                            <input type="text" class="comment-input-field" placeholder="添加评论..." id="commentInput">
+                            <button class="comment-submit" onclick="submitComment()">发送</button>
+                        </div>
+                        
+                        <div class="comments-list">
+                            <div class="comment-item">
+                                <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=64&h=64&fit=crop" alt="评论者头像" class="comment-avatar">
+                                <div class="comment-content">
+                                    <div class="comment-author">
+                                        <span class="comment-name">助老志愿者</span>
+                                        <span class="comment-time">1小时前</span>
+                                    </div>
+                                    <p class="comment-text">确实很方便！我昨天带老人去体验了，电梯很宽敞，按钮也够大，老人操作起来很方便。</p>
+                                    <div class="comment-actions">
+                                        <button class="comment-action" onclick="likeComment(this)">
+                                            <i class="fas fa-heart"></i>
+                                            <span>12</span>
+                                        </button>
+                                        <button class="comment-action" onclick="replyComment()">
+                                            <i class="fas fa-reply"></i>
+                                            <span>回复</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="comment-item">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop" alt="评论者头像" class="comment-avatar">
+                                <div class="comment-content">
+                                    <div class="comment-author">
+                                        <span class="comment-name">无障碍设计师</span>
+                                        <span class="comment-time">30分钟前</span>
+                                    </div>
+                                    <p class="comment-text">从设计角度来说，这个电梯做得很好。按钮高度、盲文标识、语音提示都考虑得很周到。</p>
+                                    <div class="comment-actions">
+                                        <button class="comment-action" onclick="likeComment(this)">
+                                            <i class="fas fa-heart"></i>
+                                            <span>8</span>
+                                        </button>
+                                        <button class="comment-action" onclick="replyComment()">
+                                            <i class="fas fa-reply"></i>
+                                            <span>回复</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="related-posts">
+                        <h3 class="related-header">相关推荐</h3>
+                        <div class="related-grid">
+                            <div class="related-item" onclick="navigateToPost(2)">
+                                <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=200&fit=crop" alt="相关内容" class="related-image">
+                                <div class="related-info">
+                                    <h4 class="related-title">图书馆无障碍卫生间设施</h4>
+                                    <div class="related-location">上海图书馆</div>
+                                </div>
+                            </div>
+                            
+                            <div class="related-item" onclick="navigateToPost(3)">
+                                <img src="https://images.unsplash.com/photo-1577705998148-f5b7d6fbf7c7?w=400&h=200&fit=crop" alt="相关内容" class="related-image">
+                                <div class="related-info">
+                                    <h4 class="related-title">商场自动门体验分享</h4>
+                                    <div class="related-location">港汇恒隆广场</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <a href="home.html" class="tab-item">
+                    <i class="fas fa-home tab-icon"></i>
+                    <span class="tab-label">首页</span>
+                </a>
+                <a href="explore.html" class="tab-item">
+                    <i class="fas fa-compass tab-icon"></i>
+                    <span class="tab-label">发现</span>
+                </a>
+                <a href="create_post.html" class="tab-item">
+                    <i class="fas fa-plus-square tab-icon"></i>
+                    <span class="tab-label">发布</span>
+                </a>
+                <a href="notifications.html" class="tab-item">
+                    <i class="fas fa-bell tab-icon"></i>
+                    <span class="tab-label">通知</span>
+                </a>
+                <a href="profile.html" class="tab-item">
+                    <i class="fas fa-user tab-icon"></i>
+                    <span class="tab-label">我的</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let video = document.getElementById('postVideo');
+        let isPlaying = false;
+        let isMuted = true;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupVideoControls();
+            loadComments();
+        });
+        
+        function setupVideoControls() {
+            video.addEventListener('loadedmetadata', function() {
+                video.muted = true;
+                video.play().catch(() => {});
+                isPlaying = true;
+                updatePlayPauseButton();
+            });
+            
+            video.addEventListener('timeupdate', function() {
+                const progress = (video.currentTime / video.duration) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+            });
+            
+            video.addEventListener('ended', function() {
+                isPlaying = false;
+                updatePlayPauseButton();
+            });
+        }
+        
+        function togglePlayPause() {
+            if (video.paused) {
+                video.play();
+                isPlaying = true;
+            } else {
+                video.pause();
+                isPlaying = false;
+            }
+            updatePlayPauseButton();
+        }
+        
+        function updatePlayPauseButton() {
+            const icon = document.getElementById('playPauseIcon');
+            icon.className = isPlaying ? 'fas fa-pause' : 'fas fa-play';
+        }
+        
+        function toggleMute() {
+            video.muted = !video.muted;
+            isMuted = video.muted;
+            updateVolumeButton();
+        }
+        
+        function updateVolumeButton() {
+            const icon = document.getElementById('volumeIcon');
+            icon.className = isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+        }
+        
+        function seekVideo(event) {
+            const progressBar = event.currentTarget;
+            const clickX = event.offsetX;
+            const width = progressBar.offsetWidth;
+            const percentage = clickX / width;
+            video.currentTime = percentage * video.duration;
+        }
+        
+        function goBack() {
+            window.history.back();
+        }
+        
+        function sharePost() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '人民广场地铁站新增的无障碍电梯',
+                    text: '看看这个无障碍设施！',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback
+                const textArea = document.createElement('textarea');
+                textArea.value = window.location.href;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                showToast('链接已复制到剪贴板');
+            }
+        }
+        
+        function toggleFollow(button) {
+            if (button.textContent === '关注') {
+                button.textContent = '已关注';
+                button.classList.add('following');
+                showToast('已关注');
+            } else {
+                button.textContent = '关注';
+                button.classList.remove('following');
+                showToast('已取消关注');
+            }
+        }
+        
+        function toggleLike() {
+            const button = document.querySelector('.action-btn.liked');
+            const span = button.querySelector('span');
+            let likes = parseInt(span.textContent);
+            
+            if (button.classList.contains('liked')) {
+                button.classList.remove('liked');
+                likes--;
+            } else {
+                button.classList.add('liked');
+                likes++;
+                // Show like animation
+                const likeAnimation = document.createElement('div');
+                likeAnimation.className = 'like-animation';
+                likeAnimation.innerHTML = '<i class="fas fa-heart"></i>';
+                button.appendChild(likeAnimation);
+                
+                setTimeout(() => {
+                    likeAnimation.remove();
+                }, 600);
+            }
+            
+            span.textContent = likes;
+        }
+        
+        function toggleSave() {
+            const button = document.querySelector('.action-btn.saved');
+            button.classList.toggle('saved');
+            
+            if (button.classList.contains('saved')) {
+                showToast('已收藏');
+            } else {
+                showToast('已取消收藏');
+            }
+        }
+        
+        function reportIssue() {
+            window.location.href = 'report_issue.html';
+        }
+        
+        function navigateToRoute() {
+            window.location.href = 'route_preview.html';
+        }
+        
+        function navigateToPost(postId) {
+            window.location.href = `post_detail.html?id=${postId}`;
+        }
+        
+        function scrollToComments() {
+            document.getElementById('commentsSection').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+        
+        function submitComment() {
+            const input = document.getElementById('commentInput');
+            const comment = input.value.trim();
+            
+            if (!comment) {
+                showToast('请输入评论内容');
+                return;
+            }
+            
+            // Add comment to UI
+            const commentsList = document.querySelector('.comments-list');
+            const newComment = document.createElement('div');
+            newComment.className = 'comment-item';
+            newComment.innerHTML = `
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=64&h=64&fit=crop" alt="我的头像" class="comment-avatar">
+                <div class="comment-content">
+                    <div class="comment-author">
+                        <span class="comment-name">我</span>
+                        <span class="comment-time">刚刚</span>
+                    </div>
+                    <p class="comment-text">${comment}</p>
+                    <div class="comment-actions">
+                        <button class="comment-action" onclick="likeComment(this)">
+                            <i class="fas fa-heart"></i>
+                            <span>0</span>
+                        </button>
+                        <button class="comment-action" onclick="replyComment()">
+                            <i class="fas fa-reply"></i>
+                            <span>回复</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            commentsList.insertBefore(newComment, commentsList.firstChild);
+            input.value = '';
+            
+            showToast('评论发布成功');
+        }
+        
+        function likeComment(button) {
+            const span = button.querySelector('span');
+            let likes = parseInt(span.textContent);
+            
+            if (button.style.color === 'var(--accent)') {
+                button.style.color = 'var(--text-secondary)';
+                likes--;
+            } else {
+                button.style.color = 'var(--accent)';
+                likes++;
+            }
+            
+            span.textContent = likes;
+        }
+        
+        function replyComment() {
+            const input = document.getElementById('commentInput');
+            input.focus();
+            input.placeholder = '回复评论...';
+        }
+        
+        function loadComments() {
+            // In real app, this would fetch comments from API
+            console.log('Loading comments...');
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

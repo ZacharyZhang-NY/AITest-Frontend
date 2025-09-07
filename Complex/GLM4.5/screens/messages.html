@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>私信 - Accessibility Navigator</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .messages-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .content-wrapper {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            right: 0;
+            bottom: 83px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+        
+        .message-list {
+            padding: 16px;
+        }
+        
+        .message-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .message-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+        
+        .message-item.unread {
+            background: linear-gradient(to right, var(--bg-tertiary), var(--card-bg));
+            border-left: 4px solid var(--accent);
+        }
+        
+        .message-item.unread::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 12px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+        
+        .message-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        
+        .message-username {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+        }
+        
+        .message-preview {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .message-badge {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            min-width: 20px;
+            height: 20px;
+            background: var(--accent);
+            color: white;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 6px;
+        }
+        
+        .message-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .message-action {
+            padding: 4px 12px;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 16px;
+            font-size: 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .message-action:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--text-tertiary);
+        }
+        
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        
+        .new-message-btn {
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        
+        .new-message-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.1);
+        }
+        
+        .search-bar {
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            font-size: 16px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            font-size: 18px;
+        }
+        
+        .search-container {
+            position: relative;
+        }
+        
+        @media (max-width: 393px) {
+            .message-item {
+                padding: 12px;
+            }
+            
+            .message-avatar {
+                width: 48px;
+                height: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="status-bar">
+            <div class="status-time">9:41</div>
+            <div class="status-icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="dynamic-island"></div>
+        
+        <div class="header">
+            <button class="header-back" onclick="goBack()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h1 class="header-title">私信</h1>
+            <button class="header-action" onclick="startNewMessage()">
+                <i class="fas fa-edit"></i>
+            </button>
+        </div>
+        
+        <div class="messages-container">
+            <div class="search-bar">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="搜索私信..." onkeyup="searchMessages(event)">
+                </div>
+            </div>
+            
+            <div class="content-wrapper">
+                <div class="message-list" id="messageList">
+                    <!-- Unread Message -->
+                    <div class="message-item unread" onclick="openChat('explorer')">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop" alt="无障碍探索者" class="message-avatar">
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-username">无障碍探索者</div>
+                                <div class="message-time">2分钟前</div>
+                            </div>
+                            <div class="message-preview">你好！我看到你分享的无障碍设施信息很有用，能详细说说那个电梯的具体位置吗？</div>
+                        </div>
+                        <span class="message-badge">3</span>
+                    </div>
+                    
+                    <!-- Read Message -->
+                    <div class="message-item" onclick="openChat('volunteer')">
+                        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop" alt="助老志愿者" class="message-avatar">
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-username">助老志愿者</div>
+                                <div class="message-time">1小时前</div>
+                            </div>
+                            <div class="message-preview">谢谢你的分享！我已经把你的建议反馈给相关部门了。</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Unread Message -->
+                    <div class="message-item unread" onclick="openChat('designer')">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" alt="无障碍设计师" class="message-avatar">
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-username">无障碍设计师</div>
+                                <div class="message-time">3小时前</div>
+                            </div>
+                            <div class="message-preview">关于你提到的坡度问题，我有一些设计上的建议想和你讨论</div>
+                        </div>
+                        <span class="message-badge">1</span>
+                    </div>
+                    
+                    <!-- Read Message -->
+                    <div class="message-item" onclick="openChat('observer')">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="城市观察员" class="message-avatar">
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-username">城市观察员</div>
+                                <div class="message-time">昨天</div>
+                            </div>
+                            <div class="message-preview">你好，我想请教一下关于无障碍停车位标识的问题</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Read Message -->
+                    <div class="message-item" onclick="openChat('admin')">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="系统管理员" class="message-avatar">
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-username">系统管理员</div>
+                                <div class="message-time">2天前</div>
+                            </div>
+                            <div class="message-preview">你的帖子已被选为本周精选，感谢你的贡献！</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Unread Message -->
+                    <div class="message-item unread" onclick="openChat('helper')">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop" alt="志愿者小王" class="message-avatar">
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-username">志愿者小王</div>
+                                <div class="message-time">3天前</div>
+                            </div>
+                            <div class="message-preview">你好，我是附近的志愿者，看到你分享的信息很有帮助</div>
+                        </div>
+                        <span class="message-badge">2</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="new-message-btn" onclick="startNewMessage()">
+                <i class="fas fa-plus"></i>
+            </button>
+            
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <a href="home.html" class="tab-item">
+                    <i class="fas fa-home tab-icon"></i>
+                    <span class="tab-label">首页</span>
+                </a>
+                <a href="explore.html" class="tab-item">
+                    <i class="fas fa-compass tab-icon"></i>
+                    <span class="tab-label">发现</span>
+                </a>
+                <a href="create_post.html" class="tab-item">
+                    <i class="fas fa-plus-square tab-icon"></i>
+                    <span class="tab-label">发布</span>
+                </a>
+                <a href="notifications.html" class="tab-item">
+                    <i class="fas fa-bell tab-icon"></i>
+                    <span class="tab-label">通知</span>
+                </a>
+                <a href="profile.html" class="tab-item">
+                    <i class="fas fa-user tab-icon"></i>
+                    <span class="tab-label">我的</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Sample message data
+        const messages = [
+            {
+                id: 'explorer',
+                username: '无障碍探索者',
+                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
+                lastMessage: '你好！我看到你分享的无障碍设施信息很有用，能详细说说那个电梯的具体位置吗？',
+                time: '2分钟前',
+                unread: 3,
+                unreadCount: 3
+            },
+            {
+                id: 'volunteer',
+                username: '助老志愿者',
+                avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop',
+                lastMessage: '谢谢你的分享！我已经把你的建议反馈给相关部门了。',
+                time: '1小时前',
+                unread: false
+            },
+            {
+                id: 'designer',
+                username: '无障碍设计师',
+                avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop',
+                lastMessage: '关于你提到的坡度问题，我有一些设计上的建议想和你讨论',
+                time: '3小时前',
+                unread: true,
+                unreadCount: 1
+            },
+            {
+                id: 'observer',
+                username: '城市观察员',
+                avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
+                lastMessage: '你好，我想请教一下关于无障碍停车位标识的问题',
+                time: '昨天',
+                unread: false
+            },
+            {
+                id: 'admin',
+                username: '系统管理员',
+                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
+                lastMessage: '你的帖子已被选为本周精选，感谢你的贡献！',
+                time: '2天前',
+                unread: false
+            },
+            {
+                id: 'helper',
+                username: '志愿者小王',
+                avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop',
+                lastMessage: '你好，我是附近的志愿者，看到你分享的信息很有帮助',
+                time: '3天前',
+                unread: true,
+                unreadCount: 2
+            }
+        ];
+        
+        let filteredMessages = [...messages];
+        
+        function openChat(userId) {
+            // Mark as read
+            const messageItem = event.currentTarget;
+            messageItem.classList.remove('unread');
+            
+            const badge = messageItem.querySelector('.message-badge');
+            if (badge) {
+                badge.style.display = 'none';
+            }
+            
+            // In real app, this would navigate to chat detail page
+            showToast(`打开与 ${getUserById(userId).username} 的聊天`);
+            // window.location.href = `chat_detail.html?user=${userId}`;
+        }
+        
+        function getUserById(userId) {
+            return messages.find(msg => msg.id === userId);
+        }
+        
+        function startNewMessage() {
+            showToast('开始新对话');
+            // In real app, this would open user selection modal
+            // window.location.href = 'new_message.html';
+        }
+        
+        function searchMessages(event) {
+            const query = event.target.value.toLowerCase().trim();
+            
+            if (query === '') {
+                filteredMessages = [...messages];
+            } else {
+                filteredMessages = messages.filter(message => 
+                    message.username.toLowerCase().includes(query) ||
+                    message.lastMessage.toLowerCase().includes(query)
+                );
+            }
+            
+            renderMessages();
+        }
+        
+        function renderMessages() {
+            const messageList = document.getElementById('messageList');
+            
+            if (filteredMessages.length === 0) {
+                messageList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-comments"></i>
+                        <h3>暂无私信</h3>
+                        <p>开始新的对话或查看现有的消息</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            messageList.innerHTML = filteredMessages.map(message => `
+                <div class="message-item ${message.unread ? 'unread' : ''}" onclick="openChat('${message.id}')">
+                    <img src="${message.avatar}" alt="${message.username}" class="message-avatar">
+                    <div class="message-content">
+                        <div class="message-header">
+                            <div class="message-username">${message.username}</div>
+                            <div class="message-time">${message.time}</div>
+                        </div>
+                        <div class="message-preview">${message.lastMessage}</div>
+                    </div>
+                    ${message.unread ? `<span class="message-badge">${message.unreadCount}</span>` : ''}
+                </div>
+            `).join('');
+        }
+        
+        function goBack() {
+            window.history.back();
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 2000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderMessages();
+        });
+    </script>
+</body>
+</html>

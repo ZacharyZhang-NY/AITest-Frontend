@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN" data-fontscale="base">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>注册 · 无障碍社区</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="../styles/global.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style> body { font-family: Inter, ui-sans-serif, system-ui; } </style>
+</head>
+<body data-theme="light" class="bg-[color:var(--bg)] text-[color:var(--fg)] grid place-items-center">
+  <div class="device" role="application" aria-label="注册">
+    <div class="dynamic-island"></div>
+    <div class="status-bar"><div>9:41</div><div class="right">📶 📡 🔋</div></div>
+
+    <div class="absolute inset-[44px_0_0_0] p-6 flex flex-col">
+      <h1 class="text-2xl font-bold mb-6">创建你的账户</h1>
+
+      <form class="space-y-3" onsubmit="event.preventDefault(); window.location.href='home.html'">
+        <label class="block">
+          <span class="text-sm">昵称</span>
+          <input required class="mt-1 w-full px-3 py-2 border rounded-xl bg-[color:var(--bg)]" placeholder="你的昵称" />
+        </label>
+        <label class="block">
+          <span class="text-sm">邮箱</span>
+          <input type="email" required class="mt-1 w-full px-3 py-2 border rounded-xl bg-[color:var(--bg)]" placeholder="you@example.com" />
+        </label>
+        <label class="block">
+          <span class="text-sm">密码</span>
+          <input type="password" required class="mt-1 w-full px-3 py-2 border rounded-xl bg-[color:var(--bg)]" placeholder="至少 8 位" />
+        </label>
+        <button class="w-full py-2 rounded-xl bg-[color:var(--accent)] text-white ripple" type="submit">注册</button>
+      </form>
+
+      <div class="my-4 text-center text-sm text-[color:var(--muted)]">或</div>
+      <div class="grid gap-2">
+        <button class="border rounded-xl py-2 ripple"><i class="fa-brands fa-apple"></i> 使用 Apple 注册</button>
+        <button class="border rounded-xl py-2 ripple"><i class="fa-brands fa-google"></i> 使用 Google 注册</button>
+      </div>
+      <div class="mt-auto text-sm text-center">
+        已有账号？<a class="text-[color:var(--accent)] underline" href="login.html">登录</a>
+      </div>
+    </div>
+    <div class="tab-bar grid place-items-center text-xs text-[color:var(--muted)]">注册后进入首页</div>
+  </div>
+
+  <script src="../scripts/observer.js" defer></script>
+  <script src="../scripts/waapi.js" defer></script>
+  <script src="../scripts/app.js" defer></script>
+</body>
+</html>
+

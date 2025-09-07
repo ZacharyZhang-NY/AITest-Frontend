@@ -1,0 +1,28 @@
+Remote assets used by index.html
+
+Hero image:
+https://source.unsplash.com/1600x1200/?wheelchair,ramp
+
+About figure:
+https://source.unsplash.com/1200x800/?tactile,paving
+
+Journey A background:
+https://source.unsplash.com/1600x1200/?city,entrance,accessibility
+
+Journey B background:
+https://source.unsplash.com/1600x1200/?city,sidewalk,slope
+
+Journey C background:
+https://source.unsplash.com/1600x1200/?accessible,elevator
+
+Map cards:
+https://source.unsplash.com/800x600/?wheelchair,sidewalk
+https://source.unsplash.com/800x600/?subway,elevator
+https://source.unsplash.com/800x600/?accessible,restroom
+
+Community figure:
+https://source.unsplash.com/1200x900/?city,sidewalk,night
+
+CTA background:
+https://source.unsplash.com/1600x1000/?city,accessibility
+

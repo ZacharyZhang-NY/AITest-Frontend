@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-img { margin: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Testing Image URLs</h1>
+    <div id="results"></div>
+    
+    <script>
+        const testUrls = [
+            'https://images.unsplash.com/photo-1578058625421-2a9a7736d0f2?auto=format&fit=crop&w=800&h=600&q=80',
+            'https://images.unsplash.com/photo-1551036455-2872e5f66a70?auto=format&fit=crop&w=1200&h=400&q=80',
+            'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&h=600&q=80',
+            'https://images.unsplash.com/photo-1507038151947-1959def9123c?auto=format&fit=crop&w=800&h=600&q=80',
+            'https://images.unsplash.com/photo-1543286986-7421074a6311?auto=format&fit=crop&w=100&h=100&q=80',
+            'https://images.unsplash.com/photo-1581091226365-327e22a52b44?auto=format&fit=crop&w=100&h=100&q=80',
+            'https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?auto=format&fit=crop&w=100&h=100&q=80',
+            'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=600&h=800&q=80',
+            'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=1920&h=600&q=80'
+        ];
+        
+        const results = document.getElementById('results');
+        let loaded = 0;
+        
+        testUrls.forEach((url, index) => {
+            const img = new Image();
+            const div = document.createElement('div');
+            div.innerHTML = `Testing ${url}: `;
+            results.appendChild(div);
+            
+            img.onload = () => {
+                loaded++;
+                div.innerHTML += `✅ Loaded (${img.naturalWidth}x${img.naturalHeight})`;
+                if (loaded === testUrls.length) {
+                    div.innerHTML += `<br><br>All images loaded successfully! (${loaded}/${testUrls.length})`;
+                }
+            };
+            
+            img.onerror = () => {
+                div.innerHTML += `❌ Failed to load`;
+            };
+            
+            img.src = url;
+        });
+    </script>
+</body>
+</html>

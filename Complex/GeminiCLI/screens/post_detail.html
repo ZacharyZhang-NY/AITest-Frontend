@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帖子详情</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../styles/global.css">
+    <style>
+        .scroll-snap-container { scroll-snap-type: x mandatory; }
+        .scroll-snap-item { scroll-snap-align: center; }
+    </style>
+</head>
+<body class="flex items-center justify-center bg-gray-800">
+    <div class="iphone-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span class="time">9:41</span>
+            <div class="icons"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <a href="home.html" class="text-accent"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+                <h1>详情</h1>
+                <button class="text-accent"><i class="fa-solid fa-ellipsis"></i></button>
+            </header>
+
+            <div class="p-4">
+                <!-- User Info -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <img class="w-12 h-12 rounded-full object-cover" src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="User avatar">
+                        <div>
+                            <p class="font-semibold">城市漫游者</p>
+                            <p class="text-xs text-secondary">2小时前 · 科技公园</p>
+                        </div>
+                    </div>
+                    <button class="px-4 py-1 text-sm bg-accent text-white rounded-full">关注</button>
+                </div>
+
+                <!-- Post Content -->
+                <p class="mb-4">新开放的科技公园轮椅通道体验，全程无障碍，坡度平缓，风景也很好，强烈推荐！</p>
+
+                <!-- Media Gallery -->
+                <div class="scroll-snap-container flex overflow-x-auto space-x-2 rounded-lg mb-4">
+                    <img src="https://images.pexels.com/photos/3829175/pexels-photo-3829175.jpeg?auto=compress&cs=tinysrgb&w=800" class="scroll-snap-item w-full flex-shrink-0 rounded-lg">
+                    <img src="https://images.pexels.com/photos/13974900/pexels-photo-13974900.jpeg?auto=compress&cs=tinysrgb&w=800" class="scroll-snap-item w-full flex-shrink-0 rounded-lg">
+                </div>
+
+                <!-- Tags -->
+                <div class="flex flex-wrap gap-2 mb-4 text-xs">
+                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">🦽 轮椅友好</span>
+                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full">↗ 坡度 ≤ 5%</span>
+                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full">🛗 电梯</span>
+                </div>
+
+                <!-- Ratings -->
+                <div class="bg-card p-3 rounded-lg mb-4 space-y-2">
+                    <h3 class="font-semibold">无障碍评分</h3>
+                    <div class="space-y-1 text-sm">
+                        <div class="flex items-center justify-between"><span>坡度</span><span class="font-mono">5/5</span></div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-green-500 h-1.5 rounded-full" style="width: 100%"></div></div>
+                    </div>
+                     <div class="space-y-1 text-sm">
+                        <div class="flex items-center justify-between"><span>路缘</span><span class="font-mono">4/5</span></div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5"><div class="bg-yellow-500 h-1.5 rounded-full" style="width: 80%"></div></div>
+                    </div>
+                </div>
+                
+                <!-- CTA Button -->
+                <a href="route_preview.html" class="block w-full text-center bg-accent text-white font-bold py-3 rounded-lg mb-4">去这里</a>
+
+                <!-- Comments -->
+                <div>
+                    <h3 class="font-semibold mb-2">评论 (3)</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <img class="w-8 h-8 rounded-full object-cover" src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=160" alt="Commenter avatar">
+                            <div class="flex-1">
+                                <p class="text-sm"><span class="font-semibold">无障碍先锋</span> 感谢分享！正准备去看看。</p>
+                                <p class="text-xs text-secondary">1小时前 · <button class="font-semibold">回复</button></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- No Tab Bar on detail pages -->
+    </div>
+    <script src="../scripts/app.js"></script>
+</body>
+</html>

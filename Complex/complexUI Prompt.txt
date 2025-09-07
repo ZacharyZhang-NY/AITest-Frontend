@@ -1,0 +1,219 @@
+工作模式（必须遵守）
+
+你可以使用你所需要的任何时间；我只要质量和结果。think step by step。ultrathink mode，ultrathink mode。
+
+在内部完成完整的分步推理与多轮自检后再输出最终结果。不要敷衍。
+
+输出可直接用于开发的原型代码，多文件，语义化、可访问、响应式优先满足iPhone 15 Pro尺寸。
+
+禁用第三方动画/滚动库（不使用 GSAP/Lenis 等）；用原生 Web 能力（CSS、IntersectionObserver、WAAPI、@media、prefers-reduced-motion）。
+
+1）产品定位与核心体验（结合 Accessibility Navigator）
+
+产品定位：一个围绕城市无障碍的“视频 + 图文社区”，融合 B 站（视频流、弹性互动）与小红书（图文卡片、话题/标签/收藏）。
+
+主要用户：轮椅/助行用户、长者群体、婴幼儿家庭、公益志愿者、城市管理者。
+
+关键价值：
+
+发现：附近的无障碍路径/电梯/卫生间、避坑提醒（路缘太高/电梯停运）。
+
+分享：图文/短视频报告、地点标签（坡度、门宽、盲道状态）。
+
+协作纠错：社区审核、更新可信度。
+
+轻路设想：从帖子一键进入“去这里”的路线草案页（仅原型按钮，无需接地图 API）。
+
+核心交互流：浏览 → 关注/收藏 → 发表/打卡 → 讨论 → 纠错/上报 → 个人主页成长。
+
+2）信息架构与页面列表（每个页面独立 HTML 文件）
+
+请生成下列文件（全部）：
+
+index.html（主入口；不要塞入所有页面源码；用 iframe 平铺加载各页面，左侧展示小目录/标签）
+
+screens/onboarding.html（三屏引导 + 权限引导）
+
+screens/login.html / screens/signup.html（第三方登陆按钮占位）
+
+screens/home.html（首页：混合流——视频卡 + 图文卡，“推荐/关注/附近”分段）
+
+screens/explore.html（发现：话题瀑布流 + 热门标签 + 搜索）
+
+screens/post_detail.html（帖子详情：视频/图文、评分、标签、评论、相关推荐）
+
+screens/create_post.html（发布：选择图片/视频、地点搜索输入框、标签/设施选择、坡度/门宽/电梯/卫生间开关、匿名开关）
+
+screens/notifications.html（通知：点赞/评论/系统消息）
+
+screens/messages.html（私信列表 + 会话）
+
+screens/profile.html（个人主页：头像、徽章、粉丝/关注、作品/收藏/足迹 Tab）
+
+screens/settings.html（设置：深色模式、字体大小、对比度增强、隐私、反馈）
+
+screens/report_issue.html（上报表单：电梯停运、路缘过高、盲道被占、设施损坏等枚举 + 照片上传）
+
+screens/route_preview.html（从帖子点“去这里”，展示静态路线预览图 + 路段提示卡，按钮“打开地图App”占位）
+
+导航框架：所有业务页面（除登陆/引导）需包含：
+
+顶部状态栏（模拟 iOS：时间/信号/电量）
+
+顶部标题栏（左返回/标题/右侧图标）
+
+底部 Tab Bar（5 个：Home / Explore / Create / Inbox / Profile；Font Awesome 图标）
+
+3）视觉与设备模拟（iPhone 15 Pro）
+
+设备容器：在每个页面内用一个居中容器模拟设备：393 × 852（逻辑点），圆角 24–28px，投影柔和。
+
+刘海/动态岛：顶部用纯 CSS 模拟（宽度、圆角、居中）。
+
+状态栏：左“9:41”文本，右侧信号/蜂窝/电量（用 FontAwesome/Emoji 组合）。
+
+主题：浅色/深色主题双版（CSS 变量 --bg, --fg, --card, --accent），settings.html 可切换；遵循 prefers-color-scheme 默认。
+
+字体：系统栈或 Inter（CDN）；字号/行高符合 iOS 人机指南习惯。
+
+图片：必须使用真实 URL（Unsplash/Pexels/Apple 资源），关键词如：wheelchair ramp, accessible elevator, tactile paving, city metro elevator。禁止占位符。
+
+动效：使用 CSS/WAAPI 微交互（按钮按压、卡片悬停阴影、切换过渡），prefers-reduced-motion 降级。
+
+4）交互细节与高级特效（原生实现，禁止第三方动效库）
+
+A. 首页（home.html）
+
+混合流布局：上方横滑“推荐/关注/附近”Segment 切换（CSS 滑块指示），下方内容采用卡片交错（视频卡、图文卡交替）。
+
+视频自动播放/暂停：用 IntersectionObserver 在 60% 可视时自动播放静音，离开视区暂停。
+
+点赞/收藏微动画：点击心形/收藏，触发 scale 弹跳 + 粒子散射（用 CSS 动画伪元素或 WAAPI 简易粒子）。
+
+Skeleton：首屏预载骨架 渐变闪烁（background: linear-gradient + background-size 移动）。
+
+下拉“弹性刷新”：顶部下拉时显示圆形进度（transform: rotate + stroke 风格用 conic-gradient 模拟），松手回弹。
+
+B. 发现（explore.html）
+
+搜索框：输入时出现热词建议（最近“坡度 ≤ 8%”“电梯停运”“无障碍卫生间”）。
+
+话题瀑布流：两列卡片，滚动懒加载；卡片随滚动 轻视差（CSS 自定义属性 --p 控制 y 偏移）。
+
+筛选条：Chip 组件（坡度、电梯、卫生间、门宽等）可多选，选中有短暂 ripple 特效（用伪元素扩散圆）。
+
+C. 详情（post_detail.html）
+
+媒体容器：顶部视频或图集横滑；图片支持双击放大（CSS transform + JS 限制最大缩放）。
+
+标签区：设施标签（🛗 电梯、🚻 卫生间、🦽 轮椅友好、🧱 路缘 ≤ Xcm、↗ 坡度 ≤ Y%）。
+
+评分条：总体可达评分 + 单项（坡度/路缘/门宽/卫生间），条形进度带数值。
+
+评论区：楼中楼交互、@ 提示占位、长按评论弹出操作（举报/复制）。
+
+路线预览 CTA：按钮“去这里”（跳 route_preview.html），View Transitions API 可用则平滑过渡（需降级）。
+
+D. 发布（create_post.html）
+
+媒体选择：支持多图/单视频（原型用本地文件输入 + 缩略图预览）。
+
+地点选择：输入框 + “使用当前位置”占位按钮；地点建议列表。
+
+设施开关：坡度输入（%）、门宽输入（cm）、电梯/卫生间开关、盲道状态选择。
+
+可达性模板：选择“快捷模版”（如“地铁站通行”“商场入口”）自动填充标签。
+
+发布按钮：按下出现进度条与成功勾动画。
+
+E. 通知（notifications.html）/ 私信（messages.html）
+
+左滑删除/静音：列表项左滑出现操作（CSS transform + 阴影强调）。
+
+未读红点：Tab Bar 与列表项角上小红点，展示缩放出现动画。
+
+F. 个人主页（profile.html）
+
+封面 & 头像：下拉时封面视差缩放；头像 夹持吸附到标题栏。
+
+作品/收藏/足迹：三段 Tab 切换，保留滚动位置。
+
+徽章系统：如“坡度标记者 Lv.3”“电梯修复线索达人”等。
+
+G. 设置（settings.html）
+
+无障碍开关：大字体、对比度增强（切换 CSS 变量）、减少动效（prefers-reduced-motion 强制）。
+
+外观：浅/深色主题即时切换（data-theme）。
+
+H. 上报（report_issue.html）
+
+枚举类型 + 照片上传 + 位置；提交后显示反馈已接收动效（绿色条上升 + 勾）。
+
+I. 路线预览（route_preview.html）
+
+用静态图片模拟路线快照（真实 URL），下方列出关键路段提示（坡度/路缘/电梯）。
+
+“打开地图 App”按钮保留点击态动效。
+
+5）技术规范与代码组织
+
+技术栈：原生 HTML + Tailwind CSS（CDN） 或 Bootstrap（CDN）（任选其一，统一全站）；Font Awesome（CDN）。
+
+文件结构：
+
+/index.html
+/styles/global.css         # 公共变量、主题、工具类（可覆盖 Tailwind 变量）
+/scripts/app.js            # 交互：IO、自动播放、ripple、3D 倾斜、骨架、下拉刷新、Tab 切换
+/scripts/observer.js       # 观察者与滚动进度工具（可合并到 app.js）
+/scripts/waapi.js          # 微动画封装（like/collect 粒子、按钮呼吸）
+/screens/*.html            # 上述所有页面
+/assets/images/*           # 真实远程图片 URL 同时列在 README 中
+/README.md                 # 如何本地打开、已知限制、图片来源链接
+
+
+组件化：头部/状态栏/底部 Tab Bar 写成可复用片段（可用 <template> 或直接复制，注意一致性）。
+
+iFrame 展示（index.html）：将 /screens/*.html 以 多列网格 iframe 平铺预览；每个 iframe 上方带标题标签；默认比例模拟 iPhone 15 Pro 尺寸，容器圆角。
+
+可访问性：语义化标签、aria-*、焦点样式可见、键盘可用（手风琴/切换/按钮）。
+
+降级：prefers-reduced-motion: reduce 时关闭自动播放与大位移；不支持 IO 的浏览器使用滚动事件回退。
+
+真实资产：所有图片必须是可访问 URL（Unsplash/Pexels/Apple）；视频可选用 Pexels MP4（短片，静音自动播放）。
+
+6）输出与质量门槛
+
+多文件输出：为每个文件分别给出完整源码，以文件名标注的代码块形式输出（例如 html filename: screens/home.html）。
+
+提供一个一键复制/下载说明（若支持可生成 zip；若不支持，给出清单与粘贴顺序）。
+
+自检（必过）：
+
+控制台 0 错误；
+
+所有 <img> 加载成功（或替代方案/错误态清晰）；
+
+首页 IO 自动播放/暂停能触发；
+
+详情页点赞/收藏微动画能触发；
+
+Tab Bar 高亮正确 & 跳转（在原型里可用假链接/锚点）；
+
+prefers-reduced-motion 下动效明显减少；
+
+浅/深色主题切换可用；
+
+iPhone 15 Pro 容器尺寸与圆角正确，状态栏/刘海位置无偏移。
+
+交付格式（严格照做）
+
+先给出简短的 UX 分析与信息架构图（文字版），确认页面 & 交互流。
+
+随后输出全部文件源码，分文件代码块（含 index.html、各 screens/*.html、styles/global.css、scripts/*.js、README.md）。
+
+在末尾附上简单的人工检查清单（方便我浏览器里快速验收）。
+
+不要废话，不要放占位符图；所有图片/视频使用真实可访问链接。
+
+记住：你可以使用你所需要的任何时间；step by step；ultrathink mode。质量优先、一次到位。

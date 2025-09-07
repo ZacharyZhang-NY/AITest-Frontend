@@ -1,0 +1,8 @@
+This file lists the remote image assets used in the project.
+
+- Hero Background: https://images.pexels.com/photos/7723943/pexels-photo-7723943.jpeg?auto=compress&cs=tinysrgb&w=1920
+- About Background: https://images.pexels.com/photos/4484065/pexels-photo-4484065.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2
+- Journey C Background: https://images.pexels.com/photos/1543895/pexels-photo-1543895.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2
+- Map Teaser 1: https://images.pexels.com/photos/2846337/pexels-photo-2846337.jpeg?auto=compress&cs=tinysrgb&w=600
+- Map Teaser 2 / Crowd Image: https://images.pexels.com/photos/7724000/pexels-photo-7724000.jpeg?auto=compress&cs=tinysrgb&w=600
+- Map Teaser 3: https://images.pexels.com/photos/4484065/pexels-photo-4484065.jpeg?auto=compress&cs=tinysrgb&w=600

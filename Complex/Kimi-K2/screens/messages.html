@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>私信 - 无障碍社区</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #1a1a1a;
+            --card: #f8fafc;
+            --accent: #3b82f6;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+        }
+        
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --fg: #f1f5f9;
+            --card: #1e293b;
+            --accent: #60a5fa;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        .device-container {
+            width: 393px;
+            height: 852px;
+            margin: 0 auto;
+            background: var(--bg);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            background: var(--bg);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-left { font-weight: 600; }
+        .status-right { display: flex; gap: 6px; align-items: center; }
+        
+        .nav-header {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-back {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-back:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .nav-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: var(--fg);
+        }
+        
+        .nav-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .content-area {
+            height: calc(852px - 44px - 56px - 83px);
+            overflow-y: auto;
+            background: var(--bg);
+        }
+        
+        .chat-list {
+            padding: 16px;
+        }
+        
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--card);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .chat-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .chat-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .chat-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+        
+        .chat-status.offline {
+            background: #6b7280;
+        }
+        
+        .chat-preview {
+            font-size: 13px;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .chat-meta {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        
+        .chat-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .unread-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+        }
+        
+        .chat-detail {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            padding: 16px;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .chat-header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .chat-header-info {
+            flex: 1;
+        }
+        
+        .chat-header-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+        
+        .chat-header-status {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .message {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            max-width: 80%;
+        }
+        
+        .message.own {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            background: var(--card);
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        
+        .message.own .message-content {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            text-align: right;
+        }
+        
+        .message-input-area {
+            padding: 16px;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+        }
+        
+        .message-input-container {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            font-size: 14px;
+            background: var(--bg);
+            color: var(--fg);
+            resize: none;
+            max-height: 100px;
+            min-height: 40px;
+        }
+        
+        .message-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .send-btn:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+        }
+        
+        .send-btn:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 48px 16px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-text {
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .empty-action {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .empty-action:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .bottom-nav {
+            height: 83px;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .nav-item.active {
+            color: var(--accent);
+        }
+        
+        .nav-item:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="device-container">
+        <div class="status-bar">
+            <div class="status-left">9:41</div>
+            <div class="status-right">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="nav-header">
+            <div class="nav-title">私信</div>
+            <div class="nav-actions">
+                <button class="nav-btn" onclick="startNewChat()" title="新建聊天">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Chat List View -->
+        <div class="content-area" id="chatListView">
+            <div class="chat-list">
+                <!-- Chat Item 1 -->
+                <div class="chat-item" onclick="openChat('宝妈小李', 'https://images.unsplash.com/photo-1494790108755-2616b612b5bc?w=100&h=100&fit=crop')">
+                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b5bc?w=100&h=100&fit=crop" alt="宝妈小李" class="chat-avatar">
+                    <div class="chat-info">
+                        <div class="chat-name">
+                            宝妈小李
+                            <span class="chat-status"></span>
+                        </div>
+                        <div class="chat-preview">谢谢你的分享！我也经常带宝宝去那里
+                        </div>
+                    </div>
+                    <div class="chat-meta">
+                        <div class="chat-time">刚刚</div>
+                        <div class="unread-badge">2</div>
+                    </div>
+                </div>
+                
+                <!-- Chat Item 2 -->
+                <div class="chat-item" onclick="openChat('张奶奶', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop')">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="张奶奶" class="chat-avatar">
+                    <div class="chat-info">
+                        <div class="chat-name">
+                            张奶奶
+                            <span class="chat-status offline"></span>
+                        </div>
+                        <div class="chat-preview">今天去体验了，确实很不错！
+                        </div>
+                    </div>
+                    <div class="chat-meta">
+                        <div class="chat-time">5分钟前</div>
+                    </div>
+                </div>
+                
+                <!-- Chat Item 3 -->
+                <div class="chat-item" onclick="openChat('志愿者小王', 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop')">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" alt="志愿者小王" class="chat-avatar">
+                    <div class="chat-info">
+                        <div class="chat-name">
+                            志愿者小王
+                            <span class="chat-status"></span>
+                        </div>
+                        <div class="chat-preview">欢迎加入我们的志愿者团队！
+                        </div>
+                    </div>
+                    <div class="chat-meta">
+                        <div class="chat-time">1小时前</div>
+                        <div class="unread-badge">1</div>
+                    </div>
+                </div>
+                
+                <!-- Chat Item 4 -->
+                <div class="chat-item" onclick="openChat('城市管理者', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop')">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="城市管理者" class="chat-avatar">
+                    <div class="chat-info">
+                        <div class="chat-name">
+                            城市管理者
+                            <span class="chat-status"></span>
+                        </div>
+                        <div class="chat-preview">感谢您的反馈，我们已经安排处理
+                        </div>
+                    </div>
+                    <div class="chat-meta">
+                        <div class="chat-time">昨天</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Detail View (Hidden by default) -->
+        <div class="chat-detail" id="chatDetailView" style="display: none;">
+            <div class="chat-header"
+                <img src="" alt="聊天对象头像" class="chat-header-avatar" id="chatAvatar"
+                <div class="chat-header-info"
+                    <div class="chat-header-name" id="chatName"></div>
+                    <div class="chat-header-status">在线</div>
+                </div>
+                <button class="nav-btn" onclick="closeChat()"
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages"
+                <!-- Messages will be populated here --
+            </div>
+            
+            <div class="message-input-area"
+                <div class="message-input-container"
+                    <textarea class="message-input" placeholder="输入消息..." id="messageInput" rows="1"></textarea
+                    <button class="send-btn" onclick="sendMessage()" id="sendBtn" disabled
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Empty State --
+        <div class="empty-state" id="emptyState"
+            <div class="empty-icon"><i class="far fa-comment-dots"></i></div>
+            <div class="empty-text">还没有私信消息</div>
+            <button class="empty-action" onclick="startNewChat()">开始新聊天</button>
+        </div>
+        
+        <!-- Bottom Navigation --
+        <nav class="bottom-nav"
+            <button class="nav-item" onclick="window.location.href='home.html'"
+                <i class="fas fa-home nav-icon"></i>
+                <span>首页</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='explore.html'"
+                <i class="fas fa-compass nav-icon"></i>
+                <span>发现</span>
+            </button>
+            
+            <button class="nav-item ripple-btn" onclick="window.location.href='create_post.html'" data-ripple="true"
+                <i class="fas fa-plus-circle nav-icon"></i>
+                <span>发布</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='notifications.html'"
+                <i class="fas fa-bell nav-icon"></i>
+                <span>通知</span>
+            </button>
+            
+            <button class="nav-item active" onclick="window.location.href='messages.html'"
+                <i class="fas fa-comment-dots nav-icon"></i>
+                <span>消息</span>
+                <div class="notification-badge">3</div>
+            </button>
+        </nav>
+    </div>
+    
+    <script>
+        let currentChat = null;
+        let chatMessages = {
+            '宝妈小李': [
+                { sender: 'other', text: '你好！看到你分享的地铁2号线体验，我也想带宝宝去试试', time: '10:30' },
+                { sender: 'me', text: '欢迎！那里的母婴设施确实不错', time: '10:32' },
+                { sender: 'other', text: '谢谢你的分享！我也经常带宝宝去那里', time: '刚刚' }
+            ],
+            '张奶奶': [
+                { sender: 'other', text: '今天去体验了，确实很不错！', time: '14:20' }
+            ],
+            '志愿者小王': [
+                { sender: 'other', text: '欢迎加入我们的志愿者团队！', time: '15:30' },
+                { sender: 'me', text: '谢谢！很高兴能为社区做贡献', time: '15:35' }
+            ],
+            '城市管理者': [
+                { sender: 'other', text: '感谢您的反馈，我们已经安排处理', time: '昨天 16:45' }
+            ]
+        };
+        
+        function openChat(name, avatarSrc) {
+            currentChat = name;
+            
+            // Switch views
+            document.getElementById('chatListView').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('chatDetailView').style.display = 'flex';
+            
+            // Update chat header
+            document.getElementById('chatName').textContent = name;
+            document.getElementById('chatAvatar').src = avatarSrc;
+            
+            // Load messages
+            loadMessages(name);
+            
+            // Clear unread badge for this chat
+            const chatItems = document.querySelectorAll('.chat-item');
+            chatItems.forEach(item => {
+                const itemName = item.querySelector('.chat-name').textContent.trim();
+                if (itemName === name) {
+                    const badge = item.querySelector('.unread-badge');
+                    if (badge) {
+                        badge.style.display = 'none';
+                    }
+                }
+            });
+            
+            // Update main badge
+            updateMainBadge();
+        }
+        
+        function closeChat() {
+            currentChat = null;
+            document.getElementById('chatDetailView').style.display = 'none';
+            document.getElementById('chatListView').style.display = 'block';
+        }
+        
+        function loadMessages(name) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messages = chatMessages[name] || [];
+            
+            messagesContainer.innerHTML = messages.map(msg => `
+                <div class="message ${msg.sender === 'me' ? 'own' : ''}">
+                    ${msg.sender === 'other' ? `<img src="${document.getElementById('chatAvatar').src}" alt="头像" class="message-avatar">` : ''}
+                    <div class="message-content">
+                        ${msg.text}
+                        <div class="message-time">${msg.time}</div>
+                    </div>
+                    ${msg.sender === 'me' ? `<img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="我的头像" class="message-avatar">` : ''}
+                </div>
+            `).join('');
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            
+            if (!text || !currentChat) return;
+            
+            // Add message to chat
+            const now = new Date();
+            const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            
+            if (!chatMessages[currentChat]) {
+                chatMessages[currentChat] = [];
+            }
+            
+            chatMessages[currentChat].push({
+                sender: 'me',
+                text: text,
+                time: time
+            });
+            
+            // Reload messages
+            loadMessages(currentChat);
+            
+            // Clear input
+            input.value = '';
+            updateSendButton();
+            
+            // Simulate response after delay
+            setTimeout(() => {
+                simulateResponse();
+            }, 1000 + Math.random() * 2000);
+        }
+        
+        function simulateResponse() {
+            if (!currentChat) return;
+            
+            const responses = {
+                '宝妈小李': ['太好了，谢谢推荐！', '宝宝一定会喜欢的', '下次一起去吧'],
+                '张奶奶': ['真的很方便', '谢谢你的分享', '我会推荐给朋友的'],
+                '志愿者小王': ['我们一起努力', '社区需要更多像你这样的人', '有空一起参加活动'],
+                '城市管理者': ['我们会持续改进', '感谢您的宝贵意见', '欢迎继续监督我们的工作']
+            };
+            
+            const possibleResponses = responses[currentChat] || ['收到', '好的', '明白了'];
+            const response = possibleResponses[Math.floor(Math.random() * possibleResponses.length)];
+            
+            const now = new Date();
+            const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            
+            chatMessages[currentChat].push({
+                sender: 'other',
+                text: response,
+                time: time
+            });
+            
+            loadMessages(currentChat);
+        }
+        
+        function updateSendButton() {
+            const input = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = !input.value.trim();
+        }
+        
+        function startNewChat() {
+            const name = prompt('请输入用户名：');
+            if (name && name.trim()) {
+                // Simulate creating new chat
+                alert(`已向 ${name.trim()} 发送聊天请求`);
+            }
+        }
+        
+        function updateMainBadge() {
+            // Count total unread messages
+            let totalUnread = 0;
+            const chatItems = document.querySelectorAll('.chat-item');
+            chatItems.forEach(item => {
+                const badge = item.querySelector('.unread-badge');
+                if (badge && badge.style.display !== 'none') {
+                    totalUnread += parseInt(badge.textContent) || 0;
+                }
+            });
+            
+            const mainBadge = document.querySelector('.nav-item.active .notification-badge');
+            if (mainBadge) {
+                if (totalUnread > 0) {
+                    mainBadge.textContent = totalUnread;
+                    mainBadge.style.display = 'block';
+                } else {
+                    mainBadge.style.display = 'none';
+                }
+            }
+        }
+        
+        // Auto-resize textarea
+        document.getElementById('messageInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+            updateSendButton();
+        });
+        
+        // Handle Enter key
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!this.value.trim()) return;
+                sendMessage();
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateMainBadge();
+        });
+    </script>
+</body>
+</html>

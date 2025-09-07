@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#111827">
+    <title>Accessibility Navigator - Move Freely, Access Easily</title>
+    <meta name="description" content="Navigate cities with confidence. Find wheelchair ramps, accessible elevators, tactile paving and barrier-free routes. 18,000+ intersections mapped.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="scroll-progress" class="scroll-progress"></div>
+    
+    <header class="header">
+        <nav class="nav" aria-label="Main navigation">
+            <div class="nav-brand">
+                <span class="nav-logo">🧭</span>
+                <span class="nav-title">Accessibility Navigator</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#sec-about">About</a></li>
+                <li><a href="#sec-journey">Journey</a></li>
+                <li><a href="#sec-map">Map</a></li>
+                <li><a href="#sec-features">Features</a></li>
+                <li><a href="#sec-community">Community</a></li>
+                <li><a href="#sec-faq">FAQ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="sec-hero" class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">Move Freely, Access Easily</h1>
+                    <p class="hero-subtitle">Navigate cities with confidence. Find wheelchair ramps, accessible elevators, tactile paving and barrier-free routes optimized for slope, elevator access, and accessible restrooms.</p>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary hero-cta" id="plan-route">
+                            Plan an Accessible Route
+                        </button>
+                        <button class="btn btn-secondary" id="how-it-works">
+                            How it works
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1559028147-2b412c1b7432?auto=format&fit=crop&w=800&q=80" 
+                         alt="Wheelchair accessible ramp in urban setting" 
+                         loading="lazy" 
+                         width="800" 
+                         height="600">
+                    <div class="hero-badge">
+                        <span class="badge-number">18,000+</span>
+                        <span class="badge-text">intersections mapped</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-about" class="about">
+            <div class="container">
+                <h2 class="section-title">Why Accessible Navigation Matters</h2>
+                <div class="about-stats">
+                    <div class="stat-card">
+                        <div class="stat-number">18,000+</div>
+                        <div class="stat-label">Intersections Mapped</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">3,200+</div>
+                        <div class="stat-label">Building Entrances</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔄</div>
+                        <div class="stat-label">Community Verified Daily</div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1587135941948-670b381f08ce?auto=format&fit=crop&w=600&q=80" 
+                         alt="Accessible elevator entrance with tactile paving" 
+                         loading="lazy" 
+                         width="600" 
+                         height="400">
+                </div>
+                <div class="about-caption">
+                    <p>Data sourced from municipal records, community reports, and on-site verification</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-journey" class="journey">
+            <div class="journey-act" id="journey-a">
+                <div class="act-content">
+                    <div class="act-text">
+                        <h3 class="act-title">Starting Point Accessibility</h3>
+                        <div class="accessibility-check">
+                            <div class="check-card ok">
+                                <div class="check-icon">✓</div>
+                                <div class="check-text">Entrance OK</div>
+                            </div>
+                            <div class="check-card not-ok">
+                                <div class="check-icon">⚠</div>
+                                <div class="check-text">Not OK - Nearest accessible entrance 45m away</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="act-image">
+                        <img src="https://images.unsplash.com/photo-1587135941948-670b381f08ce?auto=format&fit=crop&w=600&q=80" 
+                             alt="Wheelchair accessible building entrance" 
+                             loading="lazy" 
+                             width="600" 
+                             height="400">
+                    </div>
+                </div>
+            </div>
+
+            <div class="journey-act" id="journey-b">
+                <div class="act-content">
+                    <div class="act-text">
+                        <h3 class="act-title">Route Slope Analysis</h3>
+                        <div class="slope-indicator">
+                            <div class="slope-value">
+                                <span class="slope-number" data-target="3.2">0</span>
+                                <span class="slope-unit">%</span>
+                            </div>
+                            <div class="slope-label">Maximum slope</div>
+                        </div>
+                        <div class="route-alternatives">
+                            <div class="alternative-card">
+                                <div class="alt-icon">🛤️</div>
+                                <div class="alt-text">Tactile paving available</div>
+                            </div>
+                            <div class="alternative-card">
+                                <div class="alt-icon">🌊</div>
+                                <div class="alt-text">Curb cuts verified</div>
+                            </div>
+                            <div class="alternative-card">
+                                <div class="alt-icon">🧱</div>
+                                <div class="alt-text">Smooth surface</div>
+                            </div>
+                        </div>
+                        <div class="route-suggestion">
+                            <p>Alternative route available: +120m, 0.8% max slope</p>
+                        </div>
+                    </div>
+                    <div class="act-image">
+                        <img src="https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?auto=format&fit=crop&w=600&q=80" 
+                             alt="Accessible city sidewalk with tactile paving" 
+                             loading="lazy" 
+                             width="600" 
+                             height="400">
+                    </div>
+                </div>
+            </div>
+
+            <div class="journey-act" id="journey-c">
+                <div class="act-content">
+                    <div class="act-text">
+                        <h3 class="act-title">Destination Facilities</h3>
+                        <div class="facility-checklist">
+                            <div class="facility-item checked">
+                                <div class="facility-icon">✓</div>
+                                <div class="facility-text">Door width ≥ 90cm</div>
+                            </div>
+                            <div class="facility-item checked">
+                                <div class="facility-icon">✓</div>
+                                <div class="facility-text">Elevator available</div>
+                            </div>
+                            <div class="facility-item checked">
+                                <div class="facility-icon">✓</div>
+                                <div class="facility-text">Accessible restroom</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary">Proceed to plan</button>
+                    </div>
+                    <div class="act-image">
+                        <img src="https://images.unsplash.com/photo-1617802692773-3507579744a7?auto=format&fit=crop&w=600&q=80" 
+                             alt="Accessible restroom facilities" 
+                             loading="lazy" 
+                             width="600" 
+                             height="400">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-map" class="map-teasers">
+            <div class="container">
+                <h2 class="section-title">Navigation Preferences</h2>
+                <div class="map-cards">
+                    <div class="map-card">
+                        <div class="map-icon">⛰️</div>
+                        <h3 class="map-title">Slope Priority</h3>
+                        <p class="map-description">Find routes with minimal elevation changes and gentle gradients</p>
+                        <img src="https://images.unsplash.com/photo-1607961188333-60a0c2e1b3c0?auto=format&fit=crop&w=400&q=80" 
+                             alt="Gentle slope pathway" 
+                             loading="lazy" 
+                             width="400" 
+                             height="300">
+                    </div>
+                    <div class="map-card">
+                        <div class="map-icon">🛗</div>
+                        <h3 class="map-title">Elevator Priority</h3>
+                        <p class="map-description">Prioritize routes with verified elevator access</p>
+                        <img src="https://images.unsplash.com/photo-1559028147-2b412c1b7432?auto=format&fit=crop&w=400&q=80" 
+                             alt="Accessible elevator" 
+                             loading="lazy" 
+                             width="400" 
+                             height="300">
+                    </div>
+                    <div class="map-card">
+                        <div class="map-icon">🚻</div>
+                        <h3 class="map-title">Restroom Priority</h3>
+                        <p class="map-description">Quick access to verified accessible facilities</p>
+                        <img src="https://images.unsplash.com/photo-1587135941948-670b381f08ce?auto=format&fit=crop&w=400&q=80" 
+                             alt="Accessible restroom sign" 
+                             loading="lazy" 
+                             width="400" 
+                             height="300">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-features" class="features">
+            <div class="container">
+                <h2 class="section-title">Smart Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📐</div>
+                        <h3 class="feature-title">Slope Threshold Alerts</h3>
+                        <p class="feature-description">Get notified when routes exceed your preferred gradient limits</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👁️</div>
+                        <h3 class="feature-title">Curb Recognition</h3>
+                        <p class="feature-description">AI-powered detection of curb cuts and accessibility features</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔊</div>
+                        <h3 class="feature-title">Voice Navigation</h3>
+                        <p class="feature-description">Audio guidance for hands-free navigation</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h3 class="feature-title">Offline Maps</h3>
+                        <p class="feature-description">Download routes for offline navigation</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⏰</div>
+                        <h3 class="feature-title">Facility Reminders</h3>
+                        <p class="feature-description">Alerts for accessible facilities along your route</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <h3 class="feature-title">Community Corrections</h3>
+                        <p class="feature-description">Report and verify accessibility information</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-community" class="community">
+            <div class="container">
+                <h2 class="section-title">Powered by Community</h2>
+                <div class="community-content">
+                    <div class="community-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Upload Photos</h3>
+                                <p>Share accessibility features you discover</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Community Review</h3>
+                                <p>Verified by local accessibility advocates</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Map Updates</h3>
+                                <p>Live updates for everyone</p>
+                            </div>
+                        </div>
+                        <div class="community-progress">
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
+                    <div class="community-image">
+                        <img src="https://images.unsplash.com/photo-1607961188333-60a0c2e1b3c0?auto=format&fit=crop&w=600&q=80" 
+                             alt="Community members sharing accessibility information" 
+                             loading="lazy" 
+                             width="600" 
+                             height="400">
+                    </div>
+                </div>
+                <div class="community-tip">
+                    <p>🔒 We automatically blur license plates and faces in uploaded photos</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-faq" class="faq">
+            <div class="container">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <div class="faq-list">
+                    <details class="faq-item">
+                        <summary class="faq-question">
+                            <span>How accurate is the accessibility data?</span>
+                            <span class="faq-icon">+</span>
+                        </summary>
+                        <div class="faq-answer">
+                            <p>Our data combines municipal records, community reports, and on-site verification. Information is updated daily and verified by local accessibility advocates.</p>
+                        </div>
+                    </details>
+                    <details class="faq-item">
+                        <summary class="faq-question">
+                            <span>How do I report incorrect information?</span>
+                            <span class="faq-icon">+</span>
+                        </summary>
+                        <div class="faq-answer">
+                            <p>You can report issues directly through the app by tapping "Report Problem" on any location. Our community review process typically updates information within 24-48 hours.</p>
+                        </div>
+                    </details>
+                    <details class="faq-item">
+                        <summary class="faq-question">
+                            <span>Does it work offline?</span>
+                            <span class="faq-icon">+</span>
+                        </summary>
+                        <div class="faq-answer">
+                            <p>Yes! You can download maps and routes for offline use. Voice navigation and accessibility alerts work even without an internet connection.</p>
+                        </div>
+                    </details>
+                    <details class="faq-item">
+                        <summary class="faq-question">
+                            <span>How is my privacy protected?</span>
+                            <span class="faq-icon">+</span>
+                        </summary>
+                        <div class="faq-answer">
+                            <p>We don't track your precise location or store personal data. All navigation happens locally on your device, and uploaded photos are automatically processed to blur identifying information.</p>
+                        </div>
+                    </details>
+                    <details class="faq-item">
+                        <summary class="faq-question">
+                            <span>Will it drain my battery?</span>
+                            <span class="faq-icon">+</span>
+                        </summary>
+                        <div class="faq-answer">
+                            <p>We've optimized for battery efficiency with smart location sampling and offline-first design. Typical usage adds less than 5% battery drain per hour.</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-cta" class="cta">
+            <div class="container">
+                <div class="cta-content">
+                    <h2 class="cta-title">Ready to Navigate with Confidence?</h2>
+                    <p class="cta-subtitle">Join thousands of users who rely on Accessibility Navigator for barrier-free city exploration.</p>
+                    <div class="cta-actions">
+                        <button class="btn btn-primary btn-large">Start planning now</button>
+                        <button class="btn btn-secondary">Share a report</button>
+                    </div>
+                </div>
+                <div class="cta-image">
+                    <img src="https://images.unsplash.com/photo-1607961188333-60a0c2e1b3c0?auto=format&fit=crop&w=800&q=80" 
+                         alt="Accessible city street at night" 
+                         loading="lazy" 
+                         width="800" 
+                         height="600">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Accessibility Navigator. Built for the community, by the community.</p>
+        </div>
+    </footer>
+
+    <div id="qa-status" class="qa-status"></div>
+    <div id="qa-panel" class="qa-panel hidden">
+        <h3>Debug Panel</h3>
+        <div id="qa-results"></div>
+        <button id="qa-close">Close</button>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="qa.js"></script>
+    <script>
+        // Initialize QA system after DOM is ready
+        if (typeof runQA === 'function') {
+            document.addEventListener('DOMContentLoaded', runQA);
+        }
+    </script>
+</body>
+</html>

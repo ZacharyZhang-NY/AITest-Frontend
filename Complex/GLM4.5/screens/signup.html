@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - Accessibility Navigator</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .signup-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .signup-header {
+            text-align: center;
+            padding: 60px 40px 20px;
+            color: white;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 20px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: #667eea;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .signup-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .signup-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .signup-form {
+            flex: 1;
+            background: white;
+            border-radius: 30px 30px 0 0;
+            padding: 40px 32px;
+            margin-top: 20px;
+            overflow-y: auto;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 16px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: var(--text-tertiary);
+        }
+        
+        .input-icon {
+            position: relative;
+        }
+        
+        .input-icon i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            font-size: 18px;
+        }
+        
+        .input-icon .form-input {
+            padding-left: 50px;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 8px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .user-type-selection {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .user-type-btn {
+            flex: 1;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .user-type-btn:hover {
+            border-color: var(--accent);
+        }
+        
+        .user-type-btn.active {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+        
+        .user-type-btn i {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .user-type-btn span {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .accessibility-needs {
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .accessibility-needs h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+        
+        .accessibility-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .accessibility-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .accessibility-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+        }
+        
+        .accessibility-option label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        
+        .terms-agreement {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .terms-agreement input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            margin-top: 2px;
+        }
+        
+        .terms-agreement label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        
+        .terms-agreement a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .terms-agreement a:hover {
+            text-decoration: underline;
+        }
+        
+        .signup-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+        }
+        
+        .signup-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 102, 204, 0.3);
+        }
+        
+        .signup-btn:disabled {
+            background: var(--text-tertiary);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 24px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--border-color);
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 16px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            background: white;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .social-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        
+        .social-btn i {
+            font-size: 20px;
+        }
+        
+        .social-btn.wechat {
+            color: #07c160;
+            border-color: #07c160;
+        }
+        
+        .social-btn.wechat:hover {
+            background: #07c160;
+            color: white;
+        }
+        
+        .social-btn.weibo {
+            color: #e6162d;
+            border-color: #e6162d;
+        }
+        
+        .social-btn.weibo:hover {
+            background: #e6162d;
+            color: white;
+        }
+        
+        .social-btn.apple {
+            color: #000;
+            border-color: #000;
+        }
+        
+        .social-btn.apple:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .login-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .password-strength {
+            margin-top: 8px;
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .password-strength-bar.weak {
+            width: 33%;
+            background: var(--danger);
+        }
+        
+        .password-strength-bar.medium {
+            width: 66%;
+            background: var(--warning);
+        }
+        
+        .password-strength-bar.strong {
+            width: 100%;
+            background: var(--success);
+        }
+        
+        .password-strength-text {
+            font-size: 12px;
+            margin-top: 4px;
+            color: var(--text-tertiary);
+        }
+        
+        @media (max-width: 393px) {
+            .signup-form {
+                padding: 32px 24px;
+            }
+            
+            .signup-title {
+                font-size: 28px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .accessibility-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="status-bar">
+            <div class="status-time">9:41</div>
+            <div class="status-icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="dynamic-island"></div>
+        
+        <div class="signup-container">
+            <div class="signup-header">
+                <div class="logo">
+                    <i class="fas fa-universal-access"></i>
+                </div>
+                <h1 class="signup-title">创建账户</h1>
+                <p class="signup-subtitle">加入无障碍社区，让城市更包容</p>
+            </div>
+            
+            <div class="signup-form">
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+                
+                <form id="signupForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">姓氏</label>
+                            <div class="input-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" class="form-input" placeholder="姓氏" id="lastName" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">名字</label>
+                            <div class="input-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" class="form-input" placeholder="名字" id="firstName" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">邮箱</label>
+                        <div class="input-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" class="form-input" placeholder="请输入邮箱地址" id="email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">手机号</label>
+                        <div class="input-icon">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" class="form-input" placeholder="请输入手机号" id="phone" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">密码</label>
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" class="form-input" placeholder="请输入密码" id="password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <i class="fas fa-eye" id="passwordIcon"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                        </div>
+                        <div class="password-strength-text" id="passwordStrengthText">密码强度：无</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">确认密码</label>
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" class="form-input" placeholder="请再次输入密码" id="confirmPassword" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">用户类型</label>
+                        <div class="user-type-selection">
+                            <div class="user-type-btn active" onclick="selectUserType(this, 'user')">
+                                <i class="fas fa-user"></i>
+                                <span>普通用户</span>
+                            </div>
+                            <div class="user-type-btn" onclick="selectUserType(this, 'volunteer')">
+                                <i class="fas fa-hands-helping"></i>
+                                <span>志愿者</span>
+                            </div>
+                            <div class="user-type-btn" onclick="selectUserType(this, 'organization')">
+                                <i class="fas fa-building"></i>
+                                <span>机构</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accessibility-needs">
+                        <h3>无障碍需求（可选）</h3>
+                        <div class="accessibility-options">
+                            <div class="accessibility-option">
+                                <input type="checkbox" id="wheelchair" value="wheelchair">
+                                <label for="wheelchair">轮椅用户</label>
+                            </div>
+                            <div class="accessibility-option">
+                                <input type="checkbox" id="visual" value="visual">
+                                <label for="visual">视觉障碍</label>
+                            </div>
+                            <div class="accessibility-option">
+                                <input type="checkbox" id="hearing" value="hearing">
+                                <label for="hearing">听觉障碍</label>
+                            </div>
+                            <div class="accessibility-option">
+                                <input type="checkbox" id="elderly" value="elderly">
+                                <label for="elderly">长者</label>
+                            </div>
+                            <div class="accessibility-option">
+                                <input type="checkbox" id="stroller" value="stroller">
+                                <label for="stroller">婴儿车</label>
+                            </div>
+                            <div class="accessibility-option">
+                                <input type="checkbox" id="temporary" value="temporary">
+                                <label for="temporary">临时行动不便</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="terms-agreement">
+                        <input type="checkbox" id="terms" required>
+                        <label for="terms">
+                            我已阅读并同意 <a href="#">服务条款</a> 和 <a href="#">隐私政策</a>，以及 <a href="#">社区规范</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="signup-btn" id="signupBtn">创建账户</button>
+                </form>
+                
+                <div class="divider">
+                    <span>或使用以下方式注册</span>
+                </div>
+                
+                <div class="social-login">
+                    <a href="#" class="social-btn wechat" onclick="socialSignup('wechat')">
+                        <i class="fab fa-weixin"></i>
+                        微信注册
+                    </a>
+                    <a href="#" class="social-btn weibo" onclick="socialSignup('weibo')">
+                        <i class="fab fa-weibo"></i>
+                        微博注册
+                    </a>
+                    <a href="#" class="social-btn apple" onclick="socialSignup('apple')">
+                        <i class="fab fa-apple"></i>
+                        Apple ID
+                    </a>
+                </div>
+                
+                <div class="login-link">
+                    已有账户？<a href="login.html">立即登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedUserType = 'user';
+        
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.className = 'fas fa-eye';
+            }
+        }
+        
+        function selectUserType(element, type) {
+            document.querySelectorAll('.user-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            element.classList.add('active');
+            selectedUserType = type;
+        }
+        
+        function socialSignup(provider) {
+            showMessage(`正在跳转到${provider}注册...`, 'success');
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 1500);
+        }
+        
+        function showMessage(message, type) {
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            if (type === 'error') {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            } else {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+            
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+            }, 3000);
+        }
+        
+        function checkPasswordStrength(password) {
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            const strengthText = document.getElementById('passwordStrengthText');
+            
+            let strength = 0;
+            
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+            
+            strengthBar.className = 'password-strength-bar';
+            
+            if (strength <= 2) {
+                strengthBar.classList.add('weak');
+                strengthText.textContent = '密码强度：弱';
+                strengthText.style.color = 'var(--danger)';
+            } else if (strength <= 3) {
+                strengthBar.classList.add('medium');
+                strengthText.textContent = '密码强度：中';
+                strengthText.style.color = 'var(--warning)';
+            } else {
+                strengthBar.classList.add('strong');
+                strengthText.textContent = '密码强度：强';
+                strengthText.style.color = 'var(--success)';
+            }
+        }
+        
+        // Password strength checker
+        document.getElementById('password').addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+        });
+        
+        // Form submission
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const lastName = document.getElementById('lastName').value;
+            const firstName = document.getElementById('firstName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Validation
+            if (!lastName || !firstName || !email || !phone || !password || !confirmPassword) {
+                showMessage('请填写完整的注册信息', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('两次输入的密码不一致', 'error');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showMessage('密码长度不能少于8位', 'error');
+                return;
+            }
+            
+            if (!terms) {
+                showMessage('请同意服务条款和隐私政策', 'error');
+                return;
+            }
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showMessage('请输入有效的邮箱地址', 'error');
+                return;
+            }
+            
+            // Phone validation
+            const phoneRegex = /^1[3-9]\d{9}$/;
+            if (!phoneRegex.test(phone)) {
+                showMessage('请输入有效的手机号码', 'error');
+                return;
+            }
+            
+            // Simulate signup process
+            const signupBtn = document.getElementById('signupBtn');
+            signupBtn.disabled = true;
+            signupBtn.textContent = '正在创建账户...';
+            
+            showMessage('正在创建账户...', 'success');
+            
+            setTimeout(() => {
+                // Save user data (in real app, this would be sent to server)
+                const userData = {
+                    lastName,
+                    firstName,
+                    email,
+                    phone,
+                    userType: selectedUserType,
+                    accessibilityNeeds: Array.from(document.querySelectorAll('.accessibility-option input:checked')).map(cb => cb.value)
+                };
+                
+                localStorage.setItem('userData', JSON.stringify(userData));
+                
+                window.location.href = 'home.html';
+            }, 2000);
+        });
+        
+        // Add ripple effect to buttons
+        document.querySelectorAll('.signup-btn, .social-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    </script>
+</body>
+</html>

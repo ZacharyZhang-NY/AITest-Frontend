@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知中心 - 无障碍社区</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #1a1a1a;
+            --card: #f8fafc;
+            --accent: #3b82f6;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+        
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --fg: #f1f5f9;
+            --card: #1e293b;
+            --accent: #60a5fa;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --success: #34d399;
+            --warning: #fbbf24;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        .device-container {
+            width: 393px;
+            height: 852px;
+            margin: 0 auto;
+            background: var(--bg);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            background: var(--bg);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-left { font-weight: 600; }
+        .status-right { display: flex; gap: 6px; align-items: center; }
+        
+        .nav-header {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-back {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-back:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .nav-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: var(--fg);
+        }
+        
+        .nav-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .content-area {
+            height: calc(852px - 44px - 56px - 83px);
+            overflow-y: auto;
+            background: var(--bg);
+        }
+        
+        .filter-tabs {
+            display: flex;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .filter-tab {
+            flex: 1;
+            padding: 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .filter-tab.active {
+            color: var(--accent);
+        }
+        
+        .filter-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent);
+        }
+        
+        .notification-list {
+            padding: 16px;
+        }
+        
+        .notification-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            background: var(--card);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .notification-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .notification-item.unread {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .notification-icon.like {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+        
+        .notification-icon.comment {
+            background: #f0f9ff;
+            color: #3b82f6;
+        }
+        
+        .notification-icon.follow {
+            background: #f0fdf4;
+            color: #10b981;
+        }
+        
+        .notification-icon.system {
+            background: #fefce8;
+            color: #f59e0b;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .notification-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+        
+        .notification-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .action-btn {
+            padding: 4px 8px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 48px 16px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-text {
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .empty-action {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .empty-action:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        
+        .bottom-nav {
+            height: 83px;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .nav-item.active {
+            color: var(--accent);
+        }
+        
+        .nav-item:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="device-container">
+        <div class="status-bar">
+            <div class="status-left">9:41</div>
+            <div class="status-right">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="nav-header">
+            <div class="nav-back" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="nav-title">通知中心</div>
+            <div class="nav-actions">
+                <button class="nav-btn" onclick="markAllRead()" title="全部标记为已读">
+                    <i class="fas fa-check-double"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="switchTab(this, 'all')">全部</button>
+                <button class="filter-tab" onclick="switchTab(this, 'likes')">点赞</button>
+                <button class="filter-tab" onclick="switchTab(this, 'comments')">评论</button>
+                <button class="filter-tab" onclick="switchTab(this, 'follows')">关注</button>
+                <button class="filter-tab" onclick="switchTab(this, 'system')">系统</button>
+            </div>
+            
+            <!-- Notification List -->
+            <div class="notification-list" id="notificationList">
+                <!-- Like Notification -->
+                <div class="notification-item unread" data-type="like">
+                    <div class="notification-icon like">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">宝妈小李 点赞了你的帖子</div>
+                        <div class="notification-text">地铁2号线无障碍体验分享</div>
+                        <div class="notification-time">2分钟前</div>
+                    </div>
+                </div>
+                
+                <!-- Comment Notification -->
+                <div class="notification-item unread" data-type="comment">
+                    <div class="notification-icon comment">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">张奶奶 评论了你的帖子</div>
+                        <div class="notification-text">太实用了！我也经常坐地铁2号线，确实感觉比其他线路的无障碍设施更完善一些...</div>
+                        <div class="notification-time">5分钟前</div>
+                        <div class="notification-actions">
+                            <button class="action-btn" onclick="replyNotification(this)">回复</button>
+                            <button class="action-btn" onclick="viewComment(this)">查看</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Follow Notification -->
+                <div class="notification-item" data-type="follow">
+                    <div class="notification-icon follow">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">志愿者小王 开始关注你</div>
+                        <div class="notification-text">感谢分享实用的无障碍信息！</div>
+                        <div class="notification-time">1小时前</div>
+                        <div class="notification-actions">
+                            <button class="action-btn" onclick="followBack(this)">回关</button>
+                            <button class="action-btn" onclick="viewProfile(this)">查看资料</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- System Notification -->
+                <div class="notification-item" data-type="system">
+                    <div class="notification-icon system">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">系统通知</div>
+                        <div class="notification-text">恭喜！你的帖子被评为本周优质内容，获得社区徽章一枚 🎉</div>
+                        <div class="notification-time">2小时前</div>
+                    </div>
+                </div>
+                
+                <!-- Like Notification -->
+                <div class="notification-item" data-type="like">
+                    <div class="notification-icon like">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">城市管理者 点赞了你的帖子</div>
+                        <div class="notification-text">市民中心避坑提醒</div>
+                        <div class="notification-time">3小时前</div>
+                    </div>
+                </div>
+                
+                <!-- Comment Notification -->
+                <div class="notification-item" data-type="comment">
+                    <div class="notification-icon comment">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">用户1382 评论了你的帖子</div>
+                        <div class="notification-text">感谢分享！已经联系相关部门处理这个问题了</div>
+                        <div class="notification-time">5小时前</div>
+                        <div class="notification-actions">
+                            <button class="action-btn" onclick="replyNotification(this)">回复</button>
+                            <button class="action-btn" onclick="viewComment(this)">查看</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Empty State (Hidden by default) -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon"><i class="far fa-bell"></i></div>
+                <div class="empty-text">暂无通知消息</div>
+                <button class="empty-action" onclick="window.location.href='home.html'">去首页看看</button>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item" onclick="window.location.href='home.html'">
+                <i class="fas fa-home nav-icon"></i>
+                <span>首页</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='explore.html'">
+                <i class="fas fa-compass nav-icon"></i>
+                <span>发现</span>
+            </button>
+            
+            <button class="nav-item ripple-btn" onclick="window.location.href='create_post.html'" data-ripple="true">
+                <i class="fas fa-plus-circle nav-icon"></i>
+                <span>发布</span>
+            </button>
+            
+            <button class="nav-item active" onclick="window.location.href='notifications.html'">
+                <i class="fas fa-bell nav-icon"></i>
+                <span>通知</span>
+                <div class="notification-badge">6</div>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user nav-icon"></i>
+                <span>我的</span>
+            </button>
+        </nav>
+    </div>
+    
+    <script>
+        function switchTab(element, tab) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.filter-tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            element.classList.add('active');
+            
+            // Filter notifications
+            filterNotifications(tab);
+        }
+        
+        function filterNotifications(type) {
+            const notifications = document.querySelectorAll('.notification-item');
+            let visibleCount = 0;
+            
+            notifications.forEach(notification => {
+                const notificationType = notification.dataset.type;
+                const shouldShow = type === 'all' || notificationType === type;
+                
+                notification.style.display = shouldShow ? 'flex' : 'none';
+                if (shouldShow) visibleCount++;
+            });
+            
+            // Show/hide empty state
+            const emptyState = document.getElementById('emptyState');
+            const notificationList = document.getElementById('notificationList');
+            
+            if (visibleCount === 0) {
+                emptyState.style.display = 'block';
+                notificationList.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                notificationList.style.display = 'block';
+            }
+        }
+        
+        function markAllRead() {
+            const unreadItems = document.querySelectorAll('.notification-item.unread');
+            unreadItems.forEach(item => {
+                item.classList.remove('unread');
+            });
+            
+            // Update badge
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.style.display = 'none';
+            }
+            
+            alert('所有通知已标记为已读');
+        }
+        
+        function replyNotification(button) {
+            const notification = button.closest('.notification-item');
+            const title = notification.querySelector('.notification-title').textContent;
+            const username = title.split(' ')[0];
+            
+            // Navigate to messages with pre-filled recipient
+            window.location.href = `messages.html?recipient=${username}`;
+        }
+        
+        function viewComment(button) {
+            // Navigate to the related post
+            window.location.href = 'post_detail.html';
+        }
+        
+        function viewProfile(button) {
+            // Navigate to user profile
+            window.location.href = 'profile.html';
+        }
+        
+        function followBack(button) {
+            button.textContent = '已关注';
+            button.disabled = true;
+            button.style.background = 'var(--success)';
+            button.style.color = 'white';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Show all notifications by default
+            filterNotifications('all');
+        });
+    </script>
+</body>
+</html>

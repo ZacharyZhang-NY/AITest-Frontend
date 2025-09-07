@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#0EA5E9">
+    <title>Accessibility Navigator — Move Freely, Access Easily</title>
+    <link rel="preconnect" href="https://rsms.me" crossorigin>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#sec-hero">Skip to content</a>
+
+    <header class="site-header" role="banner">
+      <div class="container nav">
+        <a class="brand" href="#sec-hero" aria-label="Accessibility Navigator Home">🧭 Accessibility Navigator</a>
+        <nav aria-label="Primary">
+          <ul class="nav-list">
+            <li><a href="#sec-about">About</a></li>
+            <li><a href="#sec-journey">Journey</a></li>
+            <li><a href="#sec-map">Map</a></li>
+            <li><a href="#sec-features">Features</a></li>
+            <li><a href="#sec-crowd">Community</a></li>
+            <li><a href="#sec-faq">FAQ</a></li>
+            <li><a class="nav-cta" href="#sec-cta">Start</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div id="scroll-progress" aria-hidden="true"></div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <!-- Hero -->
+      <section id="sec-hero" aria-label="Hero">
+        <div class="hero wrap">
+          <div class="hero-col hero-text" data-anim="fade-in-up">
+            <h1>Move Freely, Access Easily</h1>
+            <p class="sub">Plan routes optimized for ramps, elevators, and accessible restrooms — designed for every body.</p>
+            <div class="cta-row">
+              <a id="cta-primary" class="btn btn-primary magnet" href="#sec-map">Plan an Accessible Route</a>
+              <a class="btn btn-secondary" href="#sec-about">How it works</a>
+            </div>
+            <div class="tag">18,000+ intersections mapped</div>
+          </div>
+          <div class="hero-col hero-media">
+            <figure class="hero-figure">
+              <img 
+                src="https://source.unsplash.com/1600x1200/?wheelchair,ramp"
+                alt="Real city wheelchair ramp near a sidewalk"
+                width="1600" height="1200" loading="eager" fetchpriority="high" decoding="async" />
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section id="sec-about">
+        <div class="container">
+          <h2>为什么无障碍导航重要</h2>
+          <div class="source-bar" aria-label="Data source">数据来源：城市设施开放数据与社区标注</div>
+          <div class="about-grid">
+            <article class="card stat" data-anim="stagger">
+              <h3><span class="num" data-target="18000">18,000+</span></h3>
+              <p>路口已标注可达性</p>
+            </article>
+            <article class="card stat" data-anim="stagger">
+              <h3><span class="num" data-target="3200">3,200+</span></h3>
+              <p>建筑入口被记录</p>
+            </article>
+            <article class="card stat" data-anim="stagger">
+              <h3><span class="num" data-target="1">updated daily</span></h3>
+              <p>社区校验每日更新</p>
+            </article>
+            <figure class="card about-figure" data-anim="parallax">
+              <img 
+                src="https://source.unsplash.com/1200x800/?tactile,paving"
+                alt="Tactile paving guiding path on a city sidewalk"
+                width="1200" height="800" loading="lazy" decoding="async" />
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- Journey: three acts -->
+      <section id="sec-journey" aria-label="Journey">
+        <!-- Act A -->
+        <div class="stage" id="journey-a">
+          <div class="stage-sticky">
+            <div class="stage-bg">
+              <img 
+                src="https://source.unsplash.com/1600x1200/?city,entrance,accessibility"
+                alt="Accessible building entrance"
+                width="1600" height="1200" loading="lazy" decoding="async" />
+            </div>
+            <div class="stage-fg">
+              <h3 class="stage-title">起点可达性</h3>
+              <div class="verdict card" aria-live="polite">
+                <div class="verdict-body">
+                  <strong class="ok">入口 OK</strong>
+                  <strong class="not-ok">入口 Not OK</strong>
+                  <p class="tip">最近可达入口：<span class="dist">120</span> 米</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Act B -->
+        <div class="stage" id="journey-b">
+          <div class="stage-sticky">
+            <div class="stage-bg">
+              <img 
+                src="https://source.unsplash.com/1600x1200/?city,sidewalk,slope"
+                alt="City sidewalk with gentle slope"
+                width="1600" height="1200" loading="lazy" decoding="async" />
+            </div>
+            <div class="stage-fg">
+              <h3 class="stage-title">路段坡度</h3>
+              <div class="metrics">
+                <div class="metric">
+                  <div class="label">最大坡度</div>
+                  <div class="value"><span class="counter" data-to="8">0</span>%</div>
+                </div>
+                <div class="metric">
+                  <div class="label">替代路段</div>
+                  <div class="value"><span class="counter" data-to="230">0</span> 米</div>
+                </div>
+              </div>
+              <div class="sidecards">
+                <div class="mini-card">路缘</div>
+                <div class="mini-card">盲道</div>
+                <div class="mini-card">路面材质</div>
+              </div>
+              <div class="alt-path card" role="note">建议：使用坡度更缓的替代路径（亮显 2 次）</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Act C -->
+        <div class="stage" id="journey-c">
+          <div class="stage-sticky">
+            <div class="stage-bg">
+              <img 
+                src="https://source.unsplash.com/1600x1200/?accessible,elevator"
+                alt="Elevator with accessibility signage"
+                width="1600" height="1200" loading="lazy" decoding="async" />
+            </div>
+            <div class="stage-fg">
+              <h3 class="stage-title">目的地设施</h3>
+              <ul class="checklist" aria-live="polite">
+                <li><input type="checkbox" id="chk1" disabled><label for="chk1">门宽 ≥ 90 cm</label></li>
+                <li><input type="checkbox" id="chk2" disabled><label for="chk2">电梯 🛗</label></li>
+                <li><input type="checkbox" id="chk3" disabled><label for="chk3">无障碍卫生间 🚻</label></li>
+              </ul>
+              <div class="cta-row">
+                <a class="btn btn-primary proceed" href="#sec-cta">Proceed to plan</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Map Teasers -->
+      <section id="sec-map">
+        <div class="container">
+          <h2>Map Teasers</h2>
+          <div class="map-grid">
+            <article class="map-card" data-anim="slide-in">
+              <div class="icon" aria-hidden="true">🦽</div>
+              <h3>坡度优先</h3>
+              <p>优先选择低坡度路段，减少体力消耗。</p>
+              <img 
+                src="https://source.unsplash.com/800x600/?wheelchair,sidewalk"
+                alt="Wheelchair-friendly sidewalk"
+                width="800" height="600" loading="lazy" decoding="async" />
+            </article>
+            <article class="map-card" data-anim="slide-in">
+              <div class="icon" aria-hidden="true">🛗</div>
+              <h3>电梯优先</h3>
+              <p>地铁站、过街点的可达电梯优先推荐。</p>
+              <img 
+                src="https://source.unsplash.com/800x600/?subway,elevator"
+                alt="Subway elevator"
+                width="800" height="600" loading="lazy" decoding="async" />
+            </article>
+            <article class="map-card" data-anim="slide-in">
+              <div class="icon" aria-hidden="true">🚻</div>
+              <h3>就近卫生间</h3>
+              <p>沿途标记可达卫生间，减少不确定性。</p>
+              <img 
+                src="https://source.unsplash.com/800x600/?accessible,restroom"
+                alt="Accessible restroom sign"
+                width="800" height="600" loading="lazy" decoding="async" />
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section id="sec-features">
+        <div class="container">
+          <h2>Features</h2>
+          <div class="features-grid">
+            <article class="feature-card tilt" tabindex="0"><h3>坡度阈值</h3><p>自定义最大坡度，个性化路线偏好。</p></article>
+            <article class="feature-card tilt" tabindex="0"><h3>路缘识别</h3><p>自动识别路缘与落差，智能避让。</p></article>
+            <article class="feature-card tilt" tabindex="0"><h3>语音提示</h3><p>全程语音导航，免手操作。</p></article>
+            <article class="feature-card tilt" tabindex="0"><h3>离线包</h3><p>弱网可用，城市离线地图包。</p></article>
+            <article class="feature-card tilt" tabindex="0"><h3>设施提醒</h3><p>电梯、卫生间等设施到点提醒。</p></article>
+            <article class="feature-card tilt" tabindex="0"><h3>社区纠错</h3><p>一键上报错误点位，协作完善。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Community -->
+      <section id="sec-crowd">
+        <div class="container">
+          <h2>Community</h2>
+          <div class="crowd-wrap">
+            <div class="steps">
+              <div class="step card" data-step="1">上传照片</div>
+              <div class="step card" data-step="2">审核</div>
+              <div class="step card" data-step="3">地图更新</div>
+              <div class="timeline" aria-hidden="true"></div>
+              <div class="hint" role="note">提示：自动模糊车牌/人脸</div>
+            </div>
+            <figure class="crowd-figure">
+              <img 
+                src="https://source.unsplash.com/1200x900/?city,sidewalk,night"
+                alt="City sidewalk at night with tactile paving"
+                width="1200" height="900" loading="lazy" decoding="async" />
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="sec-faq">
+        <div class="container">
+          <h2>FAQ</h2>
+          <div class="accordion" role="region" aria-label="Frequently asked questions">
+            <div class="item">
+              <button class="acc-btn" aria-expanded="false" aria-controls="faq1" id="q1">数据准确性如何？</button>
+              <div id="faq1" class="acc-panel" role="region" aria-labelledby="q1"><p>来自官方数据、街景识别与社区校验，多源融合，持续更新。</p></div>
+            </div>
+            <div class="item">
+              <button class="acc-btn" aria-expanded="false" aria-controls="faq2" id="q2">如何纠错？</button>
+              <div id="faq2" class="acc-panel" role="region" aria-labelledby="q2"><p>标注错误点位并提交，审核通过后即时更正。</p></div>
+            </div>
+            <div class="item">
+              <button class="acc-btn" aria-expanded="false" aria-controls="faq3" id="q3">离线是否可用？</button>
+              <div id="faq3" class="acc-panel" role="region" aria-labelledby="q3"><p>下载城市离线包后，无网也能规划与查看。</p></div>
+            </div>
+            <div class="item">
+              <button class="acc-btn" aria-expanded="false" aria-controls="faq4" id="q4">隐私如何保护？</button>
+              <div id="faq4" class="acc-panel" role="region" aria-labelledby="q4"><p>端侧人脸/车牌模糊，定位只用于导航，未经同意不上传。</p></div>
+            </div>
+            <div class="item">
+              <button class="acc-btn" aria-expanded="false" aria-controls="faq5" id="q5">电量优化？</button>
+              <div id="faq5" class="acc-panel" role="region" aria-labelledby="q5"><p>低频定位与蓝牙传感器配合，保持高效与精准。</p></div>
+            </div>
+            <div class="item">
+              <button class="acc-btn" aria-expanded="false" aria-controls="faq6" id="q6">社区如何参与？</button>
+              <div id="faq6" class="acc-panel" role="region" aria-labelledby="q6"><p>上传照片、核验点位、提出建议，人人都是建设者。</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section id="sec-cta" aria-label="Call to action">
+        <div class="cta-wrap">
+          <div class="cta-bg">
+            <img 
+              src="https://source.unsplash.com/1600x1000/?city,accessibility"
+              alt="City accessible path overview"
+              width="1600" height="1000" loading="lazy" decoding="async" />
+          </div>
+          <div class="cta-inner">
+            <h2>Start planning now</h2>
+            <p>Find the best accessible route in seconds.</p>
+            <div class="cta-row">
+              <a class="btn btn-primary" href="#sec-map">Start planning now</a>
+              <a class="btn btn-secondary" href="#sec-crowd">Share a report</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Debug Panel (manual checklist) -->
+      <section id="debug-panel" hidden>
+        <div class="container">
+          <h2>Debug Panel</h2>
+          <ul class="debug-list">
+            <li>Chrome desktop: smooth scroll Hero → CTA</li>
+            <li>Prefers-reduced-motion: reduced animations, content readable</li>
+            <li>Mobile 375–430 width: no overflow, accordion smooth, CTA clickable</li>
+            <li>Slow/Offline: lazy images don’t break layout</li>
+            <li>Lighthouse targets: P≥90 / A≥90 / BP≥90</li>
+            <li>Copy consistency: 18,000+ / 3,200+ / updated daily</li>
+            <li>Anchors and focus management correct</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>© <span id="year"></span> Accessibility Navigator • Built for inclusive cities.</p>
+      </div>
+    </footer>
+
+    <script defer src="./app.js"></script>
+    <script defer src="./qa.js"></script>
+  </body>
+  </html>

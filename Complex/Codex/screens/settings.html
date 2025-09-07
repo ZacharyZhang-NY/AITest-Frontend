@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN" data-fontscale="base">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>设置 · 无障碍社区</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="../styles/global.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style> body { font-family: Inter, ui-sans-serif, system-ui; } </style>
+</head>
+<body data-theme="light" data-current-tab="profile" class="bg-[color:var(--bg)] text-[color:var(--fg)]">
+  <div class="device" role="application" aria-label="设置">
+    <div class="dynamic-island" aria-hidden="true"></div>
+    <div class="status-bar"><div>9:41</div><div class="right">📶 📡 🔋</div></div>
+
+    <header class="title-bar">
+      <a class="btn" aria-label="返回" href="profile.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title">设置</div>
+      <div class="flex items-center gap-1 justify-end">
+        <button class="btn" data-action="toggle-theme" aria-label="切换主题"><i class="fa-solid fa-circle-half-stroke"></i></button>
+      </div>
+    </header>
+
+    <main class="content p-3 space-y-3">
+      <section class="card p-3">
+        <h3 class="font-semibold mb-2">外观</h3>
+        <div class="flex items-center justify-between py-1">
+          <div>深色模式</div>
+          <button class="px-3 py-1.5 border rounded-xl ripple" data-action="toggle-theme">切换</button>
+        </div>
+        <div class="flex items-center justify-between py-1">
+          <label class="flex-1">字体大小</label>
+          <select id="fontScale" class="px-2 py-1 border rounded-xl bg-[color:var(--bg)]">
+            <option value="base">标准</option>
+            <option value="large">大号</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="card p-3">
+        <h3 class="font-semibold mb-2">无障碍</h3>
+        <div class="flex items-center justify-between py-1">
+          <label for="contrastHigh" class="flex-1">对比度增强</label>
+          <input id="contrastHigh" type="checkbox" class="w-5 h-5" />
+        </div>
+        <div class="flex items-center justify-between py-1">
+          <label for="reduceMotion" class="flex-1">减少动效</label>
+          <input id="reduceMotion" type="checkbox" class="w-5 h-5" />
+        </div>
+        <div class="text-xs text-[color:var(--muted)]">“减少动效”启用后：自动播放/粒子/大位移将关闭或弱化。</div>
+      </section>
+
+      <section class="card p-3">
+        <h3 class="font-semibold mb-2">隐私</h3>
+        <div class="flex items-center justify-between py-1"><div>私密账户</div><input type="checkbox" class="w-5 h-5"/></div>
+        <div class="flex items-center justify-between py-1"><div>允许他人私信</div><input type="checkbox" class="w-5 h-5" checked/></div>
+      </section>
+
+      <section class="card p-3">
+        <h3 class="font-semibold mb-2">反馈</h3>
+        <a class="underline text-[color:var(--accent)]" href="report_issue.html">上报设施问题</a>
+      </section>
+    </main>
+
+    <nav class="tab-bar" aria-label="底部导航">
+      <a class="tab-item" data-tab="home" href="home.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+      <a class="tab-item" data-tab="explore" href="explore.html"><i class="fa-regular fa-compass"></i><span>Explore</span></a>
+      <a class="tab-item" data-tab="create" href="create_post.html"><i class="fa-solid fa-circle-plus"></i><span>Create</span></a>
+      <a class="tab-item" data-tab="inbox" href="messages.html"><i class="fa-regular fa-message"></i><span>Inbox</span></a>
+      <a class="tab-item active" data-tab="profile" href="profile.html" aria-current="page"><i class="fa-regular fa-user"></i><span>Profile</span></a>
+    </nav>
+  </div>
+
+  <script src="../scripts/observer.js" defer></script>
+  <script src="../scripts/waapi.js" defer></script>
+  <script src="../scripts/app.js" defer></script>
+</body>
+</html>
+

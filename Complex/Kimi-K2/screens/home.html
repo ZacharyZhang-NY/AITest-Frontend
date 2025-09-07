@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 无障碍社区</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #1a1a1a;
+            --card: #f8fafc;
+            --accent: #3b82f6;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --fg: #f1f5f9;
+            --card: #1e293b;
+            --accent: #60a5fa;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        .device-container {
+            width: 393px;
+            height: 852px;
+            margin: 0 auto;
+            background: var(--bg);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            background: var(--bg);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-left { font-weight: 600; }
+        .status-right { display: flex; gap: 6px; align-items: center; }
+        
+        .nav-header {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-title {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: var(--fg);
+        }
+        
+        .nav-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .content-area {
+            height: calc(852px - 44px - 56px - 83px);
+            overflow-y: auto;
+            background: var(--bg);
+        }
+        
+        .stories-section {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .stories-container {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        
+        .story-item {
+            flex-shrink: 0;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .story-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            padding: 2px;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .story-avatar:hover {
+            transform: scale(1.05);
+        }
+        
+        .story-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+            object-fit: cover;
+        }
+        
+        .story-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            max-width: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .feed-container {
+            padding: 16px;
+        }
+        
+        .post-card {
+            background: var(--card);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .post-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .post-header {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .post-user-info {
+            flex: 1;
+        }
+        
+        .post-username {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        
+        .post-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .post-menu {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .post-menu:hover {
+            background: var(--bg);
+            color: var(--fg);
+        }
+        
+        .post-content {
+            padding: 0 16px 16px;
+        }
+        
+        .post-text {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        
+        .post-media {
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .post-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .post-video {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            border-radius: 12px;
+        }
+        
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .tag {
+            background: var(--bg);
+            color: var(--text-secondary);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .tag.accessible {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .tag.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: var(--bg);
+            color: var(--fg);
+        }
+        
+        .action-btn.liked {
+            color: #ef4444;
+        }
+        
+        .action-btn.collected {
+            color: #f59e0b;
+        }
+        
+        .bottom-nav {
+            height: 83px;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .nav-item.active {
+            color: var(--accent);
+        }
+        
+        .nav-item:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, var(--border) 25%, transparent 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 8px;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .skeleton {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="device-container">
+        <div class="status-bar">
+            <div class="status-left">9:41</div>
+            <div class="status-right">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="nav-header">
+            <div class="nav-title">无障碍社区</div>
+            <div class="nav-actions">
+                <button class="nav-btn" onclick="window.location.href='create_post.html'">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button class="nav-btn" onclick="window.location.href='notifications.html'">
+                    <i class="fas fa-bell"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <!-- Stories Section -->
+            <div class="stories-section">
+                <div class="stories-container">
+                    <div class="story-item" onclick="window.location.href='create_post.html'">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="我的故事">
+                        </div>
+                        <div class="story-label">我的故事</div>
+                    </div>
+                    
+                    <div class="story-item">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="张奶奶">
+                        </div>
+                        <div class="story-label">张奶奶</div>
+                    </div>
+                    
+                    <div class="story-item">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b5bc?w=100&h=100&fit=crop" alt="宝妈小李">
+                        </div>
+                        <div class="story-label">宝妈小李</div>
+                    </div>
+                    
+                    <div class="story-item">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" alt="志愿者小王">
+                        </div>
+                        <div class="story-label">志愿者小王</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feed Content -->
+            <div class="feed-container">
+                <!-- Video Post -->
+                <div class="post-card hover-card">
+                    <div class="post-header">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop" alt="用户头像" class="post-avatar">
+                        <div class="post-user-info">
+                            <div class="post-username">轮椅用户小陈</div>
+                            <div class="post-time">2小时前 · 地铁2号线</div>
+                        </div>
+                        <button class="post-menu">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="post-content">
+                        <div class="post-text">
+                            今天体验了一下地铁2号线的无障碍设施，整体感受很不错！🚇 电梯运行平稳，轮椅通道宽敞，工作人员也很热心。特别要点赞盲道的设计，很清晰实用。唯一的小建议是在高峰期可以增加一些引导志愿者。
+                        </div>
+                        
+                        <div class="post-media">
+                            <video class="post-video" controls muted>
+                                <source src="https://videos.pexels.com/video-files/4098884/4098884-hd_1920_1080_25fps.mp4" type="video/mp4">
+                                您的浏览器不支持视频播放
+                            </video>
+                        </div>
+                        
+                        <div class="post-tags">
+                            <span class="tag accessible">♿ 无障碍友好</span>
+                            <span class="tag">🚇 地铁</span>
+                            <span class="tag">📍 2号线</span>
+                        </div>
+                    </div>
+                    
+                    <div class="post-actions">
+                        <button class="action-btn like-btn" onclick="toggleLike(this)">
+                            <i class="far fa-heart"></i>
+                            <span>128</span>
+                        </button>
+                        
+                        <button class="action-btn" onclick="window.location.href='post_detail.html'">
+                            <i class="far fa-comment"></i>
+                            <span>32</span>
+                        </button>
+                        
+                        <button class="action-btn collect-btn" onclick="toggleCollect(this)">
+                            <i class="far fa-bookmark"></i>
+                            <span>收藏</span>
+                        </button>
+                        
+                        <button class="action-btn" onclick="sharePost()">
+                            <i class="far fa-share"></i>
+                            <span>分享</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Image Post -->
+                <div class="post-card hover-card">
+                    <div class="post-header">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b5bc?w=80&h=80&fit=crop" alt="用户头像" class="post-avatar">
+                        <div class="post-user-info">
+                            <div class="post-username">宝妈小李</div>
+                            <div class="post-time">4小时前 · 万达广场</div>
+                        </div>
+                        <button class="post-menu">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="post-content">
+                        <div class="post-text">
+                            带宝宝来万达广场，发现这里的母婴室和无障碍设施做得特别好！👶 有专门的婴儿护理台，轮椅也能轻松进入。地下停车场的无障碍停车位位置很方便，电梯直达各楼层。分享一些实用的小贴士给需要的朋友们～
+                        </div>
+                        
+                        <div class="post-media">
+                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop" alt="无障碍电梯" class="post-image">
+                        </div>
+                        
+                        <div class="post-tags">
+                            <span class="tag accessible">👶 母婴友好</span>
+                            <span class="tag">🏢 商场</span>
+                            <span class="tag">🅿️ 停车方便</span>
+                        </div>
+                    </div>
+                    
+                    <div class="post-actions">
+                        <button class="action-btn like-btn" onclick="toggleLike(this)">
+                            <i class="far fa-heart"></i>
+                            <span>256</span>
+                        </button>
+                        
+                        <button class="action-btn" onclick="window.location.href='post_detail.html'">
+                            <i class="far fa-comment"></i>
+                            <span>45</span>
+                        </button>
+                        
+                        <button class="action-btn collect-btn" onclick="toggleCollect(this)">
+                            <i class="far fa-bookmark"></i>
+                            <span>收藏</span>
+                        </button>
+                        
+                        <button class="action-btn" onclick="sharePost()">
+                            <i class="far fa-share"></i>
+                            <span>分享</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Warning Post -->
+                <div class="post-card hover-card">
+                    <div class="post-header">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop" alt="用户头像" class="post-avatar">
+                        <div class="post-user-info">
+                            <div class="post-username">张奶奶</div>
+                            <div class="post-time">6小时前 · 市民中心</div>
+                        </div>
+                        <button class="post-menu">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="post-content">
+                        <div class="post-text">
+                            ⚠️ 避坑提醒！市民中心A出口的轮椅坡道最近被施工围挡了，今天差点被困在那里。建议大家暂时从B出口绕行，坡道完好且宽敞。已经联系了相关部门，希望能尽快修复。有看到的朋友帮忙转发一下，避免更多人遇到麻烦。
+                        </div>
+                        
+                        <div class="post-media">
+                            <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3cac?w=400&h=300&fit=crop" alt="盲道设施" class="post-image">
+                        </div>
+                        
+                        <div class="post-tags">
+                            <span class="tag warning">⚠️ 避坑提醒</span>
+                            <span class="tag">🚧 施工绕行</span>
+                            <span class="tag">📍 市民中心</span>
+                        </div>
+                    </div>
+                    
+                    <div class="post-actions">
+                        <button class="action-btn like-btn" onclick="toggleLike(this)">
+                            <i class="far fa-heart"></i>
+                            <span>89</span>
+                        </button>
+                        
+                        <button class="action-btn" onclick="window.location.href='post_detail.html'">
+                            <i class="far fa-comment"></i>
+                            <span>23</span>
+                        </button>
+                        
+                        <button class="action-btn collect-btn" onclick="toggleCollect(this)">
+                            <i class="far fa-bookmark"></i>
+                            <span>收藏</span>
+                        </button>
+                        
+                        <button class="action-btn" onclick="sharePost()">
+                            <i class="far fa-share"></i>
+                            <span>分享</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="window.location.href='home.html'">
+                <i class="fas fa-home nav-icon"></i>
+                <span>首页</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='explore.html'">
+                <i class="fas fa-compass nav-icon"></i>
+                <span>发现</span>
+            </button>
+            
+            <button class="nav-item ripple-btn" onclick="window.location.href='create_post.html'" data-ripple="true">
+                <i class="fas fa-plus-circle nav-icon"></i>
+                <span>发布</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='messages.html'">
+                <i class="fas fa-comment-dots nav-icon"></i>
+                <span>消息</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user nav-icon"></i>
+                <span>我的</span>
+            </button>
+        </nav>
+    </div>
+    
+    <script>
+        // Auto-play videos when visible
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.observerManager) {
+                const videos = document.querySelectorAll('.post-video');
+                videos.forEach(video => {
+                    window.observerManager.observeVideo(video);
+                });
+            }
+        });
+        
+        function toggleLike(button) {
+            const icon = button.querySelector('i');
+            const count = button.querySelector('span');
+            const currentCount = parseInt(count.textContent);
+            
+            if (button.classList.contains('liked')) {
+                button.classList.remove('liked');
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                count.textContent = currentCount - 1;
+            } else {
+                button.classList.add('liked');
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                count.textContent = currentCount + 1;
+                
+                // Trigger like animation
+                if (window.animationManager) {
+                    window.animationManager.like(button);
+                }
+            }
+        }
+        
+        function toggleCollect(button) {
+            const icon = button.querySelector('i');
+            
+            if (button.classList.contains('collected')) {
+                button.classList.remove('collected');
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                button.querySelector('span').textContent = '收藏';
+            } else {
+                button.classList.add('collected');
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                button.querySelector('span').textContent = '已收藏';
+                
+                // Trigger collect animation
+                if (window.animationManager) {
+                    window.animationManager.collect(button);
+                }
+            }
+        }
+        
+        function sharePost() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '无障碍社区',
+                    text: '来看看这个有用的无障碍信息分享！',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy link to clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('链接已复制到剪贴板！');
+                });
+            }
+        }
+        
+        // Pull to refresh functionality
+        let startY = 0;
+        let isPulling = false;
+        
+        const contentArea = document.querySelector('.content-area');
+        
+        contentArea.addEventListener('touchstart', (e) => {
+            if (contentArea.scrollTop === 0) {
+                startY = e.touches[0].clientY;
+                isPulling = true;
+            }
+        });
+        
+        contentArea.addEventListener('touchmove', (e) => {
+            if (isPulling && contentArea.scrollTop === 0) {
+                const currentY = e.touches[0].clientY;
+                const pullDistance = currentY - startY;
+                
+                if (pullDistance > 0) {
+                    e.preventDefault();
+                    contentArea.style.transform = `translateY(${Math.min(pullDistance * 0.5, 100)}px)`;
+                }
+            }
+        });
+        
+        contentArea.addEventListener('touchend', (e) => {
+            if (isPulling) {
+                isPulling = false;
+                contentArea.style.transform = 'translateY(0)';
+                contentArea.style.transition = 'transform 0.3s ease';
+                
+                setTimeout(() => {
+                    contentArea.style.transition = '';
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>

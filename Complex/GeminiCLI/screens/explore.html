@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发现</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../styles/global.css">
+</head>
+<body class="flex items-center justify-center bg-gray-800">
+    <div class="iphone-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span class="time">9:41</span>
+            <div class="icons"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header with Search -->
+            <header class="sticky top-0 z-10 p-3 bg-card/80 backdrop-blur-lg border-b border-default">
+                <div class="relative">
+                    <input type="search" placeholder="搜索“坡度 ≤ 8%”" class="w-full bg-gray-200 dark:bg-gray-700 rounded-lg h-9 pl-9 text-sm focus:outline-none">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-secondary"></i>
+                </div>
+            </header>
+
+            <!-- Filter Chips -->
+            <div class="p-3 flex space-x-2 overflow-x-auto whitespace-nowrap">
+                <button class="chip relative overflow-hidden text-sm px-3 py-1 rounded-full bg-accent text-white">全部</button>
+                <button class="chip relative overflow-hidden text-sm px-3 py-1 rounded-full bg-card border border-default">坡度≤5%</button>
+                <button class="chip relative overflow-hidden text-sm px-3 py-1 rounded-full bg-card border border-default">有电梯</button>
+                <button class="chip relative overflow-hidden text-sm px-3 py-1 rounded-full bg-card border border-default">无障碍卫生间</button>
+                <button class="chip relative overflow-hidden text-sm px-3 py-1 rounded-full bg-card border border-default">门宽≥90cm</button>
+            </div>
+
+            <!-- Waterfall/Masonry Grid -->
+            <div class="p-2">
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="space-y-2">
+                        <a href="post_detail.html" class="block rounded-lg overflow-hidden"><img src="https://images.pexels.com/photos/3829175/pexels-photo-3829175.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Post image"></a>
+                        <a href="post_detail.html" class="block rounded-lg overflow-hidden"><img src="https://images.pexels.com/photos/7853230/pexels-photo-7853230.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Post image"></a>
+                        <a href="post_detail.html" class="block rounded-lg overflow-hidden"><img src="https://images.pexels.com/photos/13974900/pexels-photo-13974900.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Post image"></a>
+                    </div>
+                    <div class="space-y-2">
+                        <a href="post_detail.html" class="block rounded-lg overflow-hidden"><img src="https://images.pexels.com/photos/534124/pexels-photo-534124.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Post image"></a>
+                        <a href="post_detail.html" class="block rounded-lg overflow-hidden"><img src="https://images.pexels.com/photos/1115204/pexels-photo-1115204.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Post image"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <nav class="tab-bar">
+            <a href="home.html"><i class="fa-solid fa-house"></i><span>首页</span></a>
+            <a href="explore.html" class="active"><i class="fa-regular fa-compass"></i><span>发现</span></a>
+            <a href="create_post.html"><i class="fa-solid fa-plus-square text-2xl"></i></a>
+            <a href="notifications.html"><i class="fa-regular fa-bell"></i><span>通知</span></a>
+            <a href="profile.html"><i class="fa-regular fa-user"></i><span>我的</span></a>
+        </nav>
+    </div>
+    <script src="../scripts/app.js"></script>
+</body>
+</html>

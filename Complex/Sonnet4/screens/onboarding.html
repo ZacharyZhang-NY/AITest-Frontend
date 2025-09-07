@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>欢迎使用 Accessibility Navigator</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  
+  <style>
+    .onboarding-container {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .onboarding-slides {
+      display: flex;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 300%;
+    }
+    
+    .slide {
+      width: 33.333%;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-xl);
+      text-align: center;
+      min-height: calc(100vh - var(--status-bar-height) - var(--tab-bar-height));
+    }
+    
+    .slide-image {
+      width: 280px;
+      height: 280px;
+      border-radius: 24px;
+      object-fit: cover;
+      margin-bottom: var(--space-xl);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .slide-title {
+      font-size: var(--font-size-xxl);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+      line-height: var(--line-height-tight);
+    }
+    
+    .slide-description {
+      font-size: var(--font-size-lg);
+      color: var(--text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--space-xl);
+      max-width: 300px;
+    }
+    
+    .slide-features {
+      list-style: none;
+      padding: 0;
+      margin: var(--space-lg) 0;
+    }
+    
+    .slide-features li {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+      font-size: var(--font-size-md);
+      color: var(--text-secondary);
+    }
+    
+    .slide-features i {
+      color: var(--accent-blue);
+      font-size: 20px;
+      width: 24px;
+    }
+    
+    .pagination {
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: var(--space-sm);
+    }
+    
+    .pagination-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-color);
+      transition: all var(--duration-normal) var(--ease-out);
+      cursor: pointer;
+    }
+    
+    .pagination-dot.active {
+      background: var(--accent-blue);
+      transform: scale(1.2);
+    }
+    
+    .onboarding-actions {
+      position: absolute;
+      bottom: 40px;
+      left: var(--space-md);
+      right: var(--space-md);
+      display: flex;
+      gap: var(--space-md);
+    }
+    
+    .btn-skip {
+      flex: 1;
+      background: none;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+    
+    .btn-next {
+      flex: 2;
+      background: var(--accent-blue);
+      color: white;
+    }
+    
+    .btn-get-started {
+      width: 100%;
+      background: var(--accent-green);
+      color: white;
+      font-weight: 600;
+      padding: var(--space-lg);
+    }
+    
+    .permissions-section {
+      margin-top: var(--space-lg);
+      padding: var(--space-lg);
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 320px;
+    }
+    
+    .permission-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .permission-item:last-child {
+      border-bottom: none;
+    }
+    
+    .permission-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    
+    .permission-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: white;
+    }
+    
+    .permission-icon.location { background: var(--accent-blue); }
+    .permission-icon.camera { background: var(--accent-green); }
+    .permission-icon.notifications { background: var(--accent-orange); }
+    
+    .permission-text {
+      flex: 1;
+    }
+    
+    .permission-title {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    
+    .permission-desc {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+    
+    .permission-switch {
+      width: 44px;
+      height: 24px;
+      border-radius: 12px;
+      background: var(--border-color);
+      position: relative;
+      cursor: pointer;
+      transition: background-color var(--duration-fast) var(--ease-out);
+    }
+    
+    .permission-switch.active {
+      background: var(--accent-blue);
+    }
+    
+    .permission-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      transition: transform var(--duration-fast) var(--ease-out);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .permission-switch.active::after {
+      transform: translateX(20px);
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+      .onboarding-slides {
+        transition: none;
+      }
+      
+      .slide-image {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-indicators">
+        <i class="fas fa-signal" style="font-size: 12px;"></i>
+        <i class="fas fa-wifi" style="font-size: 12px;"></i>
+        <i class="fas fa-battery-three-quarters" style="font-size: 12px;"></i>
+      </div>
+    </div>
+    
+    <!-- Content -->
+    <div class="content onboarding-container">
+      <a href="#main-content" class="skip-link">跳转到主要内容</a>
+      
+      <div class="onboarding-slides" id="slides">
+        <!-- Slide 1: Welcome -->
+        <div class="slide" id="main-content" tabindex="0" aria-label="欢迎页面">
+          <img 
+            src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop&crop=center" 
+            alt="城市无障碍设施 - 轮椅坡道和现代建筑" 
+            class="slide-image"
+            loading="eager"
+          >
+          <h1 class="slide-title">欢迎来到<br>无障碍导航</h1>
+          <p class="slide-description">
+            发现、分享、改善身边的无障碍设施，让城市对每个人都更友好
+          </p>
+        </div>
+        
+        <!-- Slide 2: Features -->
+        <div class="slide" tabindex="0" aria-label="功能介绍">
+          <img 
+            src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop&crop=center" 
+            alt="地铁站无障碍电梯设施" 
+            class="slide-image"
+          >
+          <h2 class="slide-title">智能发现<br>贴心分享</h2>
+          <ul class="slide-features" role="list">
+            <li>
+              <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+              <span>精准定位附近无障碍设施</span>
+            </li>
+            <li>
+              <i class="fas fa-camera" aria-hidden="true"></i>
+              <span>图片视频详细记录体验</span>
+            </li>
+            <li>
+              <i class="fas fa-users" aria-hidden="true"></i>
+              <span>社区协作实时更新信息</span>
+            </li>
+            <li>
+              <i class="fas fa-route" aria-hidden="true"></i>
+              <span>一键生成无障碍路径</span>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Slide 3: Permissions -->
+        <div class="slide" tabindex="0" aria-label="权限设置">
+          <img 
+            src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&h=400&fit=crop&crop=center" 
+            alt="城市盲道和无障碍指示标识" 
+            class="slide-image"
+          >
+          <h2 class="slide-title">开始使用前<br>请允许权限</h2>
+          <p class="slide-description">
+            为了提供更好的体验，我们需要一些基础权限
+          </p>
+          
+          <div class="permissions-section">
+            <div class="permission-item">
+              <div class="permission-info">
+                <div class="permission-icon location">
+                  <i class="fas fa-location-dot" aria-hidden="true"></i>
+                </div>
+                <div class="permission-text">
+                  <div class="permission-title">位置信息</div>
+                  <div class="permission-desc">发现附近设施</div>
+                </div>
+              </div>
+              <button 
+                class="permission-switch active" 
+                role="switch" 
+                aria-checked="true"
+                aria-label="位置信息权限开关"
+                onclick="togglePermission(this)"
+              ></button>
+            </div>
+            
+            <div class="permission-item">
+              <div class="permission-info">
+                <div class="permission-icon camera">
+                  <i class="fas fa-camera" aria-hidden="true"></i>
+                </div>
+                <div class="permission-text">
+                  <div class="permission-title">相机与相册</div>
+                  <div class="permission-desc">拍摄分享内容</div>
+                </div>
+              </div>
+              <button 
+                class="permission-switch active" 
+                role="switch" 
+                aria-checked="true"
+                aria-label="相机权限开关"
+                onclick="togglePermission(this)"
+              ></button>
+            </div>
+            
+            <div class="permission-item">
+              <div class="permission-info">
+                <div class="permission-icon notifications">
+                  <i class="fas fa-bell" aria-hidden="true"></i>
+                </div>
+                <div class="permission-text">
+                  <div class="permission-title">推送通知</div>
+                  <div class="permission-desc">接收重要消息</div>
+                </div>
+              </div>
+              <button 
+                class="permission-switch" 
+                role="switch" 
+                aria-checked="false"
+                aria-label="通知权限开关"
+                onclick="togglePermission(this)"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="pagination" role="tablist" aria-label="引导页面进度">
+        <button class="pagination-dot active" role="tab" aria-selected="true" aria-label="第1页" onclick="goToSlide(0)"></button>
+        <button class="pagination-dot" role="tab" aria-selected="false" aria-label="第2页" onclick="goToSlide(1)"></button>
+        <button class="pagination-dot" role="tab" aria-selected="false" aria-label="第3页" onclick="goToSlide(2)"></button>
+      </div>
+      
+      <!-- Actions -->
+      <div class="onboarding-actions">
+        <button class="btn btn-skip" id="skipBtn" onclick="skipOnboarding()">
+          跳过
+        </button>
+        <button class="btn btn-next ripple" id="nextBtn" onclick="nextSlide()">
+          下一步
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../scripts/app.js"></script>
+  <script>
+    let currentSlide = 0;
+    const totalSlides = 3;
+    const slidesContainer = document.getElementById('slides');
+    const dots = document.querySelectorAll('.pagination-dot');
+    const nextBtn = document.getElementById('nextBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    
+    function goToSlide(index) {
+      currentSlide = index;
+      updateSlidePosition();
+      updateUI();
+      
+      // Focus management for accessibility
+      const slides = document.querySelectorAll('.slide');
+      slides[currentSlide].focus();
+    }
+    
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        goToSlide(currentSlide + 1);
+      } else {
+        completeOnboarding();
+      }
+    }
+    
+    function updateSlidePosition() {
+      const translateX = -currentSlide * (100 / totalSlides);
+      slidesContainer.style.transform = `translateX(${translateX}%)`;
+    }
+    
+    function updateUI() {
+      // Update pagination dots
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSlide);
+        dot.setAttribute('aria-selected', index === currentSlide ? 'true' : 'false');
+      });
+      
+      // Update button text
+      if (currentSlide === totalSlides - 1) {
+        nextBtn.innerHTML = '<i class="fas fa-rocket" style="margin-right: 8px;"></i>开始使用';
+        nextBtn.className = 'btn btn-get-started ripple';
+        skipBtn.style.display = 'none';
+      } else {
+        nextBtn.textContent = '下一步';
+        nextBtn.className = 'btn btn-next ripple';
+        skipBtn.style.display = 'block';
+      }
+    }
+    
+    function togglePermission(switchElement) {
+      const isActive = switchElement.classList.contains('active');
+      switchElement.classList.toggle('active');
+      switchElement.setAttribute('aria-checked', !isActive ? 'true' : 'false');
+      
+      // Haptic feedback simulation
+      if (window.navigator && navigator.vibrate) {
+        navigator.vibrate(10);
+      }
+    }
+    
+    function skipOnboarding() {
+      completeOnboarding();
+    }
+    
+    function completeOnboarding() {
+      // Mark onboarding as completed
+      localStorage.setItem('onboarding-completed', 'true');
+      
+      // Navigate to home (in real app)
+      // window.location.href = 'home.html';
+      
+      // For demo purposes, show completion message
+      showCompletionAnimation();
+    }
+    
+    function showCompletionAnimation() {
+      const slide = document.querySelector('.slide:last-child');
+      const title = slide.querySelector('.slide-title');
+      const description = slide.querySelector('.slide-description');
+      
+      title.textContent = '🎉 设置完成！';
+      description.textContent = '欢迎来到无障碍导航社区，开始你的无障碍探索之旅吧！';
+      
+      // Hide actions temporarily
+      document.querySelector('.onboarding-actions').style.opacity = '0';
+      
+      setTimeout(() => {
+        // In real app, navigate to home
+        console.log('跳转到首页...');
+      }, 2000);
+    }
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && currentSlide > 0) {
+        goToSlide(currentSlide - 1);
+      } else if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) {
+        nextSlide();
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        if (document.activeElement.classList.contains('pagination-dot')) {
+          document.activeElement.click();
+        }
+      }
+    });
+    
+    // Swipe gestures for touch devices
+    let startX = 0;
+    let startY = 0;
+    
+    slidesContainer.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    slidesContainer.addEventListener('touchend', (e) => {
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const diffX = startX - endX;
+      const diffY = startY - endY;
+      
+      // Only handle horizontal swipes
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+        if (diffX > 0 && currentSlide < totalSlides - 1) {
+          // Swipe left - next slide
+          nextSlide();
+        } else if (diffX < 0 && currentSlide > 0) {
+          // Swipe right - previous slide  
+          goToSlide(currentSlide - 1);
+        }
+      }
+    });
+    
+    // Initialize
+    updateUI();
+  </script>
+</body>
+</html>

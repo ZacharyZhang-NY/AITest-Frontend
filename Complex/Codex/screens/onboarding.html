@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN" data-fontscale="base">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>引导 · 无障碍社区</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="../styles/global.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style> body { font-family: Inter, ui-sans-serif, system-ui; } </style>
+</head>
+<body data-theme="light" class="bg-[color:var(--bg)] text-[color:var(--fg)]">
+  <div class="device" role="application" aria-label="Onboarding">
+    <div class="dynamic-island" aria-hidden="true"></div>
+    <div class="status-bar"><div>9:41</div><div class="right">📶 📡 🔋</div></div>
+
+    <div class="absolute inset-[44px_0_0_0] p-4 flex flex-col">
+      <div class="flex-1 overflow-x-auto snap-x snap-mandatory flex gap-4" aria-label="引导幻灯">
+        <section class="min-w-full snap-start grid place-items-center text-center p-6">
+          <img class="w-full h-64 object-cover rounded-2xl mb-4" src="https://source.unsplash.com/800x600/?wheelchair,ramp" alt="轮椅坡道"/>
+          <h2 class="text-xl font-bold mb-2">发现城市无障碍</h2>
+          <p class="text-sm text-[color:var(--muted)]">附近坡道、电梯、卫生间与避坑提醒，一目了然。</p>
+        </section>
+        <section class="min-w-full snap-start grid place-items-center text-center p-6">
+          <img class="w-full h-64 object-cover rounded-2xl mb-4" src="https://source.unsplash.com/800x600/?accessible,elevator" alt="无障碍电梯"/>
+          <h2 class="text-xl font-bold mb-2">分享与协作纠错</h2>
+          <p class="text-sm text-[color:var(--muted)]">图文/短视频上报，社区审核提升可信度。</p>
+        </section>
+        <section class="min-w-full snap-start grid place-items-center text-center p-6">
+          <img class="w-full h-64 object-cover rounded-2xl mb-4" src="https://source.unsplash.com/800x600/?tactile,paving" alt="盲道"/>
+          <h2 class="text-xl font-bold mb-2">轻路：一键去这里</h2>
+          <p class="text-sm text-[color:var(--muted)]">从帖子进入路线草案页，稍后在地图App打开。</p>
+        </section>
+      </div>
+
+      <div class="mt-4 flex items-center justify-between">
+        <button class="ripple px-3 py-2 rounded-xl border" onclick="history.back()">返回</button>
+        <div class="flex gap-1" aria-hidden="true">
+          <span class="w-2 h-2 bg-[color:var(--muted)] rounded-full"></span>
+          <span class="w-2 h-2 bg-[color:var(--muted)] rounded-full"></span>
+          <span class="w-2 h-2 bg-[color:var(--muted)] rounded-full"></span>
+        </div>
+        <a class="ripple px-3 py-2 rounded-xl bg-[color:var(--accent)] text-white" href="login.html">开始</a>
+      </div>
+
+      <div class="mt-4 p-3 border rounded-2xl bg-[color:var(--card)]">
+        <div class="flex items-start gap-3">
+          <i class="fa-solid fa-location-dot mt-1"></i>
+          <div class="text-sm">
+            <div class="font-semibold">允许访问定位以推荐附近设施</div>
+            <div class="text-[color:var(--muted)]">仅用于就近发现与路线草案</div>
+          </div>
+          <button class="ml-auto px-3 py-1 border rounded-lg ripple" onclick="alert('模拟：定位已授权')">允许</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-bar grid place-items-center text-xs text-[color:var(--muted)]">登录后可使用完整功能</div>
+  </div>
+
+  <script src="../scripts/observer.js" defer></script>
+  <script src="../scripts/waapi.js" defer></script>
+  <script src="../scripts/app.js" defer></script>
+</body>
+</html>
+

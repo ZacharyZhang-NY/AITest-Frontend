@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>首页 - Accessibility Navigator</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="../scripts/app.js"></script>
+  <script src="../scripts/observer.js"></script>
+  <script src="../scripts/waapi.js"></script>
+  <style>
+    .home-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+    }
+
+    .segment-control {
+      width: calc(100% - 32px);
+      margin: 12px 16px;
+    }
+
+    .segment-indicator {
+      width: 33.33%;
+    }
+
+    .pull-to-refresh {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 40px;
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .feed-container {
+      padding: 0 16px 16px;
+    }
+
+    .post-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .post-card:active {
+      transform: scale(0.98);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 12px;
+      object-fit: cover;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .username {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .verified-badge {
+      width: 16px;
+      height: 16px;
+      color: var(--accent);
+    }
+
+    .post-time {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .more-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .video-card .media-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      background: #000;
+    }
+
+    .video-card video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .play-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .media-container:hover .play-overlay {
+      opacity: 1;
+    }
+
+    .video-info {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      font-size: 12px;
+    }
+
+    .video-duration {
+      background: rgba(0,0,0,0.5);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .text-card .post-content {
+      padding: 0 16px;
+    }
+
+    .post-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .image-grid.single {
+      grid-template-columns: 1fr;
+    }
+
+    .image-grid.double {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-image {
+      width: 100%;
+      padding-bottom: 100%;
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .grid-image img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .facility-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 16px;
+      margin-bottom: 12px;
+    }
+
+    .facility-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      background: var(--bg-tertiary);
+      border-radius: 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .facility-tag.good {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .facility-tag.warning {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .facility-tag.bad {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .location-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 16px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .location-info i {
+      color: var(--accent);
+    }
+
+    .post-actions {
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 16px;
+      border-top: 0.5px solid var(--border-light);
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 8px;
+    }
+
+    .action-btn:active {
+      background: var(--bg-tertiary);
+    }
+
+    .action-btn.liked {
+      color: #ff3b30;
+    }
+
+    .action-btn.bookmarked {
+      color: #ff9500;
+    }
+
+    .action-count {
+      font-weight: 500;
+    }
+
+    .skeleton-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .skeleton-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .skeleton-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 12px;
+    }
+
+    .skeleton-lines {
+      flex: 1;
+    }
+
+    .skeleton-line {
+      height: 12px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+    }
+
+    .skeleton-media {
+      width: 100%;
+      height: 200px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    .floating-create-btn {
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+      cursor: pointer;
+      z-index: 50;
+      transition: all 0.3s;
+    }
+
+    .floating-create-btn:active {
+      transform: scale(0.9);
+    }
+
+    .story-section {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .story-section::-webkit-scrollbar {
+      display: none;
+    }
+
+    .story-item {
+      flex-shrink: 0;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .story-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin-bottom: 6px;
+    }
+
+    .story-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid white;
+      object-fit: cover;
+    }
+
+    .story-username {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .add-story {
+      position: relative;
+    }
+
+    .add-story-icon {
+      position: absolute;
+      bottom: 6px;
+      right: 0;
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      border: 2px solid white;
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <div class="notch"></div>
+    <div class="status-bar">
+      <div class="time">9:41</div>
+      <div class="status-icons">
+        <i class="fas fa-signal"></i>
+        <i class="fas fa-wifi"></i>
+        <i class="fas fa-battery-full"></i>
+      </div>
+    </div>
+
+    <div class="nav-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <i class="fas fa-universal-access" style="color: var(--accent); font-size: 24px;"></i>
+        <span style="font-size: 18px; font-weight: 600;">无障碍导航</span>
+      </div>
+      <div style="display: flex; gap: 16px;">
+        <i class="fas fa-search" style="font-size: 20px; color: var(--text-secondary);"></i>
+        <i class="fas fa-bell" style="font-size: 20px; color: var(--text-secondary); position: relative;">
+          <span class="notification-dot"></span>
+        </i>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <div class="pull-to-refresh">
+        <div class="spinner"></div>
+      </div>
+
+      <div class="segment-control">
+        <div class="segment-item active">推荐</div>
+        <div class="segment-item">关注</div>
+        <div class="segment-item">附近</div>
+        <div class="segment-indicator"></div>
+      </div>
+
+      <div class="story-section">
+        <div class="story-item add-story">
+          <div class="story-avatar">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt="我的">
+            <div class="add-story-icon">+</div>
+          </div>
+          <div class="story-username">我的</div>
+        </div>
+        <div class="story-item">
+          <div class="story-avatar">
+            <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop" alt="小明">
+          </div>
+          <div class="story-username">小明</div>
+        </div>
+        <div class="story-item">
+          <div class="story-avatar">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="无障碍先锋">
+          </div>
+          <div class="story-username">无障碍先锋</div>
+        </div>
+        <div class="story-item">
+          <div class="story-avatar">
+            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="城市观察">
+          </div>
+          <div class="story-username">城市观察</div>
+        </div>
+        <div class="story-item">
+          <div class="story-avatar">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop" alt="志愿者小李">
+          </div>
+          <div class="story-username">志愿者小李</div>
+        </div>
+      </div>
+
+      <div class="feed-container">
+        <div class="skeleton-card skeleton">
+          <div class="skeleton-header">
+            <div class="skeleton-avatar skeleton"></div>
+            <div class="skeleton-lines">
+              <div class="skeleton-line skeleton" style="width: 60%;"></div>
+              <div class="skeleton-line skeleton" style="width: 40%;"></div>
+            </div>
+          </div>
+          <div class="skeleton-media skeleton"></div>
+        </div>
+
+        <div class="post-card video-card">
+          <div class="post-header">
+            <img class="user-avatar" src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop" alt="无障碍达人">
+            <div class="user-info">
+              <div class="username">
+                无障碍达人
+                <i class="fas fa-check-circle verified-badge"></i>
+              </div>
+              <div class="post-time">2小时前 · 北京朝阳</div>
+            </div>
+            <div class="more-btn">
+              <i class="fas fa-ellipsis-h"></i>
+            </div>
+          </div>
+          
+          <div class="media-container">
+            <video muted loop playsinline poster="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?w=800&h=450&fit=crop">
+              <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+            </video>
+            <div class="play-overlay">
+              <i class="fas fa-play"></i>
+            </div>
+            <div class="video-info">
+              <span class="view-count">1.2万次播放</span>
+              <span class="video-duration">02:35</span>
+            </div>
+          </div>
+
+          <div class="post-content">
+            <p class="post-text">实测国贸地铁站无障碍电梯路线，从B出口到站台全程无障碍通行 👍</p>
+          </div>
+
+          <div class="facility-tags">
+            <span class="facility-tag good">
+              <i class="fas fa-check-circle"></i> 电梯正常
+            </span>
+            <span class="facility-tag good">
+              <i class="fas fa-wheelchair"></i> 轮椅友好
+            </span>
+            <span class="facility-tag">
+              ↗ 坡度 3%
+            </span>
+          </div>
+
+          <div class="location-info">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>北京地铁国贸站</span>
+          </div>
+
+          <div class="post-actions">
+            <button class="action-btn like-btn ripple">
+              <i class="far fa-heart"></i>
+              <span class="action-count">520</span>
+            </button>
+            <button class="action-btn">
+              <i class="far fa-comment"></i>
+              <span class="action-count">68</span>
+            </button>
+            <button class="action-btn bookmark-btn">
+              <i class="far fa-bookmark"></i>
+              <span class="action-count">收藏</span>
+            </button>
+            <button class="action-btn">
+              <i class="fas fa-share"></i>
+              <span class="action-count">分享</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="post-card text-card">
+          <div class="post-header">
+            <img class="user-avatar" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="轮椅使用者小王">
+            <div class="user-info">
+              <div class="username">轮椅使用者小王</div>
+              <div class="post-time">3小时前 · 上海静安</div>
+            </div>
+            <div class="more-btn">
+              <i class="fas fa-ellipsis-h"></i>
+            </div>
+          </div>
+
+          <div class="post-content">
+            <p class="post-text">今天发现静安寺地铁站的无障碍卫生间升级了！空间更大，扶手位置也很合理，还配备了紧急呼叫按钮。为上海地铁点赞！</p>
+            
+            <div class="image-grid double">
+              <div class="grid-image">
+                <img src="https://images.unsplash.com/photo-1567449303078-a3d1120b8de3?w=400&h=400&fit=crop" alt="无障碍卫生间">
+              </div>
+              <div class="grid-image">
+                <img src="https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=400&h=400&fit=crop" alt="卫生间设施">
+              </div>
+            </div>
+          </div>
+
+          <div class="facility-tags">
+            <span class="facility-tag good">
+              <i class="fas fa-restroom"></i> 无障碍卫生间
+            </span>
+            <span class="facility-tag good">
+              <i class="fas fa-bell"></i> 紧急呼叫
+            </span>
+            <span class="facility-tag">
+              门宽 90cm
+            </span>
+          </div>
+
+          <div class="location-info">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>上海地铁静安寺站</span>
+          </div>
+
+          <div class="post-actions">
+            <button class="action-btn like-btn ripple">
+              <i class="far fa-heart"></i>
+              <span class="action-count">1.8k</span>
+            </button>
+            <button class="action-btn">
+              <i class="far fa-comment"></i>
+              <span class="action-count">126</span>
+            </button>
+            <button class="action-btn bookmark-btn">
+              <i class="far fa-bookmark"></i>
+              <span class="action-count">收藏</span>
+            </button>
+            <button class="action-btn">
+              <i class="fas fa-share"></i>
+              <span class="action-count">分享</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="post-card text-card">
+          <div class="post-header">
+            <img class="user-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="志愿者协会">
+            <div class="user-info">
+              <div class="username">
+                志愿者协会
+                <i class="fas fa-check-circle verified-badge"></i>
+              </div>
+              <div class="post-time">5小时前 · 广州天河</div>
+            </div>
+            <div class="more-btn">
+              <i class="fas fa-ellipsis-h"></i>
+            </div>
+          </div>
+
+          <div class="post-content">
+            <p class="post-text">【提醒】天河体育中心地铁站C出口电梯今日起维修，预计持续一周。建议使用D出口，有志愿者在现场提供帮助。</p>
+            
+            <div class="image-grid single">
+              <div class="grid-image" style="padding-bottom: 56.25%;">
+                <img src="https://images.unsplash.com/photo-1581094794329-c8112ee50e00?w=800&h=450&fit=crop" alt="地铁站电梯">
+              </div>
+            </div>
+          </div>
+
+          <div class="facility-tags">
+            <span class="facility-tag warning">
+              <i class="fas fa-exclamation-triangle"></i> 电梯维修中
+            </span>
+            <span class="facility-tag">
+              <i class="fas fa-hands-helping"></i> 志愿者协助
+            </span>
+          </div>
+
+          <div class="location-info">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>广州地铁天河体育中心站</span>
+          </div>
+
+          <div class="post-actions">
+            <button class="action-btn like-btn ripple">
+              <i class="far fa-heart"></i>
+              <span class="action-count">892</span>
+            </button>
+            <button class="action-btn">
+              <i class="far fa-comment"></i>
+              <span class="action-count">45</span>
+            </button>
+            <button class="action-btn bookmark-btn">
+              <i class="far fa-bookmark"></i>
+              <span class="action-count">收藏</span>
+            </button>
+            <button class="action-btn">
+              <i class="fas fa-share"></i>
+              <span class="action-count">分享</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="infinite-scroll-loader" style="text-align: center; padding: 20px;">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="floating-create-btn" onclick="goToCreate()">
+      <i class="fas fa-plus"></i>
+    </div>
+
+    <div class="tab-bar">
+      <a href="home.html" class="tab-item active">
+        <i class="fas fa-home"></i>
+        <span class="tab-label">首页</span>
+      </a>
+      <a href="explore.html" class="tab-item">
+        <i class="fas fa-compass"></i>
+        <span class="tab-label">发现</span>
+      </a>
+      <a href="create_post.html" class="tab-item">
+        <i class="fas fa-plus-square"></i>
+        <span class="tab-label">发布</span>
+      </a>
+      <a href="notifications.html" class="tab-item">
+        <i class="fas fa-bell"></i>
+        <span class="tab-label">通知</span>
+        <span class="notification-dot"></span>
+      </a>
+      <a href="profile.html" class="tab-item">
+        <i class="fas fa-user"></i>
+        <span class="tab-label">我的</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function goToCreate() {
+      window.location.href = 'create_post.html';
+    }
+
+    setTimeout(() => {
+      document.querySelector('.skeleton-card').style.display = 'none';
+    }, 1500);
+  </script>
+</body>
+</html>

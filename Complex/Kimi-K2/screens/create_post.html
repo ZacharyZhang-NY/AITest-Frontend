@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布内容 - 无障碍社区</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #1a1a1a;
+            --card: #f8fafc;
+            --accent: #3b82f6;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+        
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --fg: #f1f5f9;
+            --card: #1e293b;
+            --accent: #60a5fa;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --error: #f87171;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        .device-container {
+            width: 393px;
+            height: 852px;
+            margin: 0 auto;
+            background: var(--bg);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            background: var(--bg);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-left { font-weight: 600; }
+        .status-right { display: flex; gap: 6px; align-items: center; }
+        
+        .nav-header {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-back {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-back:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .nav-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .nav-publish {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-publish:hover:not(:disabled) {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        
+        .nav-publish:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .content-area {
+            height: calc(852px - 44px - 56px - 83px);
+            overflow-y: auto;
+            background: var(--bg);
+        }
+        
+        .post-type-selector {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .type-tabs {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .type-tab {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .type-tab.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .type-tab:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .type-icon {
+            font-size: 24px;
+        }
+        
+        .form-section {
+            padding: 16px;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .input-label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            background: var(--card);
+            color: var(--fg);
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .content-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .location-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        
+        .location-input {
+            flex: 1;
+        }
+        
+        .location-btn {
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .location-btn:hover {
+            background: #2563eb;
+        }
+        
+        .media-upload {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+        
+        .media-upload:hover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 32px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .upload-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .upload-hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .uploaded-media {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .media-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .media-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .media-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .remove-media {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 24px;
+            height: 24px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .tag-section {
+            margin-bottom: 16px;
+        }
+        
+        .tag-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            min-height: 48px;
+            align-items: center;
+        }
+        
+        .tag-input:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .tag {
+            background: var(--accent);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .tag-remove {
+            cursor: pointer;
+            font-size: 10px;
+        }
+        
+        .tag-input-field {
+            border: none;
+            outline: none;
+            background: transparent;
+            flex: 1;
+            min-width: 80px;
+            font-size: 14px;
+        }
+        
+        .quick-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .quick-tag {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--card);
+            color: var(--text-secondary);
+        }
+        
+        .quick-tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .privacy-settings {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .privacy-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .privacy-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .privacy-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .privacy-option input[type="radio"] {
+            margin: 0;
+        }
+        
+        .privacy-label {
+            font-size: 14px;
+            flex: 1;
+        }
+        
+        .privacy-hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-left: 24px;
+        }
+        
+        .bottom-nav {
+            height: 83px;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .nav-item.active {
+            color: var(--accent);
+        }
+        
+        .nav-item:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="device-container">
+        <div class="status-bar">
+            <div class="status-left">9:41</div>
+            <div class="status-right">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="nav-header">
+            <div class="nav-back" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="nav-title">发布内容</div>
+            <button class="nav-publish" onclick="publishPost()" id="publishBtn" disabled>发布</button>
+        </div>
+        
+        <div class="content-area">
+            <!-- Post Type Selector -->
+            <div class="post-type-selector">
+                <div class="type-tabs">
+                    <button class="type-tab active" onclick="switchType(this, 'experience')">
+                        <i class="fas fa-star type-icon"></i>
+                        <span>经验分享</span>
+                    </button>
+                    
+                    <button class="type-tab" onclick="switchType(this, 'warning')">
+                        <i class="fas fa-exclamation-triangle type-icon"></i>
+                        <span>避坑提醒</span>
+                    </button>
+                    
+                    <button class="type-tab" onclick="switchType(this, 'question')">
+                        <i class="fas fa-question-circle type-icon"></i>
+                        <span>求助提问</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Form Section -->
+            <div class="form-section">
+                <form id="postForm" onsubmit="publishPost(event)">
+                    <!-- Title Input -->
+                    <div class="input-group">
+                        <label class="input-label">标题</label>
+                        <input type="text" class="input-field" placeholder="给你的分享起个标题..." maxlength="50" id="postTitle">
+                    </div>
+                    
+                    <!-- Location Input -->
+                    <div class="input-group">
+                        <label class="input-label">地点</label>
+                        <div class="location-input-group">
+                            <input type="text" class="input-field location-input" placeholder="选择地点或输入地址..." id="postLocation">
+                            <button type="button" class="location-btn" onclick="getCurrentLocation()">
+                                <i class="fas fa-location-arrow"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Content Input -->
+                    <div class="input-group">
+                        <label class="input-label">内容</label>
+                        <textarea class="input-field content-textarea" placeholder="分享你的无障碍体验、提出问题或给出建议..." maxlength="1000" id="postContent"></textarea>
+                        <div style="text-align: right; font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                            <span id="contentCount">0/1000</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Media Upload -->
+                    <div class="input-group">
+                        <label class="input-label">图片/视频</label>
+                        <div class="media-upload" onclick="selectMedia()">
+                            <div class="upload-icon"><i class="fas fa-camera"></i></div>
+                            <div class="upload-text">点击添加图片或视频</div>
+                            <div class="upload-hint">最多9张图片或1个视频</div>
+                        </div>
+                        <div class="uploaded-media" id="uploadedMedia" style="display: none;"></div>
+                    </div>
+                    
+                    <!-- Tags Input -->
+                    <div class="input-group">
+                        <label class="input-label">标签</label>
+                        <div class="tag-section">
+                            <div class="tag-input" id="tagInput">
+                                <input type="text" class="tag-input-field" placeholder="添加标签..." id="tagField">
+                            </div>
+                            <div class="quick-tags">
+                                <button type="button" class="quick-tag" onclick="addQuickTag(this)">♿ 无障碍友好</button>
+                                <button type="button" class="quick-tag" onclick="addQuickTag(this)">⚠️ 避坑提醒</button>
+                                <button type="button" class="quick-tag" onclick="addQuickTag(this)">👶 母婴友好</button>
+                                <button type="button" class="quick-tag" onclick="addQuickTag(this)">🚇 地铁</button>
+                                <button type="button" class="quick-tag" onclick="addQuickTag(this)">🚗 停车方便</button>
+                                <button type="button" class="quick-tag" onclick="addQuickTag(this)">📊 实测数据</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Privacy Settings -->
+                    <div class="input-group">
+                        <div class="privacy-settings">
+                            <div class="privacy-title">可见范围</div>
+                            <div class="privacy-options">
+                                <label class="privacy-option">
+                                    <input type="radio" name="privacy" value="public" checked>
+                                    <span class="privacy-label">公开 - 所有人可见</span>
+                                </label>
+                                <label class="privacy-option">
+                                    <input type="radio" name="privacy" value="community">
+                                    <span class="privacy-label">社区 - 仅社区用户可见</span>
+                                </label>
+                                <label class="privacy-option">
+                                    <input type="radio" name="privacy" value="private">
+                                    <span class="privacy-label">仅自己可见</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item" onclick="window.location.href='home.html'">
+                <i class="fas fa-home nav-icon"></i>
+                <span>首页</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='explore.html'">
+                <i class="fas fa-compass nav-icon"></i>
+                <span>发现</span>
+            </button>
+            
+            <button class="nav-item active ripple-btn" onclick="window.location.href='create_post.html'" data-ripple="true">
+                <i class="fas fa-plus-circle nav-icon"></i>
+                <span>发布</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='messages.html'">
+                <i class="fas fa-comment-dots nav-icon"></i>
+                <span>消息</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user nav-icon"></i>
+                <span>我的</span>
+            </button>
+        </nav>
+    </div>
+    
+    <script>
+        let currentType = 'experience';
+        let selectedMedia = [];
+        let tags = [];
+        
+        function switchType(element, type) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.type-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            element.classList.add('active');
+            
+            // Update current type
+            currentType = type;
+            
+            // Update form placeholder and hints based on type
+            updateFormPlaceholder(type);
+        }
+        
+        function updateFormPlaceholder(type) {
+            const contentTextarea = document.getElementById('postContent');
+            const titleInput = document.getElementById('postTitle');
+            
+            switch (type) {
+                case 'experience':
+                    contentTextarea.placeholder = '分享你的无障碍体验、使用感受或实用建议...';
+                    titleInput.placeholder = '给你的经验分享起个标题...';
+                    break;
+                case 'warning':
+                    contentTextarea.placeholder = '描述你遇到的问题、危险或不便之处，提醒大家注意...';
+                    titleInput.placeholder = '避坑提醒标题...';
+                    break;
+                case 'question':
+                    contentTextarea.placeholder = '详细描述你遇到的问题或疑问，寻求社区帮助...';
+                    titleInput.placeholder = '求助问题标题...';
+                    break;
+            }
+        }
+        
+        function updateContentCount() {
+            const content = document.getElementById('postContent').value;
+            const count = content.length;
+            document.getElementById('contentCount').textContent = `${count}/1000`;
+            
+            // Limit to 1000 characters
+            if (count > 1000) {
+                document.getElementById('postContent').value = content.substring(0, 1000);
+                document.getElementById('contentCount').textContent = '1000/1000';
+            }
+            
+            validateForm();
+        }
+        
+        function validateForm() {
+            const title = document.getElementById('postTitle').value.trim();
+            const content = document.getElementById('postContent').value.trim();
+            const location = document.getElementById('postLocation').value.trim();
+            
+            const isValid = title.length >= 2 && content.length >= 10 && location.length >= 2;
+            document.getElementById('publishBtn').disabled = !isValid;
+        }
+        
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        // Simulate getting location name from coordinates
+                        const mockLocations = [
+                            '地铁2号线汉口火车站',
+                            '万达广场江汉路店', 
+                            '市民中心地铁站',
+                            '中山公园地铁站',
+                            '市人民医院'
+                        ];
+                        
+                        const randomLocation = mockLocations[Math.floor(Math.random() * mockLocations.length)];
+                        document.getElementById('postLocation').value = randomLocation;
+                        validateForm();
+                    },
+                    (error) => {
+                        alert('无法获取位置信息，请手动输入地点');
+                    }
+                );
+            } else {
+                alert('您的浏览器不支持位置服务');
+            }
+        }
+        
+        function selectMedia() {
+            // Simulate file selection
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*,video/*';
+            input.multiple = true;
+            input.onchange = handleMediaSelect;
+            input.click();
+        }
+        
+        function handleMediaSelect(event) {
+            const files = Array.from(event.target.files);
+            
+            if (files.length + selectedMedia.length > 9) {
+                alert('最多只能上传9个文件');
+                return;
+            }
+            
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        addMediaItem(e.target.result, 'image');
+                    };
+                    reader.readAsDataURL(file);
+                } else if (file.type.startsWith('video/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        addMediaItem(e.target.result, 'video');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            updateMediaDisplay();
+        }
+        
+        function addMediaItem(src, type) {
+            selectedMedia.push({ src, type });
+        }
+        
+        function removeMedia(index) {
+            selectedMedia.splice(index, 1);
+            updateMediaDisplay();
+        }
+        
+        function updateMediaDisplay() {
+            const container = document.getElementById('uploadedMedia');
+            const uploadArea = document.querySelector('.media-upload');
+            
+            if (selectedMedia.length > 0) {
+                container.style.display = 'grid';
+                uploadArea.style.display = 'none';
+                
+                container.innerHTML = selectedMedia.map((media, index) => `
+                    <div class="media-item">
+                        ${media.type === 'image' 
+                            ? `<img src="${media.src}" alt="上传的图片">`
+                            : `<video src="${media.src}" muted></video>`
+                        }
+                        <button class="remove-media" onclick="removeMedia(${index})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                container.style.display = 'none';
+                uploadArea.style.display = 'block';
+            }
+        }
+        
+        function addQuickTag(element) {
+            const tagText = element.textContent;
+            if (!tags.includes(tagText)) {
+                tags.push(tagText);
+                updateTagDisplay();
+            }
+        }
+        
+        function addTagFromInput() {
+            const input = document.getElementById('tagField');
+            const tagText = input.value.trim();
+            
+            if (tagText && !tags.includes(tagText) && tags.length < 10) {
+                tags.push(tagText);
+                updateTagDisplay();
+                input.value = '';
+            }
+        }
+        
+        function removeTag(index) {
+            tags.splice(index, 1);
+            updateTagDisplay();
+        }
+        
+        function updateTagDisplay() {
+            const container = document.getElementById('tagInput');
+            const input = document.getElementById('tagField');
+            
+            // Remove existing tags
+            container.querySelectorAll('.tag').forEach(tag => tag.remove());
+            
+            // Add current tags
+            tags.forEach((tag, index) => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag';
+                tagElement.innerHTML = `
+                    ${tag}
+                    <span class="tag-remove" onclick="removeTag(${index})"><i class="fas fa-times"></i></span>
+                `;
+                container.insertBefore(tagElement, input);
+            });
+        }
+        
+        function publishPost(event) {
+            if (event) event.preventDefault();
+            
+            const title = document.getElementById('postTitle').value.trim();
+            const content = document.getElementById('postContent').value.trim();
+            const location = document.getElementById('postLocation').value.trim();
+            
+            if (!title || !content || !location) {
+                alert('请填写完整信息');
+                return;
+            }
+            
+            if (content.length < 10) {
+                alert('内容至少需要10个字符');
+                return;
+            }
+            
+            // Simulate publishing
+            const publishBtn = document.getElementById('publishBtn');
+            publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发布中...';
+            publishBtn.disabled = true;
+            
+            setTimeout(() => {
+                alert('发布成功！');
+                window.location.href = 'home.html';
+            }, 2000);
+        }
+        
+        // Event listeners
+        document.getElementById('postTitle').addEventListener('input', validateForm);
+        document.getElementById('postContent').addEventListener('input', function() {
+            updateContentCount();
+            validateForm();
+        });
+        document.getElementById('postLocation').addEventListener('input', validateForm);
+        document.getElementById('tagField').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTagFromInput();
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateFormPlaceholder('experience');
+        });
+    </script>
+</body>
+</html>

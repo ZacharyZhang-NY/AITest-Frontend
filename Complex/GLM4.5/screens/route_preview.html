@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>路线预览 - Accessibility Navigator</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .route-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .map-container {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            right: 0;
+            height: 300px;
+            background: var(--bg-secondary);
+            overflow: hidden;
+        }
+        
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            font-size: 18px;
+            position: relative;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .map-icon {
+            font-size: 48px;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+        
+        .route-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        
+        .route-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .route-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .route-distance {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .route-stats {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .route-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .route-stat i {
+            color: var(--accent);
+        }
+        
+        .content-wrapper {
+            position: absolute;
+            top: 400px;
+            left: 0;
+            right: 0;
+            bottom: 83px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+        
+        .route-section {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+        
+        .accessibility-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        
+        .feature-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 14px;
+        }
+        
+        .feature-content {
+            flex: 1;
+        }
+        
+        .feature-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        
+        .feature-status {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+        
+        .feature-status.available {
+            color: #52C234;
+        }
+        
+        .feature-status.unavailable {
+            color: #E74C3C;
+        }
+        
+        .route-steps {
+            margin-top: 16px;
+        }
+        
+        .route-step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        
+        .route-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 36px;
+            bottom: -16px;
+            width: 2px;
+            background: var(--border-color);
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-instruction {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .step-details {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .step-warning {
+            margin-top: 4px;
+            padding: 6px 8px;
+            background: #FFF3CD;
+            color: #856404;
+            border-radius: 4px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .step-warning i {
+            color: #856404;
+        }
+        
+        .transport-options {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .transport-option {
+            flex: 1;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .transport-option:hover {
+            border-color: var(--accent);
+        }
+        
+        .transport-option.selected {
+            border-color: var(--accent);
+            background: var(--bg-tertiary);
+        }
+        
+        .transport-icon {
+            font-size: 20px;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+        
+        .transport-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .transport-time {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn.primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .action-btn.primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        
+        .action-btn.secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .action-btn.secondary:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .elevation-profile {
+            height: 100px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-top: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .elevation-chart {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            padding: 8px;
+            gap: 2px;
+        }
+        
+        .elevation-bar {
+            flex: 1;
+            background: var(--accent);
+            border-radius: 2px 2px 0 0;
+            opacity: 0.7;
+        }
+        
+        .elevation-info {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+        
+        .weather-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .weather-icon {
+            font-size: 20px;
+            color: var(--accent);
+        }
+        
+        .weather-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .poi-suggestions {
+            margin-top: 16px;
+        }
+        
+        .poi-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .poi-item:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .poi-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        
+        .poi-content {
+            flex: 1;
+        }
+        
+        .poi-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .poi-distance {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 393px) {
+            .accessibility-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .transport-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="status-bar">
+            <div class="status-time">9:41</div>
+            <div class="status-icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="dynamic-island"></div>
+        
+        <div class="header">
+            <button class="header-back" onclick="goBack()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h1 class="header-title">路线预览</h1>
+            <button class="header-action" onclick="shareRoute()">
+                <i class="fas fa-share-alt"></i>
+            </button>
+        </div>
+        
+        <div class="route-container">
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <div class="map-overlay">
+                        <i class="fas fa-map-marked-alt map-icon"></i>
+                        <div>交互式地图</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+                            起点：北京西站 → 终点：颐和园
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="route-info">
+                    <div class="route-header">
+                        <div class="route-title">无障碍推荐路线</div>
+                        <div class="route-distance">12.5 公里</div>
+                    </div>
+                    <div class="route-stats">
+                        <div class="route-stat">
+                            <i class="fas fa-clock"></i>
+                            <span>约 35 分钟</span>
+                        </div>
+                        <div class="route-stat">
+                            <i class="fas fa-universal-access"></i>
+                            <span>全程无障碍</span>
+                        </div>
+                        <div class="route-stat">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>2 处注意</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-wrapper">
+                <div class="route-section">
+                    <h3 class="section-title">交通方式</h3>
+                    <div class="transport-options">
+                        <div class="transport-option selected" onclick="selectTransport(this, 'subway')">
+                            <div class="transport-icon">
+                                <i class="fas fa-subway"></i>
+                            </div>
+                            <div class="transport-name">地铁</div>
+                            <div class="transport-time">35分钟</div>
+                        </div>
+                        
+                        <div class="transport-option" onclick="selectTransport(this, 'bus')">
+                            <div class="transport-icon">
+                                <i class="fas fa-bus"></i>
+                            </div>
+                            <div class="transport-name">公交</div>
+                            <div class="transport-time">50分钟</div>
+                        </div>
+                        
+                        <div class="transport-option" onclick="selectTransport(this, 'taxi')">
+                            <div class="transport-icon">
+                                <i class="fas fa-taxi"></i>
+                            </div>
+                            <div class="transport-name">出租车</div>
+                            <div class="transport-time">25分钟</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="route-section">
+                    <h3 class="section-title">无障碍设施</h3>
+                    <div class="accessibility-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-elevator"></i>
+                            </div>
+                            <div class="feature-content">
+                                <div class="feature-name">无障碍电梯</div>
+                                <div class="feature-status available">全部可用</div>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-wheelchair"></i>
+                            </div>
+                            <div class="feature-content">
+                                <div class="feature-name">轮椅通道</div>
+                                <div class="feature-status available">畅通</div>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-restroom"></i>
+                            </div>
+                            <div class="feature-content">
+                                <div class="feature-name">无障碍卫生间</div>
+                                <div class="feature-status available">3处可用</div>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-braille"></i>
+                            </div>
+                            <div class="feature-content">
+                                <div class="feature-name">盲道引导</div>
+                                <div class="feature-status available">完整</div>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-volume-up"></i>
+                            </div>
+                            <div class="feature-content">
+                                <div class="feature-name">语音提示</div>
+                                <div class="feature-status available">主要站点</div>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="feature-content">
+                                <div class="feature-name">信息指示牌</div>
+                                <div class="feature-status available">清晰可见</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="route-section">
+                    <h3 class="section-title">路线详情</h3>
+                    <div class="weather-info">
+                        <i class="fas fa-cloud-sun weather-icon"></i>
+                        <div class="weather-text">今日天气：晴转多云，18-25°C，适合出行</div>
+                    </div>
+                    
+                    <div class="route-steps">
+                        <div class="route-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-instruction">从北京西站出发</div>
+                                <div class="step-details">进入地铁站，使用1号入口（无障碍通道）</div>
+                            </div>
+                        </div>
+                        
+                        <div class="route-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-instruction">乘坐地铁9号线</div>
+                                <div class="step-details">开往国家图书馆方向，乘坐4站到白石桥南站</div>
+                                <div class="step-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>白石桥南站电梯维护中，需使用站内垂直升降台</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="route-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-instruction">换乘地铁6号线</div>
+                                <div class="step-details">开往潞城方向，乘坐3站到海淀黄庄站</div>
+                            </div>
+                        </div>
+                        
+                        <div class="route-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <div class="step-instruction">换乘地铁4号线</div>
+                                <div class="step-details">开往安河桥北方向，乘坐4站到北宫门站</div>
+                            </div>
+                        </div>
+                        
+                        <div class="route-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <div class="step-instruction">到达北宫门站</div>
+                                <div class="step-details">从A口出站，使用无障碍通道前往颐和园</div>
+                                <div class="step-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>A口外施工，请从B口绕行</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="elevation-profile">
+                        <div class="elevation-info">海拔变化</div>
+                        <div class="elevation-chart">
+                            <div class="elevation-bar" style="height: 20%;"></div>
+                            <div class="elevation-bar" style="height: 35%;"></div>
+                            <div class="elevation-bar" style="height: 45%;"></div>
+                            <div class="elevation-bar" style="height: 60%;"></div>
+                            <div class="elevation-bar" style="height: 55%;"></div>
+                            <div class="elevation-bar" style="height: 40%;"></div>
+                            <div class="elevation-bar" style="height: 25%;"></div>
+                            <div class="elevation-bar" style="height: 30%;"></div>
+                            <div class="elevation-bar" style="height: 45%;"></div>
+                            <div class="elevation-bar" style="height: 65%;"></div>
+                            <div class="elevation-bar" style="height: 70%;"></div>
+                            <div class="elevation-bar" style="height: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="route-section">
+                    <h3 class="section-title">附近推荐</h3>
+                    <div class="poi-suggestions">
+                        <div class="poi-item" onclick="showPOIDetail('restaurant')">
+                            <div class="poi-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="poi-content">
+                                <div class="poi-name">无障碍餐厅</div>
+                                <div class="poi-distance">距离200米</div>
+                            </div>
+                        </div>
+                        
+                        <div class="poi-item" onclick="showPOIDetail('pharmacy')">
+                            <div class="poi-icon">
+                                <i class="fas fa-pills"></i>
+                            </div>
+                            <div class="poi-content">
+                                <div class="poi-name">24小时药店</div>
+                                <div class="poi-distance">距离350米</div>
+                            </div>
+                        </div>
+                        
+                        <div class="poi-item" onclick="showPOIDetail('hospital')">
+                            <div class="poi-icon">
+                                <i class="fas fa-hospital"></i>
+                            </div>
+                            <div class="poi-content">
+                                <div class="poi-name">社区医院</div>
+                                <div class="poi-distance">距离500米</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="route-section">
+                    <div class="action-buttons">
+                        <button class="action-btn primary" onclick="startNavigation()">
+                            <i class="fas fa-route"></i> 开始导航
+                        </button>
+                        <button class="action-btn secondary" onclick="saveRoute()">
+                            <i class="fas fa-bookmark"></i> 保存路线
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedTransport = 'subway';
+        
+        function selectTransport(element, transport) {
+            document.querySelectorAll('.transport-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            selectedTransport = transport;
+            
+            // Update route based on transport
+            updateRouteForTransport(transport);
+        }
+        
+        function updateRouteForTransport(transport) {
+            const routeInfo = {
+                subway: { time: '35分钟', distance: '12.5公里' },
+                bus: { time: '50分钟', distance: '13.8公里' },
+                taxi: { time: '25分钟', distance: '11.2公里' }
+            };
+            
+            const info = routeInfo[transport];
+            if (info) {
+                document.querySelector('.route-distance').textContent = info.distance;
+                document.querySelector('.route-stat span').textContent = `约 ${info.time}`;
+            }
+            
+            showToast(`切换到${transport === 'subway' ? '地铁' : transport === 'bus' ? '公交' : '出租车'}路线`);
+        }
+        
+        function startNavigation() {
+            showToast('开始导航');
+            // In real app, this would start turn-by-turn navigation
+            // window.location.href = 'navigation.html';
+        }
+        
+        function saveRoute() {
+            showToast('路线已保存');
+            // In real app, this would save the route to user's favorites
+        }
+        
+        function shareRoute() {
+            showToast('分享路线');
+            // In real app, this would open share dialog
+        }
+        
+        function showPOIDetail(poiType) {
+            const poiDetails = {
+                restaurant: { name: '无障碍餐厅', description: '提供轮椅友好环境' },
+                pharmacy: { name: '24小时药店', description: '无障碍通道，药品齐全' },
+                hospital: { name: '社区医院', description: '无障碍设施完善' }
+            };
+            
+            const poi = poiDetails[poiType];
+            if (poi) {
+                showToast(`${poi.name}: ${poi.description}`);
+            }
+        }
+        
+        function goBack() {
+            window.history.back();
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 2000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate loading route data
+            console.log('Route preview page loaded');
+            
+            // Initialize map (in real app, this would load actual map)
+            initializeMap();
+        });
+        
+        function initializeMap() {
+            // In real app, this would initialize map service
+            console.log('Map initialized');
+        }
+    </script>
+</body>
+</html>

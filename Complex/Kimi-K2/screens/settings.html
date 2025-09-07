@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 - 无障碍社区</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #1a1a1a;
+            --card: #f8fafc;
+            --accent: #3b82f6;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+        
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --fg: #f1f5f9;
+            --card: #1e293b;
+            --accent: #60a5fa;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --success: #34d399;
+            --warning: #fbbf24;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        .device-container {
+            width: 393px;
+            height: 852px;
+            margin: 0 auto;
+            background: var(--bg);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            background: var(--bg);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-left { font-weight: 600; }
+        .status-right { display: flex; gap: 6px; align-items: center; }
+        
+        .nav-header {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-back {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-back:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .nav-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .content-area {
+            height: calc(852px - 44px - 56px);
+            overflow-y: auto;
+            background: var(--bg);
+        }
+        
+        .settings-section {
+            margin-bottom: 16px;
+        }
+        
+        .section-header {
+            padding: 16px 16px 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        .settings-list {
+            background: var(--card);
+            border-radius: 12px;
+            margin: 0 16px;
+            overflow: hidden;
+        }
+        
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            color: var(--fg);
+        }
+        
+        .setting-item:hover {
+            background: var(--bg);
+        }
+        
+        .setting-item:not(:last-child) {
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .setting-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .setting-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+        }
+        
+        .setting-info {
+            flex: 1;
+        }
+        
+        .setting-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .setting-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .setting-value {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-right: 8px;
+        }
+        
+        .setting-arrow {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+        
+        .slider-control {
+            padding: 16px;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .slider-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .slider-value {
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .button-group {
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn-primary {
+            flex: 1;
+            padding: 12px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            flex: 1;
+            padding: 12px;
+            background: var(--card);
+            color: var(--fg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .modal-body {
+            margin-bottom: 24px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .color-option.selected {
+            border-color: var(--accent);
+            transform: scale(1.1);
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="device-container">
+        <div class="status-bar">
+            <div class="status-left">9:41</div>
+            <div class="status-right">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="nav-header">
+            <div class="nav-back" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="nav-title">设置</div>
+            <div></div>
+        </div>
+        
+        <div class="content-area">
+            <!-- Accessibility Settings -->
+            <div class="settings-section">
+                <div class="section-header">无障碍设置</div>
+                <div class="settings-list">
+                    <div class="setting-item" onclick="toggleSetting('highContrast')">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-adjust"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">高对比度模式</div>
+                                <div class="setting-desc">增强界面可读性</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch" id="highContrastToggle" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    
+                    <div class="setting-item" onclick="toggleSetting('largeText')">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-font"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">大字体模式</div>
+                                <div class="setting-desc">放大界面文字</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch" id="largeTextToggle" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    
+                    <div class="setting-item" onclick="toggleSetting('reducedMotion')">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-play-circle"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">减少动效</div>
+                                <div class="setting-desc">关闭动画效果</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch" id="reducedMotionToggle" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    
+                    <div class="setting-item" onclick="showFontSizeModal()">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-text-height"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">字体大小</div>
+                                <div class="setting-desc">调整文字显示大小</div>
+                            </div>
+                        </div>
+                        <div class="setting-value">标准</span>
+                        <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Display Settings -->
+            <div class="settings-section">
+                <div class="section-header">显示设置</div>
+                <div class="settings-list">
+                    <div class="setting-item" onclick="toggleSetting('darkMode')">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-moon"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">深色模式</div>
+                                <div class="setting-desc">深色主题界面</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch" id="darkModeToggle" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    
+                    <div class="setting-item" onclick="showThemeModal()">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-palette"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">主题颜色</div>
+                                <div class="setting-desc">个性化界面颜色</div>
+                            </div>
+                        </div>
+                        <div class="setting-value">蓝色</span>
+                        <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Settings -->
+            <div class="settings-section">
+                <div class="section-header">账号设置</div>
+                <div class="settings-list">
+                    <div class="setting-item" onclick="window.location.href='profile.html'">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-user"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">个人资料</div>
+                                <div class="setting-desc">编辑个人信息</div>
+                            </div>
+                        </div>
+                        <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    
+                    <div class="setting-item" onclick="showPrivacyModal()">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-lock"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">隐私设置</div>
+                                <div class="setting-desc">管理隐私权限</div>
+                            </div>
+                        </div>
+                        <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    
+                    <div class="setting-item" onclick="showNotificationModal()">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-bell"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">通知设置</div>
+                                <div class="setting-desc">管理推送通知</div>
+                            </div>
+                        </div>
+                        <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    
+                    <div class="setting-item" onclick="showLanguageModal()">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-language"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">语言设置</div>
+                                <div class="setting-desc">简体中文</div>
+                            </div>
+                        </div>
+                        <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Help & Support -->
+            <div class="settings-section">
+                <div class="section-header">帮助与支持</div>
+                <div class="settings-list">
+                    <div class="setting-item" onclick="showHelpModal()">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-question-circle"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">帮助中心</div>
+                                <div class="setting-desc">常见问题和使用指南</div>
+                            </div>
+                        </div>
+                        <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    
+                    <div class="setting-item" onclick="showFeedbackModal()">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-comment"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">意见反馈</div>
+                                <div class="setting-desc">向我们反馈使用体验</div>
+                            </div>
+                        </div>
+                        <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    
+                    <div class="setting-item" onclick="showAboutModal()">
+                        <div class="setting-left">
+                            <div class="setting-icon"><i class="fas fa-info-circle"></i></div>
+                            <div class="setting-info">
+                                <div class="setting-title">关于我们</div>
+                                <div class="setting-desc">版本信息和开发者</div>
+                            </div>
+                        </div>
+                        <div class="setting-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="settings-section">
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="resetSettings()">重置设置</button>
+                    <button class="btn-primary" onclick="saveSettings()">保存设置</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Font Size Modal -->
+        <div class="modal" id="fontSizeModal">
+            <div class="modal-content">
+                <h3 class="modal-title">字体大小</h3>
+                <div class="modal-body">
+                    <div class="slider-control">
+                        <div class="slider-label">
+                            <span class="slider-title">字体大小</span>
+                            <span class="slider-value" id="fontSizeValue">100%</span>
+                        </div>
+                        <input type="range" class="slider" id="fontSizeSlider" min="50" max="150" value="100" oninput="updateFontSize(this.value)">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="closeModal('fontSizeModal')">取消</button>
+                    <button class="btn-primary" onclick="saveFontSize()">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let settings = {
+            highContrast: false,
+            largeText: false,
+            reducedMotion: false,
+            fontSize: 100,
+            darkMode: false,
+            themeColor: 'blue'
+        };
+        
+        // Load saved settings
+        function loadSettings() {
+            const saved = localStorage.getItem('accessibilitySettings');
+            if (saved) {
+                settings = JSON.parse(saved);
+                applySettings();
+            }
+        }
+        
+        // Apply settings to UI
+        function applySettings() {
+            // Update toggle switches
+            document.getElementById('highContrastToggle').classList.toggle('active', settings.highContrast);
+            document.getElementById('largeTextToggle').classList.toggle('active', settings.largeText);
+            document.getElementById('reducedMotionToggle').classList.toggle('active', settings.reducedMotion);
+            document.getElementById('darkModeToggle').classList.toggle('active', settings.darkMode);
+            
+            // Apply to document
+            document.documentElement.setAttribute('data-theme', settings.darkMode ? 'dark' : 'light');
+            
+            if (settings.highContrast) {
+                document.body.classList.add('high-contrast');
+            }
+            
+            if (settings.largeText) {
+                document.body.classList.add('large-text');
+            }
+            
+            if (settings.reducedMotion) {
+                document.body.classList.add('reduced-motion');
+            }
+            
+            // Apply font size
+            document.documentElement.style.fontSize = settings.fontSize + '%';
+        }
+        
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+            const settingId = element.id.replace('Toggle', '');
+            settings[settingId] = element.classList.contains('active');
+            applySettings();
+        }
+        
+        function toggleSetting(setting) {
+            settings[setting] = !settings[setting];
+            applySettings();
+        }
+        
+        function updateFontSize(value) {
+            document.getElementById('fontSizeValue').textContent = value + '%';
+            document.documentElement.style.fontSize = value + '%';
+        }
+        
+        function saveFontSize() {
+            const value = document.getElementById('fontSizeSlider').value;
+            settings.fontSize = parseInt(value);
+            closeModal('fontSizeModal');
+        }
+        
+        function showFontSizeModal() {
+            document.getElementById('fontSizeSlider').value = settings.fontSize;
+            document.getElementById('fontSizeValue').textContent = settings.fontSize + '%';
+            document.getElementById('fontSizeModal').classList.add('show');
+        }
+        
+        function showThemeModal() {
+            alert('主题颜色功能开发中...');
+        }
+        
+        function showPrivacyModal() {
+            alert('隐私设置功能开发中...');
+        }
+        
+        function showNotificationModal() {
+            alert('通知设置功能开发中...');
+        }
+        
+        function showLanguageModal() {
+            alert('语言设置功能开发中...');
+        }
+        
+        function showHelpModal() {
+            alert('帮助中心功能开发中...');
+        }
+        
+        function showFeedbackModal() {
+            alert('意见反馈功能开发中...');
+        }
+        
+        function showAboutModal() {
+            alert('无障碍社区 v1.0.0\n\n让城市更加友好包容！\n\n开发者：无障碍社区团队\n更新时间：2024年');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+        
+        function resetSettings() {
+            if (confirm('确定要重置所有设置吗？')) {
+                settings = {
+                    highContrast: false,
+                    largeText: false,
+                    reducedMotion: false,
+                    fontSize: 100,
+                    darkMode: false,
+                    themeColor: 'blue'
+                };
+                applySettings();
+                alert('设置已重置');
+            }
+        }
+        
+        function saveSettings() {
+            localStorage.setItem('accessibilitySettings', JSON.stringify(settings));
+            alert('设置已保存');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+        });
+        
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

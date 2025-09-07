@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人主页 - 无障碍社区</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #1a1a1a;
+            --card: #f8fafc;
+            --accent: #3b82f6;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --gradient-start: #3b82f6;
+            --gradient-end: #8b5cf6;
+        }
+        
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --fg: #f1f5f9;
+            --card: #1e293b;
+            --accent: #60a5fa;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --gradient-start: #60a5fa;
+            --gradient-end: #a78bfa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        .device-container {
+            width: 393px;
+            height: 852px;
+            margin: 0 auto;
+            background: var(--bg);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            background: var(--bg);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-left { font-weight: 600; }
+        .status-right { display: flex; gap: 6px; align-items: center; }
+        
+        .nav-header {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-back {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-back:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .nav-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: var(--fg);
+        }
+        
+        .nav-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .content-area {
+            height: calc(852px - 44px - 56px - 83px);
+            overflow-y: auto;
+            background: var(--bg);
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            padding: 32px 16px 24px;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        
+        .settings-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        .avatar-section {
+            margin-bottom: 16px;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.3);
+            object-fit: cover;
+            margin-bottom: 12px;
+        }
+        
+        .profile-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .profile-bio {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 18px;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .profile-tabs {
+            display: flex;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .profile-tab {
+            flex: 1;
+            padding: 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .profile-tab.active {
+            color: var(--accent);
+        }
+        
+        .profile-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent);
+        }
+        
+        .profile-tab:hover {
+            color: var(--accent);
+        }
+        
+        .content-section {
+            padding: 16px;
+        }
+        
+        .post-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+        
+        .post-item {
+            aspect-ratio: 1;
+            background: var(--card);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .post-item:hover {
+            transform: scale(1.05);
+            z-index: 1;
+        }
+        
+        .post-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .post-item.video::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid white;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+        
+        .post-item.video::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 48px 16px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-text {
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .empty-action {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .empty-action:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        
+        .menu-section {
+            background: var(--card);
+            border-radius: 12px;
+            margin: 16px;
+            overflow: hidden;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            color: var(--fg);
+        }
+        
+        .menu-item:hover {
+            background: var(--bg);
+        }
+        
+        .menu-item:not(:last-child) {
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+        }
+        
+        .menu-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .menu-arrow {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .bottom-nav {
+            height: 83px;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .nav-item.active {
+            color: var(--accent);
+        }
+        
+        .nav-item:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="device-container">
+        <div class="status-bar">
+            <div class="status-left">9:41</div>
+            <div class="status-right">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="nav-header">
+            <div class="nav-title">个人主页</div>
+            <div class="nav-actions">
+                <button class="nav-btn" onclick="window.location.href='settings.html'">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <button class="settings-btn" onclick="window.location.href='settings.html'">
+                    <i class="fas fa-cog"></i>
+                </button>
+                
+                <div class="avatar-section">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop" alt="用户头像" class="profile-avatar">
+                    <div class="profile-name">轮椅用户小陈</div>
+                    <div class="profile-bio">让城市更加友好包容 ♿ 分享无障碍体验，共建美好社区</div>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat-item" onclick="window.location.href='profile.html'">
+                        <span class="stat-number">128</span>
+                        <span class="stat-label">帖子</span>
+                    </div>
+                    <div class="stat-item" onclick="window.location.href='profile.html'">
+                        <span class="stat-number">1.2k</span>
+                        <span class="stat-label">粉丝</span>
+                    </div>
+                    <div class="stat-item" onclick="window.location.href='profile.html'">
+                        <span class="stat-number">89</span>
+                        <span class="stat-label">关注</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Tabs -->
+            <div class="profile-tabs">
+                <button class="profile-tab active" onclick="switchTab(this, 'posts')">作品</button>
+                <button class="profile-tab" onclick="switchTab(this, 'liked')">已赞</button>
+                <button class="profile-tab" onclick="switchTab(this, 'collected')">收藏</button>
+            </div>
+            
+            <!-- Content Section -->
+            <div class="content-section">
+                <div id="postsContent">
+                    <div class="post-grid">
+                        <div class="post-item" onclick="window.location.href='post_detail.html'">
+                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop" alt="无障碍电梯">
+                        </div>
+                        <div class="post-item" onclick="window.location.href='post_detail.html'">
+                            <img src="https://images.unsplash.com/photo-1588681573688-82d89a067e6c?w=300&h=300&fit=crop" alt="轮椅坡道">
+                        </div>
+                        <div class="post-item video" onclick="window.location.href='post_detail.html'">
+                            <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3cac?w=300&h=300&fit=crop" alt="盲道设施">
+                        </div>
+                        <div class="post-item" onclick="window.location.href='post_detail.html'">
+                            <img src="https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=300&h=300&fit=crop" alt="触觉铺装">
+                        </div>
+                        <div class="post-item" onclick="window.location.href='post_detail.html'">
+                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop" alt="无障碍设施">
+                        </div>
+                        <div class="post-item" onclick="window.location.href='post_detail.html'">
+                            <img src="https://images.unsplash.com/photo-1588681573688-82d89a067e6c?w=300&h=300&fit=crop" alt="坡道设计">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="likedContent" style="display: none;">
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="far fa-heart"></i></div>
+                        <div class="empty-text">还没有点赞任何内容</div>
+                        <button class="empty-action" onclick="window.location.href='home.html'">去发现页看看</button>
+                    </div>
+                </div>
+                
+                <div id="collectedContent" style="display: none;">
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="far fa-bookmark"></i></div>
+                        <div class="empty-text">还没有收藏任何内容</div>
+                        <button class="empty-action" onclick="window.location.href='home.html'">去发现页看看</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Menu Section -->
+            <div class="menu-section">
+                <button class="menu-item" onclick="window.location.href='settings.html'">
+                    <div class="menu-icon"><i class="fas fa-user-edit"></i></div>
+                    <div class="menu-text">编辑资料</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                </button>
+                
+                <button class="menu-item" onclick="window.location.href='settings.html'">
+                    <div class="menu-icon"><i class="fas fa-history"></i></div>
+                    <div class="menu-text">浏览历史</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                </button>
+                
+                <button class="menu-item" onclick="window.location.href='settings.html'">
+                    <div class="menu-icon"><i class="fas fa-bookmark"></i></div>
+                    <div class="menu-text">我的收藏</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                </button>
+                
+                <button class="menu-item" onclick="window.location.href='settings.html'">
+                    <div class="menu-icon"><i class="fas fa-cog"></i></div>
+                    <div class="menu-text">账号设置</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                </button>
+                
+                <button class="menu-item" onclick="logout()">
+                    <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
+                    <div class="menu-text">退出登录</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item" onclick="window.location.href='home.html'">
+                <i class="fas fa-home nav-icon"></i>
+                <span>首页</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='explore.html'">
+                <i class="fas fa-compass nav-icon"></i>
+                <span>发现</span>
+            </button>
+            
+            <button class="nav-item ripple-btn" onclick="window.location.href='create_post.html'" data-ripple="true">
+                <i class="fas fa-plus-circle nav-icon"></i>
+                <span>发布</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='messages.html'">
+                <i class="fas fa-comment-dots nav-icon"></i>
+                <span>消息</span>
+            </button>
+            
+            <button class="nav-item active" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user nav-icon"></i>
+                <span>我的</span>
+            </button>
+        </nav>
+    </div>
+    
+    <script>
+        function switchTab(element, tab) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.profile-tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            element.classList.add('active');
+            
+            // Hide all content sections
+            document.getElementById('postsContent').style.display = 'none';
+            document.getElementById('likedContent').style.display = 'none';
+            document.getElementById('collectedContent').style.display = 'none';
+            
+            // Show selected content section
+            document.getElementById(tab + 'Content').style.display = 'block';
+        }
+        
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                // Simulate logout
+                alert('已退出登录');
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // Auto-resize grid items
+        document.addEventListener('DOMContentLoaded', () => {
+            const postItems = document.querySelectorAll('.post-item');
+            postItems.forEach(item => {
+                item.style.height = item.offsetWidth + 'px';
+            });
+        });
+    </script>
+</body>
+</html>

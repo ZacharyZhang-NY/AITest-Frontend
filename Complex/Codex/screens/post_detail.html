@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN" data-fontscale="base">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>帖子详情 · 无障碍社区</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="../styles/global.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style> body { font-family: Inter, ui-sans-serif, system-ui; } .scorebar{height:8px;background:linear-gradient(90deg,var(--accent),#a7f3d0);border-radius:9999px;} </style>
+</head>
+<body data-theme="light" data-current-tab="home" class="bg-[color:var(--bg)] text-[color:var(--fg)]">
+  <div class="device" role="article" aria-label="帖子详情">
+    <div class="dynamic-island" aria-hidden="true"></div>
+    <div class="status-bar"><div>9:41</div><div class="right">📶 📡 🔋</div></div>
+
+    <header class="title-bar">
+      <a class="btn" aria-label="返回" href="home.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title">帖子</div>
+      <div class="flex items-center gap-1 justify-end">
+        <a class="btn" href="route_preview.html" aria-label="去这里" onclick="event.preventDefault(); navWithTransition('route_preview.html')"><i class="fa-solid fa-route"></i></a>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="overflow-hidden" aria-label="媒体">
+        <div class="snap-x snap-mandatory overflow-x-auto flex w-full" data-zoomable>
+          <img class="snap-start w-full h-72 object-cover" src="https://source.unsplash.com/900x700/?accessible,elevator" alt="无障碍电梯" />
+          <img class="snap-start w-full h-72 object-cover" src="https://source.unsplash.com/900x700/?wheelchair,ramp" alt="坡道" />
+          <img class="snap-start w-full h-72 object-cover" src="https://source.unsplash.com/900x700/?tactile,paving" alt="盲道" />
+        </div>
+      </section>
+
+      <section class="p-4 space-y-3">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="badge">🛗 电梯</span>
+          <span class="badge">🚻 卫生间</span>
+          <span class="badge">🧱 路缘 ≤ 2cm</span>
+          <span class="badge">↗ 坡度 ≤ 5%</span>
+        </div>
+        <p class="text-sm leading-relaxed">今天地铁站南口电梯维护完毕，坡道与盲道衔接顺畅。周边地砖平整，轮椅通行无阻。</p>
+        <div class="grid grid-cols-5 gap-2 items-center text-sm">
+          <div class="col-span-5 font-semibold">可达性评分：<span class="text-[color:var(--accent)]">4.6</span>/5</div>
+          <div>总体</div><div class="col-span-4 scorebar" style="--v:92%"></div>
+          <div>坡度</div><div class="col-span-4 scorebar"></div>
+          <div>路缘</div><div class="col-span-4 scorebar"></div>
+          <div>门宽</div><div class="col-span-4 scorebar"></div>
+          <div>卫生间</div><div class="col-span-4 scorebar"></div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button class="border rounded-xl px-3 py-1 ripple" data-like-button><i class="fa-regular fa-heart"></i> 赞</button>
+          <button class="border rounded-xl px-3 py-1 ripple" data-collect-button><i class="fa-regular fa-bookmark"></i> 收藏</button>
+          <button class="ml-auto border rounded-xl px-3 py-1 ripple" onclick="navWithTransition('route_preview.html')"><i class="fa-solid fa-route"></i> 去这里</button>
+        </div>
+      </section>
+
+      <section class="px-4 pb-3" aria-label="评论区">
+        <h3 class="font-semibold mb-2">评论 12</h3>
+        <div class="space-y-3">
+          <article class="p-3 rounded-2xl border bg-[color:var(--bg)]">
+            <div class="text-sm"><strong>@城市志愿者</strong>：已提交反馈给站务，西口盲道也会修复。</div>
+            <div class="mt-1 text-xs text-[color:var(--muted)]">1 小时前 · <button class="underline">回复</button> · <button class="underline" onclick="alert('操作：举报/复制')">更多</button></div>
+            <div class="mt-2 pl-3 border-l">
+              <div class="text-sm"><strong>@过路人</strong>：感谢，期待改善。</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="px-4 pb-20" aria-label="相关推荐">
+        <h3 class="font-semibold mb-2">相关推荐</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <a class="card overflow-hidden" href="#"><img class="w-full h-28 object-cover" src="https://source.unsplash.com/600x400/?accessible,ramp" alt="相关坡道" /><div class="p-2 text-xs">坡度更优的西门</div></a>
+          <a class="card overflow-hidden" href="#"><img class="w-full h-28 object-cover" src="https://source.unsplash.com/600x400/?accessible,entrance" alt="入口" /><div class="p-2 text-xs">北口电梯平峰更快</div></a>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tab-bar" aria-label="底部导航">
+      <a class="tab-item active" data-tab="home" href="home.html" aria-current="page"><i class="fa-solid fa-house"></i><span>Home</span></a>
+      <a class="tab-item" data-tab="explore" href="explore.html"><i class="fa-regular fa-compass"></i><span>Explore</span></a>
+      <a class="tab-item" data-tab="create" href="create_post.html"><i class="fa-solid fa-circle-plus"></i><span>Create</span></a>
+      <a class="tab-item" data-tab="inbox" href="messages.html"><i class="fa-regular fa-message"></i><span>Inbox</span></a>
+      <a class="tab-item" data-tab="profile" href="profile.html"><i class="fa-regular fa-user"></i><span>Profile</span></a>
+    </nav>
+  </div>
+
+  <script src="../scripts/observer.js" defer></script>
+  <script src="../scripts/waapi.js" defer></script>
+  <script src="../scripts/app.js" defer></script>
+</body>
+</html>
+

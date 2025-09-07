@@ -1,0 +1,25 @@
+# Asset URLs Used in the Project
+
+## Hero Section
+- Wheelchair on ramp: https://images.unsplash.com/photo-1578058625421-2a9a7736d0f2?auto=format&fit=crop&w=800&h=600&q=80
+
+## About Section  
+- City street with tactile paving: https://images.unsplash.com/photo-1551036455-2872e5f66a70?auto=format&fit=crop&w=1200&h=400&q=80
+
+## Journey Section
+- Accessible building entrance: https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&h=600&q=80
+- Street with gentle slope: https://images.unsplash.com/photo-1507038151947-1959def9123c?auto=format&fit=crop&w=800&h=600&q=80
+
+## Map Teasers Section
+- Slope icon: https://images.unsplash.com/photo-1543286986-7421074a6311?auto=format&fit=crop&w=100&h=100&q=80
+- Elevator icon: https://images.unsplash.com/photo-1581091226365-327e22a52b44?auto=format&fit=crop&w=100&h=100&q=80
+- Restroom icon: https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?auto=format&fit=crop&w=100&h=100&q=80
+
+## Community Section
+- Community contribution: https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=600&h=800&q=80
+
+## CTA Section
+- City background: https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=1920&h=600&q=80
+
+## Note
+All images are sourced from Unsplash and are free to use. Images are loaded with proper lazy loading and have defined dimensions to prevent layout shift.

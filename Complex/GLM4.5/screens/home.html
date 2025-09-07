@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - Accessibility Navigator</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .home-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .segment-control {
+            position: absolute;
+            top: 44px;
+            left: 0;
+            right: 0;
+            height: 48px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            z-index: 101;
+        }
+        
+        .segment-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .segment-item.active {
+            color: var(--accent);
+        }
+        
+        .segment-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .feed-container {
+            position: absolute;
+            top: 92px;
+            left: 0;
+            right: 0;
+            bottom: 83px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+        
+        .feed-content {
+            padding: 16px;
+        }
+        
+        .post-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .post-card:hover {
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            gap: 12px;
+        }
+        
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .post-user-info {
+            flex: 1;
+        }
+        
+        .post-username {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .post-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .post-menu {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .post-menu:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .post-content {
+            padding: 0 16px 16px;
+        }
+        
+        .post-text {
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+        
+        .post-location {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .post-media {
+            position: relative;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .post-media video {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .post-media img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .post-media:hover .video-overlay {
+            opacity: 1;
+        }
+        
+        .play-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .play-button:hover {
+            transform: scale(1.1);
+            background: white;
+        }
+        
+        .play-button i {
+            font-size: 24px;
+            color: var(--accent);
+            margin-left: 4px;
+        }
+        
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .accessibility-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .accessibility-tag:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .accessibility-tag.positive {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success);
+        }
+        
+        .accessibility-tag.negative {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--danger);
+        }
+        
+        .post-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px 16px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .action-btn:hover {
+            color: var(--accent);
+        }
+        
+        .action-btn.liked {
+            color: var(--danger);
+        }
+        
+        .action-btn.saved {
+            color: var(--accent);
+        }
+        
+        .action-btn i {
+            font-size: 20px;
+        }
+        
+        .route-btn {
+            padding: 8px 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .route-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+        
+        .skeleton-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        
+        .skeleton-header {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            gap: 12px;
+        }
+        
+        .skeleton-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-color) 50%, var(--bg-tertiary) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        
+        .skeleton-text {
+            flex: 1;
+        }
+        
+        .skeleton-title {
+            height: 16px;
+            background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-color) 50%, var(--bg-tertiary) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .skeleton-subtitle {
+            height: 12px;
+            width: 60%;
+            background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-color) 50%, var(--bg-tertiary) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        
+        .skeleton-media {
+            height: 200px;
+            background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-color) 50%, var(--bg-tertiary) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        
+        .pull-to-refresh {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent) 0deg, transparent 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .pull-to-refresh.refreshing {
+            animation: rotate 1s linear infinite;
+        }
+        
+        @keyframes rotate {
+            to { transform: translateX(-50%) rotate(360deg); }
+        }
+        
+        .like-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            color: var(--danger);
+            font-size: 60px;
+            animation: like-burst 0.6s ease-out;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        @keyframes like-burst {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+        
+        .floating-create-btn {
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        
+        .floating-create-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.1);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--text-tertiary);
+        }
+        
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        
+        .empty-state button {
+            padding: 12px 24px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .empty-state button:hover {
+            background: var(--accent-hover);
+        }
+        
+        @media (max-width: 393px) {
+            .feed-content {
+                padding: 12px;
+            }
+            
+            .post-card {
+                margin-bottom: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="status-bar">
+            <div class="status-time">9:41</div>
+            <div class="status-icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="dynamic-island"></div>
+        
+        <div class="home-container">
+            <div class="segment-control">
+                <div class="segment-item active" onclick="switchSegment(0)">
+                    推荐
+                </div>
+                <div class="segment-item" onclick="switchSegment(1)">
+                    关注
+                </div>
+                <div class="segment-item" onclick="switchSegment(2)">
+                    附近
+                </div>
+                <div class="segment-indicator" id="segmentIndicator"></div>
+            </div>
+            
+            <div class="feed-container" id="feedContainer">
+                <div class="pull-to-refresh" id="pullToRefresh"></div>
+                <div class="feed-content" id="feedContent">
+                    <!-- Skeleton Loading -->
+                    <div class="skeleton-card">
+                        <div class="skeleton-header">
+                            <div class="skeleton-avatar"></div>
+                            <div class="skeleton-text">
+                                <div class="skeleton-title"></div>
+                                <div class="skeleton-subtitle"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-media"></div>
+                    </div>
+                    
+                    <div class="skeleton-card">
+                        <div class="skeleton-header">
+                            <div class="skeleton-avatar"></div>
+                            <div class="skeleton-text">
+                                <div class="skeleton-title"></div>
+                                <div class="skeleton-subtitle"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-media"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="floating-create-btn" onclick="navigateToCreate()">
+                <i class="fas fa-plus"></i>
+            </div>
+            
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <a href="home.html" class="tab-item active">
+                    <i class="fas fa-home tab-icon"></i>
+                    <span class="tab-label">首页</span>
+                </a>
+                <a href="explore.html" class="tab-item">
+                    <i class="fas fa-compass tab-icon"></i>
+                    <span class="tab-label">发现</span>
+                </a>
+                <a href="create_post.html" class="tab-item">
+                    <i class="fas fa-plus-square tab-icon"></i>
+                    <span class="tab-label">发布</span>
+                </a>
+                <a href="notifications.html" class="tab-item">
+                    <i class="fas fa-bell tab-icon"></i>
+                    <span class="tab-label">通知</span>
+                </a>
+                <a href="profile.html" class="tab-item">
+                    <i class="fas fa-user tab-icon"></i>
+                    <span class="tab-label">我的</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentSegment = 0;
+        let isLoading = false;
+        let posts = [];
+        let observers = [];
+        
+        // Sample post data
+        const samplePosts = [
+            {
+                id: 1,
+                username: '无障碍探索者',
+                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
+                time: '2小时前',
+                content: '发现一个很棒的无障碍入口！坡度很缓，还有扶手。轮椅用户可以轻松通过。',
+                location: '上海环球金融中心',
+                mediaType: 'image',
+                mediaUrl: 'https://images.unsplash.com/photo-1589829545860-935d04ac94b9?w=600&h=400&fit=crop',
+                tags: ['🦽 轮椅友好', '↗ 坡度 ≤ 5%', '🤲 扶手'],
+                likes: 42,
+                comments: 8,
+                saved: false,
+                liked: false
+            },
+            {
+                id: 2,
+                username: '城市无障碍',
+                avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop',
+                time: '4小时前',
+                content: '地铁3号线新增的无障碍电梯真的太方便了！空间很大，操作简单。',
+                location: '人民广场地铁站',
+                mediaType: 'video',
+                mediaUrl: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+                tags: ['🛗 电梯', '🚇 地铁', '♿ 无障碍'],
+                likes: 128,
+                comments: 23,
+                saved: true,
+                liked: true
+            },
+            {
+                id: 3,
+                username: '助老志愿者',
+                avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop',
+                time: '6小时前',
+                content: '图书馆的无障碍卫生间设施很完善，紧急呼叫按钮位置合适。',
+                location: '上海图书馆',
+                mediaType: 'image',
+                mediaUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=600&h=400&fit=crop',
+                tags: ['🚻 卫生间', '🆘 紧急呼叫', '📚 图书馆'],
+                likes: 67,
+                comments: 12,
+                saved: false,
+                liked: false
+            },
+            {
+                id: 4,
+                username: '无障碍设计师',
+                avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop',
+                time: '8小时前',
+                content: '这个盲道设计很用心，没有障碍物，纹理清晰。为视障朋友提供了很好的指引。',
+                location: '南京路步行街',
+                mediaType: 'image',
+                mediaUrl: 'https://images.unsplash.com/photo-1596422838299-77b6ae3752de?w=600&h=400&fit=crop',
+                tags: ['🦯 盲道', '👁️ 视觉辅助', '🛍️ 商业区'],
+                likes: 89,
+                comments: 15,
+                saved: true,
+                liked: false
+            },
+            {
+                id: 5,
+                username: '城市观察员',
+                avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
+                time: '10小时前',
+                content: '商场入口的自动门感应很灵敏，开关速度适中，对行动不便的用户很友好。',
+                location: '港汇恒隆广场',
+                mediaType: 'video',
+                mediaUrl: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+                tags: ['🚪 自动门', '🏬 商场', '🤖 智能设备'],
+                likes: 34,
+                comments: 6,
+                saved: false,
+                liked: false
+            }
+        ];
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFeed();
+            setupSegmentIndicator();
+            setupPullToRefresh();
+            setupInfiniteScroll();
+            setupVideoAutoplay();
+            
+            // Load posts after delay
+            setTimeout(() => {
+                loadPosts();
+            }, 1500);
+        });
+        
+        function initializeFeed() {
+            const indicator = document.getElementById('segmentIndicator');
+            indicator.style.width = `${100 / 3}%`;
+        }
+        
+        function setupSegmentIndicator() {
+            const segmentItems = document.querySelectorAll('.segment-item');
+            const indicator = document.getElementById('segmentIndicator');
+            
+            segmentItems.forEach((item, index) => {
+                item.addEventListener('click', () => {
+                    currentSegment = index;
+                    indicator.style.left = `${(index * 100) / 3}%`;
+                    
+                    segmentItems.forEach(si => si.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Reload posts for new segment
+                    loadPosts();
+                });
+            });
+        }
+        
+        function setupPullToRefresh() {
+            const container = document.getElementById('feedContainer');
+            const pullToRefresh = document.getElementById('pullToRefresh');
+            let startY = 0;
+            let currentY = 0;
+            let isPulling = false;
+            
+            container.addEventListener('touchstart', (e) => {
+                if (container.scrollTop === 0) {
+                    startY = e.touches[0].clientY;
+                    isPulling = true;
+                }
+            });
+            
+            container.addEventListener('touchmove', (e) => {
+                if (!isPulling) return;
+                
+                currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+                
+                if (diff > 0 && diff < 100) {
+                    pullToRefresh.style.transform = `translateX(-50%) translateY(${diff}px)`;
+                    pullToRefresh.style.background = `conic-gradient(var(--accent) ${(diff / 100) * 360}deg, transparent ${(diff / 100) * 360}deg)`;
+                }
+            });
+            
+            container.addEventListener('touchend', () => {
+                if (!isPulling) return;
+                
+                const diff = currentY - startY;
+                if (diff > 60) {
+                    // Refresh
+                    pullToRefresh.classList.add('refreshing');
+                    setTimeout(() => {
+                        loadPosts();
+                        pullToRefresh.classList.remove('refreshing');
+                    }, 1000);
+                }
+                
+                pullToRefresh.style.transform = 'translateX(-50%) translateY(-60px)';
+                pullToRefresh.style.background = 'conic-gradient(var(--accent) 0deg, transparent 0deg)';
+                
+                isPulling = false;
+                startY = 0;
+                currentY = 0;
+            });
+        }
+        
+        function setupInfiniteScroll() {
+            const container = document.getElementById('feedContainer');
+            
+            container.addEventListener('scroll', () => {
+                if (container.scrollTop + container.clientHeight >= container.scrollHeight - 100) {
+                    if (!isLoading) {
+                        loadMorePosts();
+                    }
+                }
+            });
+        }
+        
+        function setupVideoAutoplay() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const video = entry.target;
+                    if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+                        video.play();
+                    } else {
+                        video.pause();
+                    }
+                });
+            }, { threshold: 0.6 });
+            
+            // Observe videos when they are added to DOM
+            observeNewVideos();
+        }
+        
+        function observeNewVideos() {
+            const videos = document.querySelectorAll('.post-media video');
+            videos.forEach(video => {
+                video.addEventListener('loadeddata', () => {
+                    video.muted = true;
+                    video.loop = true;
+                    video.play().catch(() => {});
+                });
+            });
+        }
+        
+        function switchSegment(index) {
+            currentSegment = index;
+            const indicator = document.getElementById('segmentIndicator');
+            indicator.style.left = `${(index * 100) / 3}%`;
+            
+            // Update active state
+            document.querySelectorAll('.segment-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+            
+            // Load posts for new segment
+            loadPosts();
+        }
+        
+        function loadPosts() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            const feedContent = document.getElementById('feedContent');
+            
+            // Show loading state
+            feedContent.innerHTML = `
+                <div class="skeleton-card">
+                    <div class="skeleton-header">
+                        <div class="skeleton-avatar"></div>
+                        <div class="skeleton-text">
+                            <div class="skeleton-title"></div>
+                            <div class="skeleton-subtitle"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-media"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-header">
+                        <div class="skeleton-avatar"></div>
+                        <div class="skeleton-text">
+                            <div class="skeleton-title"></div>
+                            <div class="skeleton-subtitle"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-media"></div>
+                </div>
+            `;
+            
+            // Simulate API call
+            setTimeout(() => {
+                const segmentPosts = getPostsForSegment(currentSegment);
+                renderPosts(segmentPosts);
+                isLoading = false;
+                
+                // Setup video autoplay for new posts
+                setTimeout(() => {
+                    observeNewVideos();
+                }, 100);
+            }, 800);
+        }
+        
+        function getPostsForSegment(segment) {
+            // In real app, this would fetch different posts based on segment
+            switch(segment) {
+                case 0: // 推荐
+                    return samplePosts;
+                case 1: // 关注
+                    return samplePosts.slice(0, 3);
+                case 2: // 附近
+                    return samplePosts.slice(1, 4);
+                default:
+                    return samplePosts;
+            }
+        }
+        
+        function renderPosts(postsToRender) {
+            const feedContent = document.getElementById('feedContent');
+            
+            if (postsToRender.length === 0) {
+                feedContent.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>暂无内容</h3>
+                        <p>快去发布第一条动态吧！</p>
+                        <button onclick="navigateToCreate()">发布动态</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            feedContent.innerHTML = postsToRender.map(post => `
+                <div class="post-card" data-post-id="${post.id}">
+                    <div class="post-header">
+                        <img src="${post.avatar}" alt="${post.username}" class="post-avatar">
+                        <div class="post-user-info">
+                            <div class="post-username">${post.username}</div>
+                            <div class="post-time">${post.time}</div>
+                        </div>
+                        <button class="post-menu">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="post-content">
+                        <div class="post-text">${post.content}</div>
+                        <div class="post-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${post.location}</span>
+                        </div>
+                        
+                        <div class="post-media">
+                            ${post.mediaType === 'video' ? `
+                                <video src="${post.mediaUrl}" muted loop playsinline></video>
+                                <div class="video-overlay">
+                                    <div class="play-button" onclick="toggleVideo(this)">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                </div>
+                            ` : `
+                                <img src="${post.mediaUrl}" alt="${post.content}" loading="lazy">
+                            `}
+                        </div>
+                        
+                        <div class="post-tags">
+                            ${post.tags.map(tag => `
+                                <span class="accessibility-tag">${tag}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="post-actions">
+                        <div class="action-buttons">
+                            <button class="action-btn ${post.liked ? 'liked' : ''}" onclick="toggleLike(${post.id})">
+                                <i class="fas fa-heart"></i>
+                                <span>${post.likes}</span>
+                            </button>
+                            <button class="action-btn" onclick="navigateToPost(${post.id})">
+                                <i class="fas fa-comment"></i>
+                                <span>${post.comments}</span>
+                            </button>
+                            <button class="action-btn ${post.saved ? 'saved' : ''}" onclick="toggleSave(${post.id})">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                            <button class="action-btn" onclick="sharePost(${post.id})">
+                                <i class="fas fa-share"></i>
+                            </button>
+                        </div>
+                        <button class="route-btn" onclick="navigateToRoute(${post.id})">
+                            <i class="fas fa-route"></i>
+                            <span>去这里</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            posts = postsToRender;
+        }
+        
+        function loadMorePosts() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            const feedContent = document.getElementById('feedContent');
+            
+            // Simulate loading more posts
+            setTimeout(() => {
+                const newPosts = samplePosts.map(post => ({
+                    ...post,
+                    id: post.id + posts.length,
+                    time: '刚刚'
+                }));
+                
+                const newPostsHTML = newPosts.map(post => `
+                    <div class="post-card" data-post-id="${post.id}">
+                        <div class="post-header">
+                            <img src="${post.avatar}" alt="${post.username}" class="post-avatar">
+                            <div class="post-user-info">
+                                <div class="post-username">${post.username}</div>
+                                <div class="post-time">${post.time}</div>
+                            </div>
+                            <button class="post-menu">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="post-content">
+                            <div class="post-text">${post.content}</div>
+                            <div class="post-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${post.location}</span>
+                            </div>
+                            
+                            <div class="post-media">
+                                ${post.mediaType === 'video' ? `
+                                    <video src="${post.mediaUrl}" muted loop playsinline></video>
+                                    <div class="video-overlay">
+                                        <div class="play-button" onclick="toggleVideo(this)">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <img src="${post.mediaUrl}" alt="${post.content}" loading="lazy">
+                                `}
+                            </div>
+                            
+                            <div class="post-tags">
+                                ${post.tags.map(tag => `
+                                    <span class="accessibility-tag">${tag}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="post-actions">
+                            <div class="action-buttons">
+                                <button class="action-btn ${post.liked ? 'liked' : ''}" onclick="toggleLike(${post.id})">
+                                    <i class="fas fa-heart"></i>
+                                    <span>${post.likes}</span>
+                                </button>
+                                <button class="action-btn" onclick="navigateToPost(${post.id})">
+                                    <i class="fas fa-comment"></i>
+                                    <span>${post.comments}</span>
+                                </button>
+                                <button class="action-btn ${post.saved ? 'saved' : ''}" onclick="toggleSave(${post.id})">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                                <button class="action-btn" onclick="sharePost(${post.id})">
+                                    <i class="fas fa-share"></i>
+                                </button>
+                            </div>
+                            <button class="route-btn" onclick="navigateToRoute(${post.id})">
+                                <i class="fas fa-route"></i>
+                                <span>去这里</span>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                feedContent.insertAdjacentHTML('beforeend', newPostsHTML);
+                posts = [...posts, ...newPosts];
+                isLoading = false;
+                
+                // Setup video autoplay for new posts
+                setTimeout(() => {
+                    observeNewVideos();
+                }, 100);
+            }, 1000);
+        }
+        
+        function toggleLike(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+            
+            post.liked = !post.liked;
+            post.likes += post.liked ? 1 : -1;
+            
+            const btn = document.querySelector(`[data-post-id="${postId}"] .action-btn`);
+            btn.classList.toggle('liked');
+            btn.innerHTML = `
+                <i class="fas fa-heart"></i>
+                <span>${post.likes}</span>
+            `;
+            
+            if (post.liked) {
+                // Show like animation
+                const likeAnimation = document.createElement('div');
+                likeAnimation.className = 'like-animation';
+                likeAnimation.innerHTML = '<i class="fas fa-heart"></i>';
+                btn.appendChild(likeAnimation);
+                
+                setTimeout(() => {
+                    likeAnimation.remove();
+                }, 600);
+            }
+        }
+        
+        function toggleSave(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+            
+            post.saved = !post.saved;
+            
+            const btn = document.querySelector(`[data-post-id="${postId}"] .action-btn.saved`);
+            btn.classList.toggle('saved');
+        }
+        
+        function toggleVideo(button) {
+            const postMedia = button.closest('.post-media');
+            const video = postMedia.querySelector('video');
+            const overlay = postMedia.querySelector('.video-overlay');
+            
+            if (video.paused) {
+                video.play();
+                overlay.style.opacity = '0';
+            } else {
+                video.pause();
+                overlay.style.opacity = '1';
+            }
+        }
+        
+        function navigateToPost(postId) {
+            window.location.href = `post_detail.html?id=${postId}`;
+        }
+        
+        function navigateToRoute(postId) {
+            window.location.href = `route_preview.html?id=${postId}`;
+        }
+        
+        function navigateToCreate() {
+            window.location.href = 'create_post.html';
+        }
+        
+        function sharePost(postId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: '无障碍设施分享',
+                    text: '看看这个无障碍设施！',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback
+                const textArea = document.createElement('textarea');
+                textArea.value = window.location.href;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                showToast('链接已复制到剪贴板');
+            }
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

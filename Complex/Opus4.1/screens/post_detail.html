@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>帖子详情 - Accessibility Navigator</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="../scripts/app.js"></script>
+  <script src="../scripts/waapi.js"></script>
+  <style>
+    .detail-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+    }
+
+    .media-carousel {
+      position: relative;
+      width: 100%;
+      background: #000;
+    }
+
+    .media-carousel-inner {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .media-carousel-inner::-webkit-scrollbar {
+      display: none;
+    }
+
+    .media-slide {
+      min-width: 100%;
+      scroll-snap-align: start;
+      position: relative;
+    }
+
+    .media-slide img,
+    .media-slide video {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+    }
+
+    .media-indicators {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+    }
+
+    .indicator-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      transition: all 0.3s;
+    }
+
+    .indicator-dot.active {
+      width: 18px;
+      border-radius: 3px;
+      background: white;
+    }
+
+    .post-info {
+      padding: 16px;
+    }
+
+    .post-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .post-description {
+      font-size: 15px;
+      color: var(--text-primary);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .author-section {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 8px solid var(--bg-secondary);
+    }
+
+    .author-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      margin-right: 12px;
+      object-fit: cover;
+    }
+
+    .author-info {
+      flex: 1;
+    }
+
+    .author-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .author-stats {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .follow-btn {
+      padding: 8px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .follow-btn.following {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .rating-section {
+      padding: 16px;
+      background: var(--bg-secondary);
+      margin-bottom: 8px;
+    }
+
+    .overall-rating {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .rating-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .rating-score {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .score-number {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    .stars {
+      display: flex;
+      gap: 4px;
+    }
+
+    .star {
+      color: #ffd700;
+      font-size: 18px;
+    }
+
+    .rating-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .rating-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100px;
+    }
+
+    .rating-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-tertiary);
+      border-radius: 3px;
+      margin: 0 12px;
+      overflow: hidden;
+    }
+
+    .rating-fill {
+      height: 100%;
+      background: var(--success);
+      transition: width 0.5s;
+    }
+
+    .rating-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      width: 40px;
+      text-align: right;
+    }
+
+    .facility-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .facility-card {
+      padding: 12px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .facility-card:active {
+      transform: scale(0.95);
+      background: var(--bg-tertiary);
+    }
+
+    .facility-icon {
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .facility-name {
+      font-size: 13px;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .facility-status {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+
+    .status-good {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .status-warning {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .status-bad {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .comments-section {
+      padding: 16px;
+    }
+
+    .comments-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .comments-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .sort-option {
+      font-size: 14px;
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    .comment-item {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .comment-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      margin-right: 12px;
+      object-fit: cover;
+    }
+
+    .comment-content {
+      flex: 1;
+    }
+
+    .comment-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .comment-author {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .comment-time {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .comment-text {
+      font-size: 14px;
+      color: var(--text-primary);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 16px;
+    }
+
+    .comment-action {
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .comment-action:active {
+      color: var(--accent);
+    }
+
+    .reply-item {
+      margin-left: 48px;
+      margin-top: 12px;
+      padding: 8px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-sm);
+    }
+
+    .route-cta {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px;
+      background: var(--bg-primary);
+      border-top: 0.5px solid var(--border-light);
+      display: flex;
+      gap: 12px;
+      z-index: 100;
+    }
+
+    .action-bar {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .action-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .action-item.liked {
+      color: #ff3b30;
+    }
+
+    .action-item.bookmarked {
+      color: #ff9500;
+    }
+
+    .route-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 24px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .route-btn:active {
+      transform: scale(0.95);
+    }
+
+    .related-posts {
+      padding: 16px;
+      background: var(--bg-secondary);
+    }
+
+    .related-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+
+    .related-card {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .related-card:active {
+      transform: scale(0.98);
+    }
+
+    .related-image {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+    }
+
+    .related-info {
+      flex: 1;
+    }
+
+    .related-post-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .related-meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <div class="notch"></div>
+    <div class="status-bar">
+      <div class="time">9:41</div>
+      <div class="status-icons">
+        <i class="fas fa-signal"></i>
+        <i class="fas fa-wifi"></i>
+        <i class="fas fa-battery-full"></i>
+      </div>
+    </div>
+
+    <div class="nav-header">
+      <i class="fas fa-arrow-left" onclick="goBack()" style="font-size: 20px; cursor: pointer;"></i>
+      <span style="font-size: 18px; font-weight: 600;">帖子详情</span>
+      <i class="fas fa-share-alt" style="font-size: 20px; cursor: pointer;"></i>
+    </div>
+
+    <div class="content-area" style="padding-bottom: 80px;">
+      <div class="media-carousel">
+        <div class="media-carousel-inner" id="carousel">
+          <div class="media-slide">
+            <video controls muted poster="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?w=800&h=600&fit=crop">
+              <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="media-slide">
+            <img src="https://images.unsplash.com/photo-1581094794329-c8112ee50e00?w=800&h=600&fit=crop" alt="无障碍电梯">
+          </div>
+          <div class="media-slide">
+            <img src="https://images.unsplash.com/photo-1567449303078-a3d1120b8de3?w=800&h=600&fit=crop" alt="无障碍通道">
+          </div>
+        </div>
+        <div class="media-indicators">
+          <span class="indicator-dot active"></span>
+          <span class="indicator-dot"></span>
+          <span class="indicator-dot"></span>
+        </div>
+      </div>
+
+      <div class="post-info">
+        <h1 class="post-title">实测国贸地铁站无障碍电梯路线，从B出口到站台全程无障碍通行</h1>
+        <p class="post-description">
+          今天特地前往国贸地铁站进行实地测试，从B出口进入，电梯标识清晰，运行正常。电梯内部空间宽敞，轮椅进出方便。从地面到站台层全程无障碍，没有台阶，坡度合理。
+        </p>
+        <div class="facility-tags">
+          <span class="facility-tag good">
+            <i class="fas fa-check-circle"></i> 电梯正常
+          </span>
+          <span class="facility-tag good">
+            <i class="fas fa-wheelchair"></i> 轮椅友好
+          </span>
+          <span class="facility-tag">
+            ↗ 坡度 3%
+          </span>
+          <span class="facility-tag">
+            🚅 地铁站
+          </span>
+        </div>
+        <div class="location-info">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>北京地铁国贸站</span>
+        </div>
+      </div>
+
+      <div class="author-section">
+        <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop" alt="作者" class="author-avatar">
+        <div class="author-info">
+          <div class="author-name">
+            无障碍达人
+            <i class="fas fa-check-circle" style="color: var(--accent); font-size: 14px;"></i>
+          </div>
+          <div class="author-stats">1.2万粉丝 · 发布了128个无障碍记录</div>
+        </div>
+        <button class="follow-btn" id="followBtn">关注</button>
+      </div>
+
+      <div class="rating-section">
+        <div class="overall-rating">
+          <div class="rating-title">无障碍评分</div>
+          <div class="rating-score">
+            <span class="score-number">4.8</span>
+            <div class="stars">
+              <i class="fas fa-star star"></i>
+              <i class="fas fa-star star"></i>
+              <i class="fas fa-star star"></i>
+              <i class="fas fa-star star"></i>
+              <i class="fas fa-star-half-alt star"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="rating-item">
+          <div class="rating-label">
+            <i class="fas fa-ramp-loading"></i>
+            <span>坡度</span>
+          </div>
+          <div class="rating-bar">
+            <div class="rating-fill" style="width: 95%;"></div>
+          </div>
+          <div class="rating-value">3%</div>
+        </div>
+        
+        <div class="rating-item">
+          <div class="rating-label">
+            <i class="fas fa-ruler-horizontal"></i>
+            <span>路缘</span>
+          </div>
+          <div class="rating-bar">
+            <div class="rating-fill" style="width: 90%;"></div>
+          </div>
+          <div class="rating-value">2cm</div>
+        </div>
+        
+        <div class="rating-item">
+          <div class="rating-label">
+            <i class="fas fa-door-open"></i>
+            <span>门宽</span>
+          </div>
+          <div class="rating-bar">
+            <div class="rating-fill" style="width: 100%;"></div>
+          </div>
+          <div class="rating-value">120cm</div>
+        </div>
+        
+        <div class="rating-item">
+          <div class="rating-label">
+            <i class="fas fa-restroom"></i>
+            <span>卫生间</span>
+          </div>
+          <div class="rating-bar">
+            <div class="rating-fill" style="width: 85%;"></div>
+          </div>
+          <div class="rating-value">良好</div>
+        </div>
+      </div>
+
+      <div class="facility-grid">
+        <div class="facility-card">
+          <i class="fas fa-elevator facility-icon"></i>
+          <div class="facility-name">电梯</div>
+          <span class="facility-status status-good">正常运行</span>
+        </div>
+        <div class="facility-card">
+          <i class="fas fa-restroom facility-icon"></i>
+          <div class="facility-name">卫生间</div>
+          <span class="facility-status status-good">可用</span>
+        </div>
+        <div class="facility-card">
+          <i class="fas fa-ramp-loading facility-icon"></i>
+          <div class="facility-name">坡道</div>
+          <span class="facility-status status-good">合规</span>
+        </div>
+        <div class="facility-card">
+          <i class="fas fa-braille facility-icon"></i>
+          <div class="facility-name">盲文</div>
+          <span class="facility-status status-good">完善</span>
+        </div>
+        <div class="facility-card">
+          <i class="fas fa-volume-up facility-icon"></i>
+          <div class="facility-name">语音</div>
+          <span class="facility-status status-warning">部分</span>
+        </div>
+        <div class="facility-card">
+          <i class="fas fa-parking facility-icon"></i>
+          <div class="facility-name">停车</div>
+          <span class="facility-status status-good">充足</span>
+        </div>
+      </div>
+
+      <div class="comments-section">
+        <div class="comments-header">
+          <div class="comments-title">评论 (68)</div>
+          <div class="sort-option">按热度 <i class="fas fa-chevron-down"></i></div>
+        </div>
+
+        <div class="comment-item">
+          <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="" class="comment-avatar">
+          <div class="comment-content">
+            <div class="comment-header">
+              <span class="comment-author">轮椅使用者小王</span>
+              <span class="comment-time">2小时前</span>
+            </div>
+            <p class="comment-text">感谢分享！上次我去的时候电梯刚好在维修，这次看来已经修好了。国贸站的无障碍设施确实做得不错。</p>
+            <div class="comment-actions">
+              <span class="comment-action"><i class="far fa-thumbs-up"></i> 23</span>
+              <span class="comment-action"><i class="far fa-comment"></i> 回复</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="reply-item">
+          <div class="comment-item">
+            <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop" alt="" class="comment-avatar">
+            <div class="comment-content">
+              <div class="comment-header">
+                <span class="comment-author">无障碍达人</span>
+                <span class="comment-time">1小时前</span>
+              </div>
+              <p class="comment-text">@轮椅使用者小王 是的，我今天确认了电梯已经恢复正常运行了！</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="comment-item">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="" class="comment-avatar">
+          <div class="comment-content">
+            <div class="comment-header">
+              <span class="comment-author">志愿者协会</span>
+              <span class="comment-time">3小时前</span>
+            </div>
+            <p class="comment-text">建议大家去之前可以在平台上查看最新的设施状态，避免白跑一趟。</p>
+            <div class="comment-actions">
+              <span class="comment-action"><i class="far fa-thumbs-up"></i> 45</span>
+              <span class="comment-action"><i class="far fa-comment"></i> 回复</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="related-posts">
+        <div class="related-title">相关推荐</div>
+        
+        <div class="related-card">
+          <img src="https://images.unsplash.com/photo-1581094794329-c8112ee50e00?w=200&h=200&fit=crop" alt="" class="related-image">
+          <div class="related-info">
+            <div class="related-post-title">三里屯地铁站无障碍电梯指南</div>
+            <div class="related-meta">1.5k次查看 · 昨天</div>
+          </div>
+        </div>
+        
+        <div class="related-card">
+          <img src="https://images.unsplash.com/photo-1567449303078-a3d1120b8de3?w=200&h=200&fit=crop" alt="" class="related-image">
+          <div class="related-info">
+            <div class="related-post-title">地铁站无障碍卫生间位置汇总</div>
+            <div class="related-meta">892次查看 · 3天前</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="route-cta">
+      <div class="action-bar">
+        <div class="action-item like-btn ripple">
+          <i class="far fa-heart"></i>
+          <span>520</span>
+        </div>
+        <div class="action-item">
+          <i class="far fa-comment"></i>
+          <span>68</span>
+        </div>
+        <div class="action-item bookmark-btn">
+          <i class="far fa-bookmark"></i>
+          <span>收藏</span>
+        </div>
+      </div>
+      <button class="route-btn" onclick="goToRoute()">
+        <i class="fas fa-route"></i>
+        <span>去这里</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function goBack() {
+      window.history.back();
+    }
+
+    function goToRoute() {
+      window.location.href = 'route_preview.html';
+    }
+
+    const carousel = document.getElementById('carousel');
+    const indicators = document.querySelectorAll('.indicator-dot');
+    let currentSlide = 0;
+
+    carousel.addEventListener('scroll', () => {
+      const slideWidth = carousel.offsetWidth;
+      const newSlide = Math.round(carousel.scrollLeft / slideWidth);
+      
+      if (newSlide !== currentSlide) {
+        indicators[currentSlide].classList.remove('active');
+        indicators[newSlide].classList.add('active');
+        currentSlide = newSlide;
+      }
+    });
+
+    const followBtn = document.getElementById('followBtn');
+    followBtn.addEventListener('click', () => {
+      if (followBtn.classList.contains('following')) {
+        followBtn.classList.remove('following');
+        followBtn.textContent = '关注';
+      } else {
+        followBtn.classList.add('following');
+        followBtn.textContent = '已关注';
+      }
+    });
+
+    document.querySelectorAll('.comment-action').forEach(action => {
+      action.addEventListener('click', () => {
+        if (action.querySelector('.fa-thumbs-up')) {
+          const icon = action.querySelector('i');
+          icon.classList.toggle('far');
+          icon.classList.toggle('fas');
+          if (icon.classList.contains('fas')) {
+            icon.style.color = 'var(--accent)';
+          } else {
+            icon.style.color = '';
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

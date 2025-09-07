@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>路线预览 - Accessibility Navigator</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  
+  <style>
+    .route-container {
+      height: calc(100vh - var(--status-bar-height) - var(--nav-bar-height));
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .map-section {
+      flex: 1;
+      position: relative;
+      background: var(--bg-secondary);
+      overflow: hidden;
+    }
+    
+    .map-placeholder {
+      width: 100%;
+      height: 100%;
+      background-image: url('https://images.unsplash.com/photo-1597149962419-0d900ac2e3ea?w=400&h=600&fit=crop');
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    
+    .route-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.4);
+    }
+    
+    .route-line {
+      position: absolute;
+      top: 20%;
+      left: 10%;
+      right: 10%;
+      height: 60%;
+      pointer-events: none;
+    }
+    
+    .route-path {
+      position: relative;
+      height: 100%;
+      width: 100%;
+    }
+    
+    .path-segment {
+      position: absolute;
+      background: var(--accent-blue);
+      border-radius: 2px;
+      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    }
+    
+    .path-segment.horizontal {
+      height: 4px;
+    }
+    
+    .path-segment.vertical {
+      width: 4px;
+    }
+    
+    .route-marker {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      animation: markerPulse 2s infinite;
+    }
+    
+    .marker-start {
+      background: var(--accent-green);
+      top: 15%;
+      left: 8%;
+    }
+    
+    .marker-end {
+      background: var(--accent-red);
+      bottom: 15%;
+      right: 8%;
+    }
+    
+    .marker-waypoint {
+      background: var(--accent-orange);
+      top: 45%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    @keyframes markerPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .map-controls {
+      position: absolute;
+      top: var(--space-md);
+      right: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    
+    .map-control {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      color: var(--text-primary);
+    }
+    
+    .map-control:hover {
+      background: white;
+      transform: scale(1.05);
+    }
+    
+    .route-info {
+      background: var(--card-bg);
+      border-top: 1px solid var(--border-color);
+      max-height: 50%;
+      overflow-y: auto;
+    }
+    
+    .route-summary {
+      padding: var(--space-lg) var(--space-md);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .route-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+    
+    .route-title {
+      font-size: var(--font-size-lg);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .route-distance {
+      font-size: var(--font-size-sm);
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+    
+    .route-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+    
+    .route-stat {
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: var(--font-size-lg);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-xs);
+    }
+    
+    .stat-label {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    .accessibility-summary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: var(--space-md);
+      background: rgba(48, 209, 88, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(48, 209, 88, 0.2);
+    }
+    
+    .accessibility-icon {
+      color: var(--accent-green);
+      font-size: 18px;
+    }
+    
+    .accessibility-text {
+      font-size: var(--font-size-sm);
+      color: var(--accent-green);
+      font-weight: 600;
+    }
+    
+    .route-steps {
+      padding: var(--space-md);
+    }
+    
+    .steps-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .step-item {
+      display: flex;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .step-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    
+    .step-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    
+    .step-content {
+      flex: 1;
+    }
+    
+    .step-instruction {
+      font-size: var(--font-size-md);
+      color: var(--text-primary);
+      margin-bottom: var(--space-sm);
+      line-height: var(--line-height-normal);
+    }
+    
+    .step-details {
+      display: flex;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .step-distance {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+    
+    .step-time {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+    
+    .step-warnings {
+      margin-top: var(--space-sm);
+    }
+    
+    .warning-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm);
+      background: rgba(255, 149, 10, 0.1);
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-orange);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .warning-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .warning-icon {
+      color: var(--accent-orange);
+      font-size: 14px;
+    }
+    
+    .warning-text {
+      font-size: var(--font-size-xs);
+      color: var(--accent-orange);
+      font-weight: 500;
+    }
+    
+    .facility-tags {
+      display: flex;
+      gap: var(--space-xs);
+      margin-top: var(--space-sm);
+      flex-wrap: wrap;
+    }
+    
+    .facility-tag {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-size: var(--font-size-xs);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .facility-tag.available {
+      background: rgba(48, 209, 88, 0.1);
+      color: var(--accent-green);
+    }
+    
+    .action-buttons {
+      padding: var(--space-md);
+      background: var(--card-bg);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: var(--space-md);
+    }
+    
+    .action-button {
+      flex: 1;
+      padding: var(--space-lg);
+      border-radius: 12px;
+      border: none;
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+    }
+    
+    .btn-navigate {
+      background: var(--accent-blue);
+      color: white;
+    }
+    
+    .btn-navigate:hover {
+      background: #0056cc;
+      transform: translateY(-1px);
+    }
+    
+    .btn-share {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+    
+    .btn-share:hover {
+      background: var(--bg-tertiary);
+    }
+    
+    .route-alternatives {
+      padding: var(--space-md);
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .alternatives-header {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .alternative-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm);
+      background: var(--card-bg);
+      border-radius: 8px;
+      margin-bottom: var(--space-sm);
+      cursor: pointer;
+      transition: background var(--duration-fast) var(--ease-out);
+    }
+    
+    .alternative-item:hover {
+      background: var(--bg-primary);
+    }
+    
+    .alternative-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .alternative-icon {
+      color: var(--accent-blue);
+    }
+    
+    .alternative-text {
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+    }
+    
+    .alternative-stats {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-indicators">
+        <i class="fas fa-signal" style="font-size: 12px;"></i>
+        <i class="fas fa-wifi" style="font-size: 12px;"></i>
+        <i class="fas fa-battery-three-quarters" style="font-size: 12px;"></i>
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="nav-bar">
+      <button class="nav-button" onclick="history.back()" aria-label="返回">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="nav-title">路线预览</div>
+      <button class="nav-button" onclick="showRouteOptions()" aria-label="路线选项">
+        <i class="fas fa-route"></i>
+      </button>
+    </div>
+    
+    <!-- Content -->
+    <div class="content">
+      <div class="route-container">
+        <!-- Map Section -->
+        <div class="map-section">
+          <div class="map-placeholder">
+            <div class="route-overlay"></div>
+            
+            <!-- Route Path -->
+            <div class="route-line">
+              <div class="route-path">
+                <!-- Path segments -->
+                <div class="path-segment horizontal" style="top: 20%; left: 12%; width: 30%;"></div>
+                <div class="path-segment vertical" style="top: 20%; left: 42%; height: 25%;"></div>
+                <div class="path-segment horizontal" style="top: 45%; left: 42%; width: 35%;"></div>
+                <div class="path-segment vertical" style="top: 45%; right: 23%; height: 20%;"></div>
+                <div class="path-segment horizontal" style="bottom: 35%; right: 12%; width: 11%;"></div>
+              </div>
+            </div>
+            
+            <!-- Route Markers -->
+            <div class="route-marker marker-start">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="route-marker marker-waypoint">
+              <i class="fas fa-subway"></i>
+            </div>
+            <div class="route-marker marker-end">
+              <i class="fas fa-flag"></i>
+            </div>
+            
+            <!-- Map Controls -->
+            <div class="map-controls">
+              <button class="map-control" onclick="zoomIn()" aria-label="放大">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button class="map-control" onclick="zoomOut()" aria-label="缩小">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button class="map-control" onclick="centerMap()" aria-label="居中">
+                <i class="fas fa-crosshairs"></i>
+              </button>
+              <button class="map-control" onclick="toggle3D()" aria-label="3D视图">
+                <i class="fas fa-cube"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Route Info -->
+        <div class="route-info">
+          <!-- Route Summary -->
+          <div class="route-summary">
+            <div class="route-header">
+              <div class="route-title">前往国贸地铁站</div>
+              <div class="route-distance">1.2公里</div>
+            </div>
+            
+            <div class="route-stats">
+              <div class="route-stat">
+                <div class="stat-value">15</div>
+                <div class="stat-label">步行分钟</div>
+              </div>
+              <div class="route-stat">
+                <div class="stat-value">3</div>
+                <div class="stat-label">无障碍设施</div>
+              </div>
+              <div class="route-stat">
+                <div class="stat-value">优</div>
+                <div class="stat-label">通行评级</div>
+              </div>
+            </div>
+            
+            <div class="accessibility-summary">
+              <i class="fas fa-wheelchair accessibility-icon"></i>
+              <span class="accessibility-text">此路线轮椅用户友好</span>
+            </div>
+          </div>
+          
+          <!-- Route Steps -->
+          <div class="route-steps">
+            <div class="steps-header">
+              <i class="fas fa-list"></i>
+              详细路线
+            </div>
+            
+            <div class="step-item">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <div class="step-instruction">从当前位置出发，向北步行至建外大街</div>
+                <div class="step-details">
+                  <div class="step-distance">200米</div>
+                  <div class="step-time">3分钟</div>
+                </div>
+                <div class="facility-tags">
+                  <span class="facility-tag available">
+                    <i class="fas fa-angle-double-down"></i>
+                    坡度 ≤ 5%
+                  </span>
+                  <span class="facility-tag available">
+                    <i class="fas fa-road"></i>
+                    盲道完整
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="step-item">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <div class="step-instruction">沿建外大街向东步行，前往地铁站入口</div>
+                <div class="step-details">
+                  <div class="step-distance">600米</div>
+                  <div class="step-time">8分钟</div>
+                </div>
+                <div class="step-warnings">
+                  <div class="warning-item">
+                    <i class="fas fa-exclamation-triangle warning-icon"></i>
+                    <span class="warning-text">注意：此路段正在施工，请绕行</span>
+                  </div>
+                </div>
+                <div class="facility-tags">
+                  <span class="facility-tag available">
+                    <i class="fas fa-arrows-alt-h"></i>
+                    人行道宽敞
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="step-item">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <div class="step-instruction">到达国贸地铁站A出口，使用无障碍电梯</div>
+                <div class="step-details">
+                  <div class="step-distance">400米</div>
+                  <div class="step-time">4分钟</div>
+                </div>
+                <div class="facility-tags">
+                  <span class="facility-tag available">
+                    <i class="fas fa-elevator"></i>
+                    电梯可用
+                  </span>
+                  <span class="facility-tag available">
+                    <i class="fas fa-volume-up"></i>
+                    语音提示
+                  </span>
+                  <span class="facility-tag available">
+                    <i class="fas fa-restroom"></i>
+                    无障碍卫生间
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Alternative Routes -->
+          <div class="route-alternatives">
+            <div class="alternatives-header">其他路线选择</div>
+            
+            <div class="alternative-item" onclick="selectAlternative('shortest')">
+              <div class="alternative-info">
+                <i class="fas fa-running alternative-icon"></i>
+                <span class="alternative-text">最短路线</span>
+              </div>
+              <span class="alternative-stats">0.9公里 · 12分钟</span>
+            </div>
+            
+            <div class="alternative-item" onclick="selectAlternative('safest')">
+              <div class="alternative-info">
+                <i class="fas fa-shield-alt alternative-icon"></i>
+                <span class="alternative-text">最安全路线</span>
+              </div>
+              <span class="alternative-stats">1.5公里 · 20分钟</span>
+            </div>
+            
+            <div class="alternative-item" onclick="selectAlternative('scenic')">
+              <div class="alternative-info">
+                <i class="fas fa-tree alternative-icon"></i>
+                <span class="alternative-text">风景路线</span>
+              </div>
+              <span class="alternative-stats">1.8公里 · 25分钟</span>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button class="action-button btn-navigate" onclick="startNavigation()">
+              <i class="fas fa-navigation"></i>
+              <span>开始导航</span>
+            </button>
+            <button class="action-button btn-share" onclick="shareRoute()">
+              <i class="fas fa-share-alt"></i>
+              <span>分享路线</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../scripts/app.js"></script>
+  <script>
+    let currentZoom = 1;
+    let is3D = false;
+    
+    // Map controls
+    function zoomIn() {
+      if (currentZoom < 3) {
+        currentZoom += 0.5;
+        updateMapZoom();
+      }
+    }
+    
+    function zoomOut() {
+      if (currentZoom > 0.5) {
+        currentZoom -= 0.5;
+        updateMapZoom();
+      }
+    }
+    
+    function centerMap() {
+      // Animate to center the route
+      const mapPlaceholder = document.querySelector('.map-placeholder');
+      mapPlaceholder.style.transform = 'scale(1) translate(0, 0)';
+      mapPlaceholder.style.transition = 'transform 0.5s ease';
+      
+      setTimeout(() => {
+        mapPlaceholder.style.transition = '';
+      }, 500);
+    }
+    
+    function toggle3D() {
+      const button = event.currentTarget;
+      const mapPlaceholder = document.querySelector('.map-placeholder');
+      
+      is3D = !is3D;
+      
+      if (is3D) {
+        button.style.background = 'var(--accent-blue)';
+        button.style.color = 'white';
+        mapPlaceholder.style.transform = 'perspective(1000px) rotateX(45deg)';
+      } else {
+        button.style.background = 'rgba(255,255,255,0.9)';
+        button.style.color = 'var(--text-primary)';
+        mapPlaceholder.style.transform = 'perspective(1000px) rotateX(0deg)';
+      }
+      
+      mapPlaceholder.style.transition = 'transform 0.5s ease';
+    }
+    
+    function updateMapZoom() {
+      const mapPlaceholder = document.querySelector('.map-placeholder');
+      mapPlaceholder.style.transform = `scale(${currentZoom})`;
+      mapPlaceholder.style.transition = 'transform 0.3s ease';
+      
+      setTimeout(() => {
+        mapPlaceholder.style.transition = '';
+      }, 300);
+    }
+    
+    // Route selection
+    function selectAlternative(routeType) {
+      // Update UI to show selected route
+      document.querySelectorAll('.alternative-item').forEach(item => {
+        item.style.background = 'var(--card-bg)';
+      });
+      
+      event.currentTarget.style.background = 'rgba(0, 122, 255, 0.1)';
+      
+      // Update route info based on selection
+      const routeData = {
+        shortest: {
+          title: '最短路线到国贸地铁站',
+          distance: '0.9公里',
+          time: '12',
+          facilities: '2',
+          rating: '良'
+        },
+        safest: {
+          title: '最安全路线到国贸地铁站',
+          distance: '1.5公里',
+          time: '20',
+          facilities: '5',
+          rating: '优'
+        },
+        scenic: {
+          title: '风景路线到国贸地铁站',
+          distance: '1.8公里',
+          time: '25',
+          facilities: '4',
+          rating: '优'
+        }
+      };
+      
+      const data = routeData[routeType];
+      if (data) {
+        updateRouteDisplay(data);
+      }
+    }
+    
+    function updateRouteDisplay(data) {
+      document.querySelector('.route-title').textContent = data.title;
+      document.querySelector('.route-distance').textContent = data.distance;
+      document.querySelectorAll('.stat-value')[0].textContent = data.time;
+      document.querySelectorAll('.stat-value')[1].textContent = data.facilities;
+      document.querySelectorAll('.stat-value')[2].textContent = data.rating;
+    }
+    
+    // Navigation actions
+    function startNavigation() {
+      // Show confirmation dialog
+      if (confirm('是否打开地图应用开始导航？')) {
+        // In real app, would open native maps app
+        const destination = 'geo:39.9076,116.4465?q=国贸地铁站A出口';
+        
+        // Try to open in native app
+        try {
+          window.open(`maps://maps.google.com/maps?daddr=国贸地铁站A出口,北京`, '_system');
+        } catch (e) {
+          // Fallback to web maps
+          window.open(`https://maps.google.com/?q=国贸地铁站A出口,北京`, '_blank');
+        }
+      }
+    }
+    
+    function shareRoute() {
+      if (navigator.share) {
+        navigator.share({
+          title: '无障碍路线分享',
+          text: '我在无障碍导航找到了一条很好的路线，推荐给你！',
+          url: window.location.href
+        }).then(() => {
+          console.log('路线分享成功');
+        }).catch(err => {
+          console.log('分享取消或失败', err);
+          fallbackShare();
+        });
+      } else {
+        fallbackShare();
+      }
+    }
+    
+    function fallbackShare() {
+      // Copy to clipboard as fallback
+      const routeText = `无障碍路线推荐：前往国贸地铁站
+距离：1.2公里
+时间：约15分钟
+特色：轮椅用户友好，设施完善`;
+      
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(routeText).then(() => {
+          alert('路线信息已复制到剪贴板');
+        });
+      } else {
+        alert('路线分享：前往国贸地铁站，距离1.2公里');
+      }
+    }
+    
+    function showRouteOptions() {
+      const options = [
+        '避开楼梯',
+        '优先电梯',
+        '最少转弯',
+        '宽阔道路',
+        '避开施工'
+      ];
+      
+      const selected = options.filter(() => Math.random() > 0.5);
+      alert(`路线偏好：${selected.join(', ') || '默认设置'}`);
+    }
+    
+    // Initialize route animation
+    document.addEventListener('DOMContentLoaded', () => {
+      // Animate route markers
+      const markers = document.querySelectorAll('.route-marker');
+      markers.forEach((marker, index) => {
+        marker.style.opacity = '0';
+        marker.style.transform = 'scale(0)';
+        
+        setTimeout(() => {
+          marker.style.opacity = '1';
+          marker.style.transform = 'scale(1)';
+          marker.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        }, index * 300);
+      });
+      
+      // Animate path segments
+      const segments = document.querySelectorAll('.path-segment');
+      segments.forEach((segment, index) => {
+        segment.style.transform = 'scaleX(0)';
+        segment.style.transformOrigin = 'left';
+        
+        setTimeout(() => {
+          segment.style.transform = 'scaleX(1)';
+          segment.style.transition = 'transform 0.8s ease-out';
+        }, 500 + index * 200);
+      });
+    });
+    
+    // Handle screen resize
+    window.addEventListener('resize', () => {
+      // Recalculate map layout if needed
+      centerMap();
+    });
+  </script>
+</body>
+</html>

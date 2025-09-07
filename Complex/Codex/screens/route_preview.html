@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN" data-fontscale="base">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>路线预览 · 无障碍社区</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="../styles/global.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style> body { font-family: Inter, ui-sans-serif, system-ui; } </style>
+</head>
+<body data-theme="light" data-current-tab="home" class="bg-[color:var(--bg)] text-[color:var(--fg)]">
+  <div class="device" role="application" aria-label="路线预览">
+    <div class="dynamic-island" aria-hidden="true"></div>
+    <div class="status-bar"><div>9:41</div><div class="right">📶 📡 🔋</div></div>
+
+    <header class="title-bar">
+      <a class="btn" aria-label="返回" href="post_detail.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title">路线预览</div>
+      <div></div>
+    </header>
+
+    <main class="content">
+      <img class="w-full h-64 object-cover" src="https://source.unsplash.com/1200x800/?city,map" alt="路线快照"/>
+      <section class="p-3 space-y-2">
+        <div class="font-semibold">关键路段提示</div>
+        <div class="card p-2 text-sm">↗ 坡度 ≤ 5%，建议从南口进入</div>
+        <div class="card p-2 text-sm">🧱 路缘 ≤ 2cm，盲道连续</div>
+        <div class="card p-2 text-sm">🛗 电梯位于 B 出口右侧</div>
+      </section>
+      <div class="p-3 pb-24">
+        <button class="w-full py-2 rounded-xl bg-[color:var(--accent)] text-white ripple" onclick="alert('打开地图 App 占位')">打开地图 App</button>
+      </div>
+    </main>
+
+    <nav class="tab-bar" aria-label="底部导航">
+      <a class="tab-item active" data-tab="home" href="home.html" aria-current="page"><i class="fa-solid fa-house"></i><span>Home</span></a>
+      <a class="tab-item" data-tab="explore" href="explore.html"><i class="fa-regular fa-compass"></i><span>Explore</span></a>
+      <a class="tab-item" data-tab="create" href="create_post.html"><i class="fa-solid fa-circle-plus"></i><span>Create</span></a>
+      <a class="tab-item" data-tab="inbox" href="messages.html"><i class="fa-regular fa-message"></i><span>Inbox</span></a>
+      <a class="tab-item" data-tab="profile" href="profile.html"><i class="fa-regular fa-user"></i><span>Profile</span></a>
+    </nav>
+  </div>
+
+  <script src="../scripts/observer.js" defer></script>
+  <script src="../scripts/waapi.js" defer></script>
+  <script src="../scripts/app.js" defer></script>
+</body>
+</html>
+

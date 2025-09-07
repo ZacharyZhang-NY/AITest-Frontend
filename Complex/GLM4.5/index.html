@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility Navigator - 原型预览</title>
+    <link rel="stylesheet" href="styles/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #f0f2f5;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .screens-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .screen-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .screen-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .screen-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .iframe-container {
+            width: 100%;
+            height: 900px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-tab:hover {
+            background: #f8f9fa;
+            border-color: #0066cc;
+        }
+        
+        .nav-tab.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+        
+        .screen-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .screen-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .screens-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .iframe-container {
+                height: 700px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Accessibility Navigator</h1>
+            <p>无障碍城市导航社区原型 - iPhone 15 Pro 预览</p>
+        </div>
+        
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="filterScreens('all')">全部页面</div>
+            <div class="nav-tab" onclick="filterScreens('auth')">认证页面</div>
+            <div class="nav-tab" onclick="filterScreens('main')">主要功能</div>
+            <div class="nav-tab" onclick="filterScreens('social')">社交功能</div>
+            <div class="nav-tab" onclick="filterScreens('settings')">设置页面</div>
+        </div>
+        
+        <div class="screens-grid" id="screensGrid">
+            <!-- Onboarding -->
+            <div class="screen-card" data-category="auth">
+                <div class="screen-title">引导页面</div>
+                <div class="iframe-container">
+                    <iframe src="screens/onboarding.html" title="Onboarding Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">onboarding</span>
+                    <span>三屏引导 + 权限获取</span>
+                </div>
+            </div>
+            
+            <!-- Login -->
+            <div class="screen-card" data-category="auth">
+                <div class="screen-title">登录页面</div>
+                <div class="iframe-container">
+                    <iframe src="screens/login.html" title="Login Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">authentication</span>
+                    <span>第三方登录集成</span>
+                </div>
+            </div>
+            
+            <!-- Signup -->
+            <div class="screen-card" data-category="auth">
+                <div class="screen-title">注册页面</div>
+                <div class="iframe-container">
+                    <iframe src="screens/signup.html" title="Signup Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">authentication</span>
+                    <span>用户注册流程</span>
+                </div>
+            </div>
+            
+            <!-- Home -->
+            <div class="screen-card" data-category="main">
+                <div class="screen-title">首页</div>
+                <div class="iframe-container">
+                    <iframe src="screens/home.html" title="Home Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">main</span>
+                    <span>混合视频图文流</span>
+                </div>
+            </div>
+            
+            <!-- Explore -->
+            <div class="screen-card" data-category="main">
+                <div class="screen-title">发现页面</div>
+                <div class="iframe-container">
+                    <iframe src="screens/explore.html" title="Explore Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">discovery</span>
+                    <span>话题瀑布流</span>
+                </div>
+            </div>
+            
+            <!-- Post Detail -->
+            <div class="screen-card" data-category="main">
+                <div class="screen-title">帖子详情</div>
+                <div class="iframe-container">
+                    <iframe src="screens/post_detail.html" title="Post Detail Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">content</span>
+                    <span>媒体内容与互动</span>
+                </div>
+            </div>
+            
+            <!-- Create Post -->
+            <div class="screen-card" data-category="main">
+                <div class="screen-title">发布页面</div>
+                <div class="iframe-container">
+                    <iframe src="screens/create_post.html" title="Create Post Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">creation</span>
+                    <span>无障碍设施标记</span>
+                </div>
+            </div>
+            
+            <!-- Notifications -->
+            <div class="screen-card" data-category="social">
+                <div class="screen-title">通知页面</div>
+                <div class="iframe-container">
+                    <iframe src="screens/notifications.html" title="Notifications Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">social</span>
+                    <span>点赞评论通知</span>
+                </div>
+            </div>
+            
+            <!-- Messages -->
+            <div class="screen-card" data-category="social">
+                <div class="screen-title">私信页面</div>
+                <div class="iframe-container">
+                    <iframe src="screens/messages.html" title="Messages Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">social</span>
+                    <span>私信对话列表</span>
+                </div>
+            </div>
+            
+            <!-- Profile -->
+            <div class="screen-card" data-category="social">
+                <div class="screen-title">个人主页</div>
+                <div class="iframe-container">
+                    <iframe src="screens/profile.html" title="Profile Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">social</span>
+                    <span>徽章系统与作品</span>
+                </div>
+            </div>
+            
+            <!-- Settings -->
+            <div class="screen-card" data-category="settings">
+                <div class="screen-title">设置页面</div>
+                <div class="iframe-container">
+                    <iframe src="screens/settings.html" title="Settings Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">settings</span>
+                    <span>无障碍偏好设置</span>
+                </div>
+            </div>
+            
+            <!-- Report Issue -->
+            <div class="screen-card" data-category="main">
+                <div class="screen-title">问题上报</div>
+                <div class="iframe-container">
+                    <iframe src="screens/report_issue.html" title="Report Issue Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">community</span>
+                    <span>设施问题反馈</span>
+                </div>
+            </div>
+            
+            <!-- Route Preview -->
+            <div class="screen-card" data-category="main">
+                <div class="screen-title">路线预览</div>
+                <div class="iframe-container">
+                    <iframe src="screens/route_preview.html" title="Route Preview Screen"></iframe>
+                </div>
+                <div class="screen-info">
+                    <span class="screen-tag">navigation</span>
+                    <span>无障碍路线规划</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function filterScreens(category) {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const cards = document.querySelectorAll('.screen-card');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            cards.forEach(card => {
+                if (category === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = card.dataset.category === category ? 'block' : 'none';
+                }
+            });
+        }
+        
+        // Add loading state
+        document.addEventListener('DOMContentLoaded', function() {
+            const iframes = document.querySelectorAll('iframe');
+            
+            iframes.forEach(iframe => {
+                iframe.addEventListener('load', function() {
+                    this.parentElement.classList.add('loaded');
+                });
+                
+                iframe.addEventListener('error', function() {
+                    this.parentElement.innerHTML = '<div class="loading">加载失败，请检查文件路径</div>';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

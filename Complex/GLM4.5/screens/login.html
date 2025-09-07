@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - Accessibility Navigator</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .login-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .login-header {
+            text-align: center;
+            padding: 60px 40px 20px;
+            color: white;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 20px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: #667eea;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .login-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .login-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .login-form {
+            flex: 1;
+            background: white;
+            border-radius: 30px 30px 0 0;
+            padding: 40px 32px;
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 16px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: var(--text-tertiary);
+        }
+        
+        .input-icon {
+            position: relative;
+        }
+        
+        .input-icon i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            font-size: 18px;
+        }
+        
+        .input-icon .form-input {
+            padding-left: 50px;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 8px;
+        }
+        
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+        }
+        
+        .remember-me label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        
+        .forgot-password {
+            font-size: 14px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+        }
+        
+        .login-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 102, 204, 0.3);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 32px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--border-color);
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 16px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            background: white;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .social-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        
+        .social-btn i {
+            font-size: 20px;
+        }
+        
+        .social-btn.wechat {
+            color: #07c160;
+            border-color: #07c160;
+        }
+        
+        .social-btn.wechat:hover {
+            background: #07c160;
+            color: white;
+        }
+        
+        .social-btn.weibo {
+            color: #e6162d;
+            border-color: #e6162d;
+        }
+        
+        .social-btn.weibo:hover {
+            background: #e6162d;
+            color: white;
+        }
+        
+        .social-btn.apple {
+            color: #000;
+            border-color: #000;
+        }
+        
+        .social-btn.apple:hover {
+            background: #000;
+            color: white;
+        }
+        
+        .signup-link {
+            text-align: center;
+            margin-top: 32px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .signup-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .accessibility-options {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .accessibility-btn {
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .accessibility-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        @media (max-width: 393px) {
+            .login-form {
+                padding: 32px 24px;
+            }
+            
+            .login-title {
+                font-size: 28px;
+            }
+            
+            .social-login {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="status-bar">
+            <div class="status-time">9:41</div>
+            <div class="status-icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="dynamic-island"></div>
+        
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fas fa-universal-access"></i>
+                </div>
+                <h1 class="login-title">欢迎回来</h1>
+                <p class="login-subtitle">登录您的无障碍导航账户</p>
+            </div>
+            
+            <div class="login-form">
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">邮箱/手机号</label>
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" class="form-input" placeholder="请输入邮箱或手机号" id="username" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">密码</label>
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" class="form-input" placeholder="请输入密码" id="password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <i class="fas fa-eye" id="passwordIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">记住我</label>
+                        </div>
+                        <a href="#" class="forgot-password">忘记密码？</a>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">登录</button>
+                </form>
+                
+                <div class="divider">
+                    <span>或使用以下方式登录</span>
+                </div>
+                
+                <div class="social-login">
+                    <a href="#" class="social-btn wechat" onclick="socialLogin('wechat')">
+                        <i class="fab fa-weixin"></i>
+                        微信登录
+                    </a>
+                    <a href="#" class="social-btn weibo" onclick="socialLogin('weibo')">
+                        <i class="fab fa-weibo"></i>
+                        微博登录
+                    </a>
+                    <a href="#" class="social-btn apple" onclick="socialLogin('apple')">
+                        <i class="fab fa-apple"></i>
+                        Apple ID
+                    </a>
+                </div>
+                
+                <div class="signup-link">
+                    还没有账户？<a href="signup.html">立即注册</a>
+                </div>
+                
+                <div class="accessibility-options">
+                    <button class="accessibility-btn" onclick="toggleLargeText()">
+                        <i class="fas fa-text-height"></i>
+                        大字体
+                    </button>
+                    <button class="accessibility-btn" onclick="toggleHighContrast()">
+                        <i class="fas fa-adjust"></i>
+                        高对比度
+                    </button>
+                    <button class="accessibility-btn" onclick="toggleScreenReader()">
+                        <i class="fas fa-volume-up"></i>
+                        朗读
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.className = 'fas fa-eye';
+            }
+        }
+        
+        function socialLogin(provider) {
+            showMessage(`正在跳转到${provider}登录...`, 'success');
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 1500);
+        }
+        
+        function showMessage(message, type) {
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            if (type === 'error') {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            } else {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+            
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+            }, 3000);
+        }
+        
+        function toggleLargeText() {
+            const body = document.body;
+            const currentFontSize = body.getAttribute('data-font-size');
+            
+            if (currentFontSize === 'large') {
+                body.removeAttribute('data-font-size');
+            } else {
+                body.setAttribute('data-font-size', 'large');
+            }
+        }
+        
+        function toggleHighContrast() {
+            const body = document.body;
+            body.classList.toggle('high-contrast');
+        }
+        
+        function toggleScreenReader() {
+            alert('屏幕阅读器功能需要在系统设置中启用');
+        }
+        
+        // Form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+            
+            // Simple validation
+            if (!username || !password) {
+                showMessage('请填写完整的登录信息', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('密码长度不能少于6位', 'error');
+                return;
+            }
+            
+            // Simulate login process
+            showMessage('正在登录...', 'success');
+            
+            setTimeout(() => {
+                if (remember) {
+                    localStorage.setItem('rememberUser', username);
+                }
+                
+                window.location.href = 'home.html';
+            }, 1500);
+        });
+        
+        // Check for remembered user
+        window.addEventListener('load', function() {
+            const rememberedUser = localStorage.getItem('rememberUser');
+            if (rememberedUser) {
+                document.getElementById('username').value = rememberedUser;
+                document.getElementById('remember').checked = true;
+            }
+        });
+        
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.classList.contains('form-input')) {
+                const form = e.target.closest('form');
+                if (form) {
+                    form.dispatchEvent(new Event('submit'));
+                }
+            }
+        });
+        
+        // Add ripple effect to buttons
+        document.querySelectorAll('.login-btn, .social-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    </script>
+</body>
+</html>

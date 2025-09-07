@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>首页 - Accessibility Navigator</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  
+  <style>
+    .home-header {
+      position: sticky;
+      top: var(--status-bar-height);
+      z-index: 90;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(20px);
+      padding: var(--space-md) 0;
+    }
+    
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-md);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .app-title {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: var(--space-sm);
+    }
+    
+    .header-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: none;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .header-button:hover {
+      background: var(--bg-tertiary);
+    }
+    
+    .segmented-control {
+      position: relative;
+      background: var(--bg-secondary);
+      border-radius: 20px;
+      padding: 4px;
+      margin: 0 var(--space-md);
+      display: flex;
+    }
+    
+    .segment {
+      flex: 1;
+      padding: var(--space-sm) var(--space-md);
+      text-align: center;
+      border: none;
+      background: none;
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 16px;
+      transition: color var(--duration-fast) var(--ease-out);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .segment.active {
+      color: var(--text-primary);
+    }
+    
+    .segment-indicator {
+      position: absolute;
+      background: var(--bg-primary);
+      border-radius: 16px;
+      transition: all var(--duration-normal) var(--ease-out);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      height: calc(100% - 8px);
+      top: 4px;
+      z-index: 0;
+    }
+    
+    .feed-container {
+      padding: var(--space-md);
+      padding-bottom: calc(var(--tab-bar-height) + var(--space-md));
+    }
+    
+    .post-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      margin-bottom: var(--space-lg);
+      overflow: hidden;
+      box-shadow: 0 2px 10px var(--shadow-color);
+      border: 1px solid var(--border-color);
+      transition: all var(--duration-normal) var(--ease-out);
+    }
+    
+    .post-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px var(--shadow-color);
+    }
+    
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border-color);
+    }
+    
+    .user-info {
+      flex: 1;
+    }
+    
+    .user-name {
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    
+    .post-meta {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .badge {
+      background: var(--accent-blue);
+      color: white;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    
+    .post-more {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--duration-fast) var(--ease-out);
+    }
+    
+    .post-more:hover {
+      background: var(--bg-secondary);
+    }
+    
+    .post-media {
+      position: relative;
+      width: 100%;
+      background: var(--bg-secondary);
+    }
+    
+    .post-media img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .post-media video {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity var(--duration-fast) var(--ease-out);
+    }
+    
+    .video-overlay.show {
+      opacity: 1;
+    }
+    
+    .play-button {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.7);
+      border: 2px solid white;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    
+    .video-duration {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      font-size: var(--font-size-xs);
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+    
+    .accessibility-tags {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    
+    .facility-tag {
+      background: rgba(0,0,0,0.7);
+      color: white;
+      font-size: var(--font-size-xs);
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .post-content {
+      padding: var(--space-md);
+    }
+    
+    .post-title {
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-sm);
+      line-height: var(--line-height-normal);
+    }
+    
+    .post-description {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--space-md);
+    }
+    
+    .post-location {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-md);
+    }
+    
+    .accessibility-rating {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+      padding: var(--space-md);
+      background: var(--bg-secondary);
+      border-radius: 12px;
+    }
+    
+    .rating-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+    
+    .rating-stars {
+      color: var(--accent-orange);
+    }
+    
+    .post-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md);
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .action-group {
+      display: flex;
+      gap: var(--space-lg);
+    }
+    
+    .action-button {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: var(--font-size-sm);
+      padding: var(--space-sm);
+      border-radius: 20px;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .action-button:hover {
+      background: var(--bg-secondary);
+    }
+    
+    .action-button.active {
+      color: var(--accent-red);
+    }
+    
+    .action-button.active.bookmark {
+      color: var(--accent-orange);
+    }
+    
+    .action-button i {
+      font-size: 18px;
+    }
+    
+    .go-button {
+      background: var(--accent-blue);
+      color: white;
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: 20px;
+      border: none;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .go-button:hover {
+      background: #0056cc;
+      transform: translateY(-1px);
+    }
+    
+    .skeleton-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      margin-bottom: var(--space-lg);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+    
+    .skeleton-header {
+      padding: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    
+    .skeleton-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+    }
+    
+    .skeleton-text {
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      height: 12px;
+    }
+    
+    .skeleton-text.title {
+      height: 16px;
+      width: 60%;
+    }
+    
+    .skeleton-text.subtitle {
+      width: 40%;
+      margin-top: 6px;
+    }
+    
+    .skeleton-media {
+      height: 280px;
+      background: var(--bg-secondary);
+    }
+    
+    .skeleton-content {
+      padding: var(--space-md);
+    }
+    
+    .skeleton-actions {
+      padding: var(--space-md);
+      display: flex;
+      gap: var(--space-md);
+    }
+    
+    .skeleton-button {
+      width: 60px;
+      height: 24px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-indicators">
+        <i class="fas fa-signal" style="font-size: 12px;"></i>
+        <i class="fas fa-wifi" style="font-size: 12px;"></i>
+        <i class="fas fa-battery-three-quarters" style="font-size: 12px;"></i>
+      </div>
+    </div>
+    
+    <!-- Header -->
+    <header class="home-header">
+      <div class="header-top">
+        <div class="app-title">
+          ♿ 无障碍导航
+        </div>
+        <div class="header-actions">
+          <button class="header-button" onclick="showSearch()" aria-label="搜索">
+            <i class="fas fa-search"></i>
+          </button>
+          <button class="header-button" onclick="showNotifications()" aria-label="通知">
+            <i class="fas fa-bell"></i>
+            <span class="badge" style="position: absolute; top: -2px; right: -2px; font-size: 8px; padding: 2px 4px;">3</span>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Segmented Control -->
+      <div class="segmented-control" role="tablist" aria-label="内容类型选择">
+        <div class="segment-indicator"></div>
+        <button class="segment active" role="tab" aria-selected="true" onclick="switchFeed('recommend')">推荐</button>
+        <button class="segment" role="tab" aria-selected="false" onclick="switchFeed('following')">关注</button>
+        <button class="segment" role="tab" aria-selected="false" onclick="switchFeed('nearby')">附近</button>
+      </div>
+    </header>
+    
+    <!-- Content -->
+    <div class="content" data-pull-refresh>
+      <div class="feed-container" id="feedContainer">
+        <!-- Skeleton Loading -->
+        <div class="skeleton-card skeleton" id="skeleton1">
+          <div class="skeleton-header">
+            <div class="skeleton-avatar skeleton"></div>
+            <div style="flex: 1;">
+              <div class="skeleton-text title skeleton"></div>
+              <div class="skeleton-text subtitle skeleton"></div>
+            </div>
+          </div>
+          <div class="skeleton-media skeleton"></div>
+          <div class="skeleton-content">
+            <div class="skeleton-text skeleton" style="width: 80%; margin-bottom: 8px;"></div>
+            <div class="skeleton-text skeleton" style="width: 60%;"></div>
+          </div>
+          <div class="skeleton-actions">
+            <div class="skeleton-button skeleton"></div>
+            <div class="skeleton-button skeleton"></div>
+            <div class="skeleton-button skeleton"></div>
+          </div>
+        </div>
+        
+        <!-- Video Post -->
+        <article class="post-card" id="post1" aria-label="用户分享的无障碍设施视频">
+          <header class="post-header">
+            <img 
+              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face" 
+              alt="张明的头像" 
+              class="user-avatar"
+            >
+            <div class="user-info">
+              <div class="user-name">张明 <span class="badge">轮椅用户</span></div>
+              <div class="post-meta">
+                <span>2小时前</span>
+                <span>·</span>
+                <i class="fas fa-map-marker-alt"></i>
+                <span>北京市朝阳区</span>
+              </div>
+            </div>
+            <button class="post-more" aria-label="更多选项">
+              <i class="fas fa-ellipsis"></i>
+            </button>
+          </header>
+          
+          <div class="post-media">
+            <video 
+              data-autoplay
+              muted 
+              loop 
+              poster="https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&h=280&fit=crop"
+              onclick="toggleVideoPlay(this)"
+              aria-label="地铁站无障碍设施演示视频"
+            >
+              <source src="https://sample-videos.com/zip/10/mp4/SampleVideo_360x240_1mb.mp4" type="video/mp4">
+              您的浏览器不支持视频播放。
+            </video>
+            <div class="video-overlay" onclick="toggleVideoPlay(this.previousElementSibling)">
+              <div class="play-button">
+                <i class="fas fa-play"></i>
+              </div>
+            </div>
+            <div class="video-duration">1:24</div>
+            <div class="accessibility-tags">
+              <span class="facility-tag">
+                <i class="fas fa-wheelchair"></i>
+                轮椅通行
+              </span>
+              <span class="facility-tag">
+                <i class="fas fa-elevator"></i>
+                电梯可用
+              </span>
+            </div>
+          </div>
+          
+          <div class="post-content">
+            <h2 class="post-title">国贸地铁站新增无障碍设施体验分享</h2>
+            <p class="post-description">
+              今天体验了国贸站新改造的无障碍通道，从地面到站台全程无障碍，电梯宽敞且有语音提示，轮椅用户出行很方便！强烈推荐大家使用。
+            </p>
+            <div class="post-location">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>国贸地铁站 A 出口</span>
+            </div>
+            <div class="accessibility-rating">
+              <div class="rating-item">
+                <span>坡度</span>
+                <div class="rating-stars">★★★★★</div>
+              </div>
+              <div class="rating-item">
+                <span>路缘</span>
+                <div class="rating-stars">★★★★★</div>
+              </div>
+              <div class="rating-item">
+                <span>门宽</span>
+                <div class="rating-stars">★★★★☆</div>
+              </div>
+            </div>
+          </div>
+          
+          <footer class="post-actions">
+            <div class="action-group">
+              <button class="action-button ripple" onclick="toggleLike(this)" aria-label="点赞">
+                <i class="far fa-heart"></i>
+                <span>128</span>
+              </button>
+              <button class="action-button" onclick="showComments()" aria-label="评论">
+                <i class="far fa-comment"></i>
+                <span>45</span>
+              </button>
+              <button class="action-button" onclick="sharePost()" aria-label="分享">
+                <i class="fas fa-share"></i>
+              </button>
+              <button class="action-button bookmark ripple" onclick="toggleBookmark(this)" aria-label="收藏">
+                <i class="far fa-bookmark"></i>
+              </button>
+            </div>
+            <button class="go-button" onclick="showRoute()">去这里</button>
+          </footer>
+        </article>
+        
+        <!-- Image Post -->
+        <article class="post-card" id="post2" aria-label="用户分享的无障碍设施图片">
+          <header class="post-header">
+            <img 
+              src="https://images.unsplash.com/photo-1494790108755-2616b612b096?w=80&h=80&fit=crop&crop=face" 
+              alt="李华的头像" 
+              class="user-avatar"
+            >
+            <div class="user-info">
+              <div class="user-name">李华 <span class="badge">志愿者</span></div>
+              <div class="post-meta">
+                <span>5小时前</span>
+                <span>·</span>
+                <i class="fas fa-map-marker-alt"></i>
+                <span>上海市黄浦区</span>
+              </div>
+            </div>
+            <button class="post-more" aria-label="更多选项">
+              <i class="fas fa-ellipsis"></i>
+            </button>
+          </header>
+          
+          <div class="post-media">
+            <img 
+              src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=280&fit=crop" 
+              alt="商场无障碍坡道设施图片"
+            >
+            <div class="accessibility-tags">
+              <span class="facility-tag">
+                <i class="fas fa-angle-double-down"></i>
+                坡度 ≤ 5%
+              </span>
+              <span class="facility-tag">
+                <i class="fas fa-restroom"></i>
+                无障碍卫生间
+              </span>
+            </div>
+          </div>
+          
+          <div class="post-content">
+            <h2 class="post-title">南京路步行街商场无障碍改造完成</h2>
+            <p class="post-description">
+              刚刚路过发现这家商场完成了无障碍改造，入口有平缓坡道，门宽足够，内部还有专用卫生间。对轮椅用户非常友好！
+            </p>
+            <div class="post-location">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>新世界大丸百货</span>
+            </div>
+            <div class="accessibility-rating">
+              <div class="rating-item">
+                <span>坡度</span>
+                <div class="rating-stars">★★★★★</div>
+              </div>
+              <div class="rating-item">
+                <span>路缘</span>
+                <div class="rating-stars">★★★★☆</div>
+              </div>
+              <div class="rating-item">
+                <span>设施</span>
+                <div class="rating-stars">★★★★★</div>
+              </div>
+            </div>
+          </div>
+          
+          <footer class="post-actions">
+            <div class="action-group">
+              <button class="action-button ripple" onclick="toggleLike(this)" aria-label="点赞">
+                <i class="far fa-heart"></i>
+                <span>89</span>
+              </button>
+              <button class="action-button" onclick="showComments()" aria-label="评论">
+                <i class="far fa-comment"></i>
+                <span>23</span>
+              </button>
+              <button class="action-button" onclick="sharePost()" aria-label="分享">
+                <i class="fas fa-share"></i>
+              </button>
+              <button class="action-button bookmark ripple" onclick="toggleBookmark(this)" aria-label="收藏">
+                <i class="far fa-bookmark"></i>
+              </button>
+            </div>
+            <button class="go-button" onclick="showRoute()">去这里</button>
+          </footer>
+        </article>
+        
+        <!-- Another Video Post -->
+        <article class="post-card" id="post3" aria-label="用户分享的盲道设施视频">
+          <header class="post-header">
+            <img 
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face" 
+              alt="王磊的头像" 
+              class="user-avatar"
+            >
+            <div class="user-info">
+              <div class="user-name">王磊 <span class="badge">视障用户</span></div>
+              <div class="post-meta">
+                <span>1天前</span>
+                <span>·</span>
+                <i class="fas fa-map-marker-alt"></i>
+                <span>深圳市南山区</span>
+              </div>
+            </div>
+            <button class="post-more" aria-label="更多选项">
+              <i class="fas fa-ellipsis"></i>
+            </button>
+          </header>
+          
+          <div class="post-media">
+            <video 
+              data-autoplay
+              muted 
+              loop 
+              poster="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=280&fit=crop"
+              onclick="toggleVideoPlay(this)"
+              aria-label="地铁站盲道设施演示视频"
+            >
+              <source src="https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_2mb.mp4" type="video/mp4">
+              您的浏览器不支持视频播放。
+            </video>
+            <div class="video-overlay show" onclick="toggleVideoPlay(this.previousElementSibling)">
+              <div class="play-button">
+                <i class="fas fa-play"></i>
+              </div>
+            </div>
+            <div class="video-duration">2:15</div>
+            <div class="accessibility-tags">
+              <span class="facility-tag">
+                <i class="fas fa-road"></i>
+                盲道完整
+              </span>
+              <span class="facility-tag">
+                <i class="fas fa-volume-up"></i>
+                语音提示
+              </span>
+            </div>
+          </div>
+          
+          <div class="post-content">
+            <h2 class="post-title">科技园地铁站盲道设施很完善</h2>
+            <p class="post-description">
+              这个站的盲道铺设很规范，从入口到站台都有连续的盲道引导，还有清晰的语音播报。作为视障人士出行很安心。
+            </p>
+            <div class="post-location">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>深大地铁站 B 出口</span>
+            </div>
+            <div class="accessibility-rating">
+              <div class="rating-item">
+                <span>盲道</span>
+                <div class="rating-stars">★★★★★</div>
+              </div>
+              <div class="rating-item">
+                <span>语音</span>
+                <div class="rating-stars">★★★★★</div>
+              </div>
+              <div class="rating-item">
+                <span>安全</span>
+                <div class="rating-stars">★★★★☆</div>
+              </div>
+            </div>
+          </div>
+          
+          <footer class="post-actions">
+            <div class="action-group">
+              <button class="action-button ripple" onclick="toggleLike(this)" aria-label="点赞">
+                <i class="far fa-heart"></i>
+                <span>156</span>
+              </button>
+              <button class="action-button" onclick="showComments()" aria-label="评论">
+                <i class="far fa-comment"></i>
+                <span>67</span>
+              </button>
+              <button class="action-button" onclick="sharePost()" aria-label="分享">
+                <i class="fas fa-share"></i>
+              </button>
+              <button class="action-button bookmark ripple" onclick="toggleBookmark(this)" aria-label="收藏">
+                <i class="far fa-bookmark"></i>
+              </button>
+            </div>
+            <button class="go-button" onclick="showRoute()">去这里</button>
+          </footer>
+        </article>
+      </div>
+    </div>
+    
+    <!-- Tab Bar -->
+    <nav class="tab-bar" role="tablist" aria-label="主导航">
+      <a href="home.html" class="tab-item active" role="tab">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+      </a>
+      <a href="explore.html" class="tab-item" role="tab">
+        <i class="fas fa-compass"></i>
+        <span>发现</span>
+      </a>
+      <a href="create_post.html" class="tab-item" role="tab">
+        <i class="fas fa-plus-circle"></i>
+        <span>发布</span>
+      </a>
+      <a href="notifications.html" class="tab-item" role="tab">
+        <i class="fas fa-bell"></i>
+        <span>通知</span>
+        <span class="badge">3</span>
+      </a>
+      <a href="profile.html" class="tab-item" role="tab">
+        <i class="fas fa-user"></i>
+        <span>我的</span>
+      </a>
+    </nav>
+  </div>
+  
+  <script src="../scripts/app.js"></script>
+  <script>
+    let currentFeed = 'recommend';
+    
+    // Feed switching
+    function switchFeed(feedType) {
+      currentFeed = feedType;
+      
+      // Update segments
+      document.querySelectorAll('.segment').forEach((seg, index) => {
+        seg.classList.remove('active');
+        seg.setAttribute('aria-selected', 'false');
+      });
+      
+      const activeSegment = event.target;
+      activeSegment.classList.add('active');
+      activeSegment.setAttribute('aria-selected', 'true');
+      
+      // Update indicator position
+      const indicator = document.querySelector('.segment-indicator');
+      const rect = activeSegment.getBoundingClientRect();
+      const containerRect = activeSegment.parentElement.getBoundingClientRect();
+      const left = rect.left - containerRect.left;
+      
+      indicator.style.transform = `translateX(${left}px)`;
+      indicator.style.width = `${rect.width}px`;
+      
+      // Load different content (simulated)
+      loadFeedContent(feedType);
+    }
+    
+    function loadFeedContent(feedType) {
+      const feedContainer = document.getElementById('feedContainer');
+      
+      // Show loading skeleton
+      showSkeletons();
+      
+      // Simulate API call
+      setTimeout(() => {
+        hideSkeletons();
+        // In real app, would load different content based on feedType
+        console.log(`Loading ${feedType} feed`);
+      }, 1000);
+    }
+    
+    function showSkeletons() {
+      document.querySelectorAll('.post-card').forEach(card => {
+        card.style.display = 'none';
+      });
+      
+      document.querySelectorAll('.skeleton-card').forEach(skeleton => {
+        skeleton.style.display = 'block';
+      });
+    }
+    
+    function hideSkeletons() {
+      document.querySelectorAll('.skeleton-card').forEach(skeleton => {
+        skeleton.style.display = 'none';
+      });
+      
+      document.querySelectorAll('.post-card').forEach(card => {
+        card.style.display = 'block';
+      });
+    }
+    
+    // Video controls
+    function toggleVideoPlay(video) {
+      if (video.paused) {
+        video.play();
+        video.nextElementSibling.classList.remove('show');
+      } else {
+        video.pause();
+        video.nextElementSibling.classList.add('show');
+      }
+    }
+    
+    // Like animation
+    function toggleLike(button) {
+      const icon = button.querySelector('i');
+      const count = button.querySelector('span');
+      const currentCount = parseInt(count.textContent);
+      
+      if (button.classList.contains('active')) {
+        button.classList.remove('active');
+        icon.className = 'far fa-heart';
+        count.textContent = currentCount - 1;
+      } else {
+        button.classList.add('active');
+        icon.className = 'fas fa-heart';
+        count.textContent = currentCount + 1;
+        
+        // Animate like
+        if (window.accessibilityApp) {
+          window.accessibilityApp.animateLike(button);
+        }
+      }
+    }
+    
+    // Bookmark animation
+    function toggleBookmark(button) {
+      const icon = button.querySelector('i');
+      
+      if (button.classList.contains('active')) {
+        button.classList.remove('active');
+        icon.className = 'far fa-bookmark';
+      } else {
+        button.classList.add('active');
+        icon.className = 'fas fa-bookmark';
+        
+        // Animate bookmark
+        if (window.accessibilityApp) {
+          window.accessibilityApp.animateCollect(button);
+        }
+      }
+    }
+    
+    // Other interactions
+    function showComments() {
+      // In real app, navigate to post detail with comments
+      window.location.href = 'post_detail.html';
+    }
+    
+    function sharePost() {
+      if (navigator.share) {
+        navigator.share({
+          title: '无障碍设施分享',
+          text: '我在无障碍导航发现了一个很棒的无障碍设施！',
+          url: window.location.href
+        });
+      } else {
+        // Fallback - show share options
+        alert('分享功能：复制链接到剪贴板');
+      }
+    }
+    
+    function showRoute() {
+      // Navigate to route preview
+      window.location.href = 'route_preview.html';
+    }
+    
+    function showSearch() {
+      // Navigate to search
+      window.location.href = 'explore.html';
+    }
+    
+    function showNotifications() {
+      // Navigate to notifications
+      window.location.href = 'notifications.html';
+    }
+    
+    // Initialize segment indicator
+    document.addEventListener('DOMContentLoaded', () => {
+      const activeSegment = document.querySelector('.segment.active');
+      const indicator = document.querySelector('.segment-indicator');
+      
+      if (activeSegment && indicator) {
+        const rect = activeSegment.getBoundingClientRect();
+        const containerRect = activeSegment.parentElement.getBoundingClientRect();
+        const left = rect.left - containerRect.left;
+        
+        indicator.style.transform = `translateX(${left}px)`;
+        indicator.style.width = `${rect.width}px`;
+      }
+      
+      // Remove skeleton loading after initial load
+      setTimeout(() => {
+        document.querySelectorAll('.skeleton').forEach(skeleton => {
+          skeleton.classList.remove('skeleton');
+        });
+      }, 2000);
+    });
+    
+    // Infinite scroll simulation
+    let isLoading = false;
+    
+    document.querySelector('.content').addEventListener('scroll', (e) => {
+      const { scrollTop, scrollHeight, clientHeight } = e.target;
+      
+      if (scrollTop + clientHeight >= scrollHeight - 100 && !isLoading) {
+        loadMorePosts();
+      }
+    });
+    
+    function loadMorePosts() {
+      isLoading = true;
+      
+      // Show loading indicator
+      const loadingDiv = document.createElement('div');
+      loadingDiv.innerHTML = `
+        <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
+          <div class="loading-spinner" style="margin: 0 auto 10px;"></div>
+          加载更多内容...
+        </div>
+      `;
+      loadingDiv.id = 'loading-indicator';
+      
+      document.getElementById('feedContainer').appendChild(loadingDiv);
+      
+      // Simulate API call
+      setTimeout(() => {
+        document.getElementById('loading-indicator').remove();
+        isLoading = false;
+        console.log('Loaded more posts');
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

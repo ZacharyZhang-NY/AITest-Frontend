@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accessibility Navigator - 无障碍导航社区</title>
+  <link rel="stylesheet" href="styles/global.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      overflow-x: auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
+
+    .screens-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .screen-preview {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .screen-preview:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.25);
+    }
+
+    .screen-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 0 8px;
+    }
+
+    .screen-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1d1d1f;
+    }
+
+    .screen-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .device-frame {
+      width: 393px;
+      height: 852px;
+      margin: 0 auto;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      background: #000;
+      box-shadow: 
+        0 0 0 12px #1d1d1f,
+        0 0 0 14px #2d2d2f,
+        0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    .device-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: white;
+    }
+
+    .navigation-menu {
+      position: fixed;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      z-index: 100;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .nav-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #86868b;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 10px 12px;
+      color: #1d1d1f;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .nav-link:hover {
+      background: #f5f5f7;
+      color: #007aff;
+      transform: translateX(4px);
+    }
+
+    .nav-link i {
+      width: 20px;
+      margin-right: 8px;
+      color: #007aff;
+    }
+
+    @media (max-width: 1200px) {
+      .navigation-menu {
+        position: static;
+        transform: none;
+        margin-bottom: 30px;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+    .loading-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #86868b;
+      font-size: 1.1rem;
+    }
+
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid #e5e5ea;
+      border-top-color: #007aff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><i class="fas fa-universal-access"></i> Accessibility Navigator</h1>
+    <p>城市无障碍视频图文社区 - 原型预览</p>
+  </div>
+
+  <nav class="navigation-menu">
+    <div class="nav-title">页面导航</div>
+    <a href="#onboarding" class="nav-link">
+      <i class="fas fa-rocket"></i> 引导页
+    </a>
+    <a href="#login" class="nav-link">
+      <i class="fas fa-sign-in-alt"></i> 登录
+    </a>
+    <a href="#signup" class="nav-link">
+      <i class="fas fa-user-plus"></i> 注册
+    </a>
+    <a href="#home" class="nav-link">
+      <i class="fas fa-home"></i> 首页
+    </a>
+    <a href="#explore" class="nav-link">
+      <i class="fas fa-compass"></i> 发现
+    </a>
+    <a href="#post-detail" class="nav-link">
+      <i class="fas fa-file-alt"></i> 帖子详情
+    </a>
+    <a href="#create" class="nav-link">
+      <i class="fas fa-plus-circle"></i> 发布
+    </a>
+    <a href="#notifications" class="nav-link">
+      <i class="fas fa-bell"></i> 通知
+    </a>
+    <a href="#messages" class="nav-link">
+      <i class="fas fa-envelope"></i> 私信
+    </a>
+    <a href="#profile" class="nav-link">
+      <i class="fas fa-user"></i> 个人主页
+    </a>
+    <a href="#settings" class="nav-link">
+      <i class="fas fa-cog"></i> 设置
+    </a>
+    <a href="#report" class="nav-link">
+      <i class="fas fa-exclamation-triangle"></i> 上报问题
+    </a>
+    <a href="#route" class="nav-link">
+      <i class="fas fa-route"></i> 路线预览
+    </a>
+  </nav>
+
+  <div class="screens-grid">
+    <div class="screen-preview" id="onboarding">
+      <div class="screen-header">
+        <h3 class="screen-title">引导页</h3>
+        <span class="screen-badge">
+          <i class="fas fa-rocket"></i> Onboarding
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/onboarding.html" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="screen-preview" id="login">
+      <div class="screen-header">
+        <h3 class="screen-title">登录</h3>
+        <span class="screen-badge">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/login.html" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="screen-preview" id="signup">
+      <div class="screen-header">
+        <h3 class="screen-title">注册</h3>
+        <span class="screen-badge">
+          <i class="fas fa-user-plus"></i> Signup
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/signup.html" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="screen-preview" id="home">
+      <div class="screen-header">
+        <h3 class="screen-title">首页</h3>
+        <span class="screen-badge">
+          <i class="fas fa-home"></i> Home
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/home.html" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="screen-preview" id="explore">
+      <div class="screen-header">
+        <h3 class="screen-title">发现</h3>
+        <span class="screen-badge">
+          <i class="fas fa-compass"></i> Explore
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/explore.html" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="screen-preview" id="post-detail">
+      <div class="screen-header">
+        <h3 class="screen-title">帖子详情</h3>
+        <span class="screen-badge">
+          <i class="fas fa-file-alt"></i> Post Detail
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/post_detail.html" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="screen-preview" id="create">
+      <div class="screen-header">
+        <h3 class="screen-title">发布内容</h3>
+        <span class="screen-badge">
+          <i class="fas fa-plus-circle"></i> Create
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/create_post.html" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="screen-preview" id="notifications">
+      <div class="screen-header">
+        <h3 class="screen-title">通知</h3>
+        <span class="screen-badge">
+          <i class="fas fa-bell"></i> Notifications
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/notifications.html" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="screen-preview" id="messages">
+      <div class="screen-header">
+        <h3 class="screen-title">私信</h3>
+        <span class="screen-badge">
+          <i class="fas fa-envelope"></i> Messages
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/messages.html" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="screen-preview" id="profile">
+      <div class="screen-header">
+        <h3 class="screen-title">个人主页</h3>
+        <span class="screen-badge">
+          <i class="fas fa-user"></i> Profile
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/profile.html" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="screen-preview" id="settings">
+      <div class="screen-header">
+        <h3 class="screen-title">设置</h3>
+        <span class="screen-badge">
+          <i class="fas fa-cog"></i> Settings
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/settings.html" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="screen-preview" id="report">
+      <div class="screen-header">
+        <h3 class="screen-title">上报问题</h3>
+        <span class="screen-badge">
+          <i class="fas fa-exclamation-triangle"></i> Report
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/report_issue.html" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <div class="screen-preview" id="route">
+      <div class="screen-header">
+        <h3 class="screen-title">路线预览</h3>
+        <span class="screen-badge">
+          <i class="fas fa-route"></i> Route
+        </span>
+      </div>
+      <div class="device-frame">
+        <iframe src="screens/route_preview.html" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+    });
+
+    document.querySelectorAll('iframe').forEach(iframe => {
+      iframe.addEventListener('load', function() {
+        this.style.opacity = '1';
+      });
+    });
+  </script>
+</body>
+</html>

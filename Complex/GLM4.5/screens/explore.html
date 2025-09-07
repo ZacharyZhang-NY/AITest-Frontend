@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发现 - Accessibility Navigator</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .explore-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .search-section {
+            position: absolute;
+            top: 44px;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 101;
+            padding: 16px;
+        }
+        
+        .search-bar {
+            position: relative;
+            margin-bottom: 12px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 48px;
+            border: 2px solid var(--border-color);
+            border-radius: 24px;
+            font-size: 16px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            font-size: 18px;
+        }
+        
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-top: 4px;
+            box-shadow: 0 4px 12px var(--shadow);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .search-suggestions.show {
+            display: block;
+        }
+        
+        .suggestion-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .suggestion-item:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .suggestion-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 14px;
+        }
+        
+        .suggestion-text {
+            flex: 1;
+        }
+        
+        .suggestion-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .suggestion-subtitle {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding-bottom: 4px;
+        }
+        
+        .filter-chips::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chip:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+        
+        .chip.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .chip.ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .explore-content {
+            position: absolute;
+            top: 140px;
+            left: 0;
+            right: 0;
+            bottom: 83px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+        
+        .topics-section {
+            padding: 16px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .section-action {
+            color: var(--accent);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        
+        .section-action:hover {
+            text-decoration: underline;
+        }
+        
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .topic-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .topic-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+        
+        .topic-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        
+        .topic-info {
+            padding: 12px;
+        }
+        
+        .topic-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .topic-stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .topic-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .trending-tags {
+            margin-bottom: 24px;
+        }
+        
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .trending-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .trending-tag:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .trending-tag.trending {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+        
+        .waterfall-grid {
+            column-count: 2;
+            column-gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .waterfall-item {
+            break-inside: avoid;
+            margin-bottom: 12px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .waterfall-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+        
+        .waterfall-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        
+        .waterfall-content {
+            padding: 12px;
+        }
+        
+        .waterfall-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+        
+        .waterfall-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .waterfall-author {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .waterfall-author img {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .location-section {
+            margin-bottom: 24px;
+        }
+        
+        .location-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .location-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .location-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+        
+        .location-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 20px;
+        }
+        
+        .location-info {
+            flex: 1;
+        }
+        
+        .location-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        
+        .location-address {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .location-distance {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .location-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--warning);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--text-tertiary);
+        }
+        
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+        }
+        
+        .loading-skeleton {
+            background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--border-color) 50%, var(--bg-tertiary) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        
+        .skeleton-topic {
+            height: 160px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+        }
+        
+        @media (max-width: 393px) {
+            .topic-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .waterfall-grid {
+                column-count: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="status-bar">
+            <div class="status-time">9:41</div>
+            <div class="status-icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="dynamic-island"></div>
+        
+        <div class="explore-container">
+            <div class="search-section">
+                <div class="search-bar">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="搜索无障碍设施、地点或话题" id="searchInput">
+                    <div class="search-suggestions" id="searchSuggestions">
+                        <div class="suggestion-item" onclick="selectSuggestion('坡度 ≤ 8%')">
+                            <div class="suggestion-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="suggestion-text">
+                                <div class="suggestion-title">坡度 ≤ 8%</div>
+                                <div class="suggestion-subtitle">适合轮椅的缓坡</div>
+                            </div>
+                        </div>
+                        <div class="suggestion-item" onclick="selectSuggestion('电梯停运')">
+                            <div class="suggestion-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="suggestion-text">
+                                <div class="suggestion-title">电梯停运</div>
+                                <div class="suggestion-subtitle">需要避开的设施</div>
+                            </div>
+                        </div>
+                        <div class="suggestion-item" onclick="selectSuggestion('无障碍卫生间')">
+                            <div class="suggestion-icon">
+                                <i class="fas fa-restroom"></i>
+                            </div>
+                            <div class="suggestion-text">
+                                <div class="suggestion-title">无障碍卫生间</div>
+                                <div class="suggestion-subtitle">残障人士专用设施</div>
+                            </div>
+                        </div>
+                        <div class="suggestion-item" onclick="selectSuggestion('盲道被占用')">
+                            <div class="suggestion-icon">
+                                <i class="fas fa-eye-slash"></i>
+                            </div>
+                            <div class="suggestion-text">
+                                <div class="suggestion-title">盲道被占用</div>
+                                <div class="suggestion-subtitle">需要清理的通道</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-chips">
+                    <div class="chip active" onclick="toggleFilter(this, 'all')">
+                        <i class="fas fa-globe"></i>
+                        全部
+                    </div>
+                    <div class="chip" onclick="toggleFilter(this, 'wheelchair')">
+                        <i class="fas fa-wheelchair"></i>
+                        轮椅
+                    </div>
+                    <div class="chip" onclick="toggleFilter(this, 'elevator')">
+                        <i class="fas fa-elevator"></i>
+                        电梯
+                    </div>
+                    <div class="chip" onclick="toggleFilter(this, 'restroom')">
+                        <i class="fas fa-restroom"></i>
+                        卫生间
+                    </div>
+                    <div class="chip" onclick="toggleFilter(this, 'ramp')">
+                        <i class="fas fa-chart-line"></i>
+                        坡道
+                    </div>
+                    <div class="chip" onclick="toggleFilter(this, 'blind')">
+                        <i class="fas fa-blind"></i>
+                        盲道
+                    </div>
+                </div>
+            </div>
+            
+            <div class="explore-content">
+                <div class="topics-section">
+                    <div class="section-header">
+                        <h2 class="section-title">热门话题</h2>
+                        <a href="#" class="section-action">查看全部</a>
+                    </div>
+                    
+                    <div class="topic-grid">
+                        <div class="topic-card" onclick="navigateToTopic('subway-accessibility')">
+                            <img src="https://images.unsplash.com/photo-1478147428288-7bca94085d88?w=400&h=300&fit=crop" alt="地铁无障碍" class="topic-image">
+                            <div class="topic-info">
+                                <h3 class="topic-name">地铁无障碍出行</h3>
+                                <div class="topic-stats">
+                                    <div class="topic-stat">
+                                        <i class="fas fa-fire"></i>
+                                        <span>2.3k 热度</span>
+                                    </div>
+                                    <div class="topic-stat">
+                                        <i class="fas fa-comments"></i>
+                                        <span>156 讨论</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="topic-card" onclick="navigateToTopic('shopping-mall')">
+                            <img src="https://images.unsplash.com/photo-1577705998148-f5b7d6fbf7c7?w=400&h=300&fit=crop" alt="商场无障碍" class="topic-image">
+                            <div class="topic-info">
+                                <h3 class="topic-name">商场无障碍设施</h3>
+                                <div class="topic-stats">
+                                    <div class="topic-stat">
+                                        <i class="fas fa-fire"></i>
+                                        <span>1.8k 热度</span>
+                                    </div>
+                                    <div class="topic-stat">
+                                        <i class="fas fa-comments"></i>
+                                        <span>89 讨论</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="topic-card" onclick="navigateToTopic('hospital')">
+                            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop" alt="医院无障碍" class="topic-image">
+                            <div class="topic-info">
+                                <h3 class="topic-name">医院无障碍指南</h3>
+                                <div class="topic-stats">
+                                    <div class="topic-stat">
+                                        <i class="fas fa-fire"></i>
+                                        <span>1.5k 热度</span>
+                                    </div>
+                                    <div class="topic-stat">
+                                        <i class="fas fa-comments"></i>
+                                        <span>67 讨论</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="topic-card" onclick="navigateToTopic('park')">
+                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" alt="公园无障碍" class="topic-image">
+                            <div class="topic-info">
+                                <h3 class="topic-name">公园无障碍路径</h3>
+                                <div class="topic-stats">
+                                    <div class="topic-stat">
+                                        <i class="fas fa-fire"></i>
+                                        <span>1.2k 热度</span>
+                                    </div>
+                                    <div class="topic-stat">
+                                        <i class="fas fa-comments"></i>
+                                        <span>45 讨论</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="topics-section trending-tags">
+                    <div class="section-header">
+                        <h2 class="section-title">热门标签</h2>
+                        <a href="#" class="section-action">更多</a>
+                    </div>
+                    
+                    <div class="tag-cloud">
+                        <a href="#" class="trending-tag trending">
+                            <i class="fas fa-fire"></i>
+                            #无障碍改造
+                        </a>
+                        <a href="#" class="trending-tag">
+                            <i class="fas fa-wheelchair"></i>
+                            #轮椅友好
+                        </a>
+                        <a href="#" class="trending-tag">
+                            <i class="fas fa-elevator"></i>
+                            #电梯维护
+                        </a>
+                        <a href="#" class="trending-tag">
+                            <i class="fas fa-restroom"></i>
+                            #无障碍卫生间
+                        </a>
+                        <a href="#" class="trending-tag trending">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            #避坑指南
+                        </a>
+                        <a href="#" class="trending-tag">
+                            <i class="fas fa-chart-line"></i>
+                            #坡度检测
+                        </a>
+                        <a href="#" class="trending-tag">
+                            <i class="fas fa-blind"></i>
+                            #盲道清理
+                        </a>
+                        <a href="#" class="trending-tag">
+                            <i class="fas fa-door-open"></i>
+                            #自动门
+                        </a>
+                        <a href="#" class="trending-tag">
+                            <i class="fas fa-parking"></i>
+                            #无障碍车位
+                        </a>
+                        <a href="#" class="trending-tag">
+                            <i class="fas fa-bus"></i>
+                            #公交无障碍
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="topics-section">
+                    <div class="section-header">
+                        <h2 class="section-title">发现精彩内容</h2>
+                        <a href="#" class="section-action">换一批</a>
+                    </div>
+                    
+                    <div class="waterfall-grid">
+                        <div class="waterfall-item" onclick="navigateToPost(1)">
+                            <img src="https://images.unsplash.com/photo-1589829545860-935d04ac94b9?w=400&h=600&fit=crop" alt="无障碍入口" class="waterfall-image">
+                            <div class="waterfall-content">
+                                <h3 class="waterfall-title">环球金融中心的无障碍入口设计</h3>
+                                <div class="waterfall-meta">
+                                    <div class="waterfall-author">
+                                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=32&h=32&fit=crop" alt="用户头像">
+                                        <span>无障碍探索者</span>
+                                    </div>
+                                    <div class="topic-stat">
+                                        <i class="fas fa-heart"></i>
+                                        <span>42</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="waterfall-item" onclick="navigateToPost(2)">
+                            <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=500&fit=crop" alt="无障碍卫生间" class="waterfall-image">
+                            <div class="waterfall-content">
+                                <h3 class="waterfall-title">图书馆的无障碍卫生间设施</h3>
+                                <div class="waterfall-meta">
+                                    <div class="waterfall-author">
+                                        <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=32&h=32&fit=crop" alt="用户头像">
+                                        <span>助老志愿者</span>
+                                    </div>
+                                    <div class="topic-stat">
+                                        <i class="fas fa-heart"></i>
+                                        <span>67</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="waterfall-item" onclick="navigateToPost(3)">
+                            <img src="https://images.unsplash.com/photo-1596422838299-77b6ae3752de?w=400&h=400&fit=crop" alt="盲道设计" class="waterfall-image">
+                            <div class="waterfall-content">
+                                <h3 class="waterfall-title">南京路步行街盲道设计体验</h3>
+                                <div class="waterfall-meta">
+                                    <div class="waterfall-author">
+                                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop" alt="用户头像">
+                                        <span>无障碍设计师</span>
+                                    </div>
+                                    <div class="topic-stat">
+                                        <i class="fas fa-heart"></i>
+                                        <span>89</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="waterfall-item" onclick="navigateToPost(4)">
+                            <img src="https://images.unsplash.com/photo-1577705998148-f5b7d6fbf7c7?w=400&h=300&fit=crop" alt="商场设施" class="waterfall-image">
+                            <div class="waterfall-content">
+                                <h3 class="waterfall-title">港汇恒隆广场自动门测评</h3>
+                                <div class="waterfall-meta">
+                                    <div class="waterfall-author">
+                                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop" alt="用户头像">
+                                        <span>城市观察员</span>
+                                    </div>
+                                    <div class="topic-stat">
+                                        <i class="fas fa-heart"></i>
+                                        <span>34</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="waterfall-item" onclick="navigateToPost(5)">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop" alt="地铁设施" class="waterfall-image">
+                            <div class="waterfall-content">
+                                <h3 class="waterfall-title">人民广场地铁站新增电梯体验</h3>
+                                <div class="waterfall-meta">
+                                    <div class="waterfall-author">
+                                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=32&h=32&fit=crop" alt="用户头像">
+                                        <span>城市无障碍</span>
+                                    </div>
+                                    <div class="topic-stat">
+                                        <i class="fas fa-heart"></i>
+                                        <span>128</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="waterfall-item" onclick="navigateToPost(6)">
+                            <img src="https://images.unsplash.com/photo-1559027615-cd78331d4d4a?w=400&h=500&fit=crop" alt="无障碍停车位" class="waterfall-image">
+                            <div class="waterfall-content">
+                                <h3 class="waterfall-title">商场无障碍停车位位置指南</h3>
+                                <div class="waterfall-meta">
+                                    <div class="waterfall-author">
+                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop" alt="用户头像">
+                                        <span>停车助手</span>
+                                    </div>
+                                    <div class="topic-stat">
+                                        <i class="fas fa-heart"></i>
+                                        <span>56</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="topics-section location-section">
+                    <div class="section-header">
+                        <h2 class="section-title">附近推荐</h2>
+                        <a href="#" class="section-action">地图</a>
+                    </div>
+                    
+                    <div class="location-list">
+                        <div class="location-item" onclick="navigateToLocation('shopping-mall')">
+                            <div class="location-icon">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="location-info">
+                                <div class="location-name">港汇恒隆广场</div>
+                                <div class="location-address">虹桥路1号</div>
+                                <div class="location-rating">
+                                    <i class="fas fa-star"></i>
+                                    <span>4.8</span>
+                                </div>
+                            </div>
+                            <div class="location-distance">500m</div>
+                        </div>
+                        
+                        <div class="location-item" onclick="navigateToLocation('hospital')">
+                            <div class="location-icon">
+                                <i class="fas fa-hospital"></i>
+                            </div>
+                            <div class="location-info">
+                                <div class="location-name">华山医院</div>
+                                <div class="location-address">乌鲁木齐中路12号</div>
+                                <div class="location-rating">
+                                    <i class="fas fa-star"></i>
+                                    <span>4.6</span>
+                                </div>
+                            </div>
+                            <div class="location-distance">1.2km</div>
+                        </div>
+                        
+                        <div class="location-item" onclick="navigateToLocation('park')">
+                            <div class="location-icon">
+                                <i class="fas fa-tree"></i>
+                            </div>
+                            <div class="location-info">
+                                <div class="location-name">中山公园</div>
+                                <div class="location-address">长宁路780号</div>
+                                <div class="location-rating">
+                                    <i class="fas fa-star"></i>
+                                    <span>4.7</span>
+                                </div>
+                            </div>
+                            <div class="location-distance">800m</div>
+                        </div>
+                        
+                        <div class="location-item" onclick="navigateToLocation('library')">
+                            <div class="location-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="location-info">
+                                <div class="location-name">上海图书馆</div>
+                                <div class="location-address">淮海中路1555号</div>
+                                <div class="location-rating">
+                                    <i class="fas fa-star"></i>
+                                    <span>4.9</span>
+                                </div>
+                            </div>
+                            <div class="location-distance">1.5km</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <a href="home.html" class="tab-item">
+                    <i class="fas fa-home tab-icon"></i>
+                    <span class="tab-label">首页</span>
+                </a>
+                <a href="explore.html" class="tab-item active">
+                    <i class="fas fa-compass tab-icon"></i>
+                    <span class="tab-label">发现</span>
+                </a>
+                <a href="create_post.html" class="tab-item">
+                    <i class="fas fa-plus-square tab-icon"></i>
+                    <span class="tab-label">发布</span>
+                </a>
+                <a href="notifications.html" class="tab-item">
+                    <i class="fas fa-bell tab-icon"></i>
+                    <span class="tab-label">通知</span>
+                </a>
+                <a href="profile.html" class="tab-item">
+                    <i class="fas fa-user tab-icon"></i>
+                    <span class="tab-label">我的</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentFilter = 'all';
+        let searchTimeout;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupSearch();
+            setupInfiniteScroll();
+        });
+        
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchSuggestions = document.getElementById('searchSuggestions');
+            
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                if (query.length > 0) {
+                    searchSuggestions.classList.add('show');
+                    
+                    // Simulate search delay
+                    searchTimeout = setTimeout(() => {
+                        // In real app, this would fetch from API
+                        console.log('Searching for:', query);
+                    }, 300);
+                } else {
+                    searchSuggestions.classList.remove('show');
+                }
+            });
+            
+            searchInput.addEventListener('focus', function() {
+                if (this.value.trim().length > 0) {
+                    searchSuggestions.classList.add('show');
+                }
+            });
+            
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
+                    searchSuggestions.classList.remove('show');
+                }
+            });
+        }
+        
+        function setupInfiniteScroll() {
+            const exploreContent = document.querySelector('.explore-content');
+            
+            exploreContent.addEventListener('scroll', () => {
+                if (exploreContent.scrollTop + exploreContent.clientHeight >= exploreContent.scrollHeight - 100) {
+                    loadMoreContent();
+                }
+            });
+        }
+        
+        function selectSuggestion(suggestion) {
+            const searchInput = document.getElementById('searchInput');
+            const searchSuggestions = document.getElementById('searchSuggestions');
+            
+            searchInput.value = suggestion;
+            searchSuggestions.classList.remove('show');
+            
+            // Perform search
+            console.log('Searching for:', suggestion);
+            showToast(`搜索: ${suggestion}`);
+        }
+        
+        function toggleFilter(chip, filter) {
+            const chips = document.querySelectorAll('.chip');
+            
+            chips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            
+            currentFilter = filter;
+            
+            // Add ripple effect
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            
+            const rect = chip.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            
+            chip.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+            
+            // Filter content
+            filterContent(filter);
+        }
+        
+        function filterContent(filter) {
+            // In real app, this would filter the content based on the selected filter
+            console.log('Filtering content by:', filter);
+            showToast(`筛选: ${getFilterName(filter)}`);
+        }
+        
+        function getFilterName(filter) {
+            const filterNames = {
+                'all': '全部',
+                'wheelchair': '轮椅',
+                'elevator': '电梯',
+                'restroom': '卫生间',
+                'ramp': '坡道',
+                'blind': '盲道'
+            };
+            return filterNames[filter] || '全部';
+        }
+        
+        function navigateToTopic(topicId) {
+            console.log('Navigating to topic:', topicId);
+            // In real app, this would navigate to topic detail page
+            showToast(`查看话题: ${topicId}`);
+        }
+        
+        function navigateToPost(postId) {
+            window.location.href = `post_detail.html?id=${postId}`;
+        }
+        
+        function navigateToLocation(locationId) {
+            console.log('Navigating to location:', locationId);
+            // In real app, this would navigate to location detail page
+            showToast(`查看地点: ${locationId}`);
+        }
+        
+        function loadMoreContent() {
+            // Simulate loading more content
+            const waterfallGrid = document.querySelector('.waterfall-grid');
+            
+            // Show loading state
+            const loadingItems = [
+                '<div class="waterfall-item loading-skeleton" style="height: 200px;"></div>',
+                '<div class="waterfall-item loading-skeleton" style="height: 250px;"></div>'
+            ];
+            
+            waterfallGrid.insertAdjacentHTML('beforeend', loadingItems.join(''));
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Remove loading skeletons
+                document.querySelectorAll('.loading-skeleton').forEach(item => item.remove());
+                
+                // Add new content (in real app, this would be from API)
+                const newItems = [
+                    '<div class="waterfall-item" onclick="navigateToPost(7)">' +
+                        '<img src="https://images.unsplash.com/photo-1559027615-cd78331d4d4a?w=400&h=300&fit=crop" alt="新内容" class="waterfall-image">' +
+                        '<div class="waterfall-content">' +
+                            '<h3 class="waterfall-title">新发现的无障碍设施</h3>' +
+                            '<div class="waterfall-meta">' +
+                                '<div class="waterfall-author">' +
+                                    '<img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=32&h=32&fit=crop" alt="用户头像">' +
+                                    '<span>新用户</span>' +
+                                '</div>' +
+                                '<div class="topic-stat">' +
+                                    '<i class="fas fa-heart"></i>' +
+                                    '<span>12</span>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>'
+                ];
+                
+                waterfallGrid.insertAdjacentHTML('beforeend', newItems.join(''));
+            }, 1000);
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 2000);
+        }
+        
+        // Add parallax effect to waterfall items
+        document.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.waterfall-image');
+            
+            parallaxElements.forEach(element => {
+                const speed = 0.5;
+                const yPos = -(scrolled * speed);
+                element.style.transform = `translateY(${yPos}px)`;
+            });
+        });
+    </script>
+</body>
+</html>

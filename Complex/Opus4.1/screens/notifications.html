@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>通知 - Accessibility Navigator</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="../scripts/app.js"></script>
+  <style>
+    .notifications-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-secondary);
+    }
+
+    .notification-tabs {
+      display: flex;
+      background: var(--bg-primary);
+      border-bottom: 0.5px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .notification-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .notification-tab.active {
+      color: var(--text-primary);
+    }
+
+    .notification-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: 8px;
+      right: calc(50% - 24px);
+      min-width: 18px;
+      height: 18px;
+      padding: 0 6px;
+      background: var(--danger);
+      color: white;
+      border-radius: 9px;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .notification-list {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .notification-item {
+      display: flex;
+      padding: 16px;
+      background: var(--bg-card);
+      border-bottom: 0.5px solid var(--border-light);
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .notification-item.unread {
+      background: var(--bg-primary);
+    }
+
+    .notification-item.unread::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--accent);
+    }
+
+    .notification-item:active {
+      background: var(--bg-tertiary);
+    }
+
+    .notification-item.swipeable {
+      transform: translateX(0);
+      transition: transform 0.3s;
+    }
+
+    .notification-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      margin-right: 12px;
+      object-fit: cover;
+      position: relative;
+    }
+
+    .notification-icon-overlay {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .notification-icon-overlay i {
+      font-size: 12px;
+    }
+
+    .icon-like {
+      color: #ff3b30;
+    }
+
+    .icon-comment {
+      color: #007aff;
+    }
+
+    .icon-follow {
+      color: #5856d6;
+    }
+
+    .icon-system {
+      color: #34c759;
+    }
+
+    .notification-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notification-text {
+      font-size: 14px;
+      color: var(--text-primary);
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+
+    .notification-text strong {
+      font-weight: 600;
+    }
+
+    .notification-time {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .notification-media {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      margin-left: 12px;
+    }
+
+    .notification-action {
+      padding: 6px 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 12px;
+      align-self: center;
+    }
+
+    .notification-action.following {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--bg-tertiary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .empty-icon i {
+      font-size: 36px;
+      color: var(--text-secondary);
+    }
+
+    .empty-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .empty-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .swipe-actions {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      transform: translateX(100%);
+      transition: transform 0.3s;
+    }
+
+    .swipe-action {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--danger);
+      color: white;
+      border-radius: 8px;
+      margin-left: 8px;
+      cursor: pointer;
+    }
+
+    .swipe-action.mute {
+      background: var(--warning);
+    }
+
+    .date-separator {
+      padding: 8px 16px;
+      background: var(--bg-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-align: center;
+      position: sticky;
+      top: 44px;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <div class="notch"></div>
+    <div class="status-bar">
+      <div class="time">9:41</div>
+      <div class="status-icons">
+        <i class="fas fa-signal"></i>
+        <i class="fas fa-wifi"></i>
+        <i class="fas fa-battery-full"></i>
+      </div>
+    </div>
+
+    <div class="nav-header">
+      <span style="font-size: 18px; font-weight: 600;">通知</span>
+      <span style="display: flex; gap: 16px;">
+        <i class="fas fa-check-double" style="font-size: 20px; color: var(--text-secondary); cursor: pointer;"></i>
+        <i class="fas fa-cog" style="font-size: 20px; color: var(--text-secondary); cursor: pointer;"></i>
+      </span>
+    </div>
+
+    <div class="content-area">
+      <div class="notification-tabs">
+        <div class="notification-tab active">
+          全部
+          <span class="notification-badge">12</span>
+        </div>
+        <div class="notification-tab">
+          点赞
+          <span class="notification-badge">5</span>
+        </div>
+        <div class="notification-tab">评论</div>
+        <div class="notification-tab">关注</div>
+      </div>
+
+      <div class="notification-list">
+        <div class="date-separator">今天</div>
+        
+        <div class="notification-item unread swipeable">
+          <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="" class="notification-avatar">
+          <div class="notification-icon-overlay">
+            <i class="fas fa-heart icon-like"></i>
+          </div>
+          <div class="notification-content">
+            <div class="notification-text">
+              <strong>轮椅使用者小王</strong> 赞了你的帖子
+            </div>
+            <div class="notification-time">
+              <span>2分钟前</span>
+            </div>
+          </div>
+          <img src="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?w=100&h=100&fit=crop" alt="" class="notification-media">
+        </div>
+
+        <div class="notification-item unread">
+          <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop" alt="" class="notification-avatar">
+          <div class="notification-icon-overlay">
+            <i class="fas fa-comment icon-comment"></i>
+          </div>
+          <div class="notification-content">
+            <div class="notification-text">
+              <strong>无障碍达人</strong> 评论了: "感谢分享！这个信息太有用了"
+            </div>
+            <div class="notification-time">
+              <span>15分钟前</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="notification-item unread">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="" class="notification-avatar">
+          <div class="notification-icon-overlay">
+            <i class="fas fa-user-plus icon-follow"></i>
+          </div>
+          <div class="notification-content">
+            <div class="notification-text">
+              <strong>志愿者协会</strong> 开始关注你
+            </div>
+            <div class="notification-time">
+              <span>1小时前</span>
+            </div>
+          </div>
+          <button class="notification-action" onclick="toggleFollow(this)">回关</button>
+        </div>
+
+        <div class="date-separator">昨天</div>
+
+        <div class="notification-item">
+          <div class="notification-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-bell" style="color: white; font-size: 24px;"></i>
+          </div>
+          <div class="notification-icon-overlay">
+            <i class="fas fa-info icon-system"></i>
+          </div>
+          <div class="notification-content">
+            <div class="notification-text">
+              <strong>系统通知</strong> 你的帖子"国贸站无障碍电梯"获得了优质内容标识
+            </div>
+            <div class="notification-time">
+              <span>昨天 18:30</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="notification-item">
+          <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop" alt="" class="notification-avatar">
+          <div class="notification-icon-overlay">
+            <i class="fas fa-heart icon-like"></i>
+          </div>
+          <div class="notification-content">
+            <div class="notification-text">
+              <strong>小红</strong>、<strong>小明</strong> 等12人赞了你的帖子
+            </div>
+            <div class="notification-time">
+              <span>昨天 16:42</span>
+            </div>
+          </div>
+          <img src="https://images.unsplash.com/photo-1581094794329-c8112ee50e00?w=100&h=100&fit=crop" alt="" class="notification-media">
+        </div>
+
+        <div class="notification-item">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt="" class="notification-avatar">
+          <div class="notification-icon-overlay">
+            <i class="fas fa-comment icon-comment"></i>
+          </div>
+          <div class="notification-content">
+            <div class="notification-text">
+              <strong>医院志愿者</strong> 回复了你: "@无障碍导航 确实，这里的设施很完善"
+            </div>
+            <div class="notification-time">
+              <span>昨天 14:20</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <a href="home.html" class="tab-item">
+        <i class="fas fa-home"></i>
+        <span class="tab-label">首页</span>
+      </a>
+      <a href="explore.html" class="tab-item">
+        <i class="fas fa-compass"></i>
+        <span class="tab-label">发现</span>
+      </a>
+      <a href="create_post.html" class="tab-item">
+        <i class="fas fa-plus-square"></i>
+        <span class="tab-label">发布</span>
+      </a>
+      <a href="notifications.html" class="tab-item active">
+        <i class="fas fa-bell"></i>
+        <span class="tab-label">通知</span>
+        <span class="notification-dot"></span>
+      </a>
+      <a href="profile.html" class="tab-item">
+        <i class="fas fa-user"></i>
+        <span class="tab-label">我的</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function toggleFollow(btn) {
+      if (btn.classList.contains('following')) {
+        btn.classList.remove('following');
+        btn.textContent = '回关';
+      } else {
+        btn.classList.add('following');
+        btn.textContent = '已关注';
+      }
+    }
+
+    document.querySelectorAll('.notification-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.notification-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.querySelectorAll('.swipeable').forEach(item => {
+      item.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+
+      item.addEventListener('touchmove', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        
+        if (diff > 0 && diff < 100) {
+          item.style.transform = `translateX(-${diff}px)`;
+        }
+      });
+
+      item.addEventListener('touchend', e => {
+        const diff = touchStartX - touchEndX;
+        
+        if (diff > 50) {
+          item.style.transform = 'translateX(-100px)';
+        } else {
+          item.style.transform = 'translateX(0)';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

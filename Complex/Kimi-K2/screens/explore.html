@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发现 - 无障碍社区</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #1a1a1a;
+            --card: #f8fafc;
+            --accent: #3b82f6;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --fg: #f1f5f9;
+            --card: #1e293b;
+            --accent: #60a5fa;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        .device-container {
+            width: 393px;
+            height: 852px;
+            margin: 0 auto;
+            background: var(--bg);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            background: var(--bg);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-left { font-weight: 600; }
+        .status-right { display: flex; gap: 6px; align-items: center; }
+        
+        .nav-header {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-title {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: var(--fg);
+        }
+        
+        .nav-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .search-section {
+            padding: 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .search-container {
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            background: var(--card);
+            color: var(--fg);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        
+        .filter-section {
+            padding: 16px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        
+        .filter-tab {
+            padding: 8px 16px;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            background: var(--card);
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .filter-tab.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .filter-tab:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .content-area {
+            height: calc(852px - 44px - 56px - 120px - 83px);
+            overflow-y: auto;
+            background: var(--bg);
+        }
+        
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 16px;
+        }
+        
+        .location-card {
+            background: var(--card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .location-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .location-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        
+        .location-info {
+            padding: 12px;
+        }
+        
+        .location-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .location-address {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .location-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        
+        .stars {
+            color: #f59e0b;
+        }
+        
+        .rating-text {
+            color: var(--text-secondary);
+        }
+        
+        .location-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        
+        .feature-tag {
+            background: var(--bg);
+            color: var(--text-secondary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+        
+        .feature-tag.accessible {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .feature-tag.parking {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .feature-tag.elevator {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .feature-tag.toilet {
+            background: #fce7f3;
+            color: #be185d;
+        }
+        
+        .distance-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .nearby-section {
+            padding: 16px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nearby-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .nearby-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--card);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nearby-item:hover {
+            background: var(--bg);
+            transform: translateX(4px);
+        }
+        
+        .nearby-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .nearby-info {
+            flex: 1;
+        }
+        
+        .nearby-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        
+        .nearby-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .nearby-distance {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+        
+        .bottom-nav {
+            height: 83px;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .nav-item.active {
+            color: var(--accent);
+        }
+        
+        .nav-item:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="device-container">
+        <div class="status-bar">
+            <div class="status-left">9:41</div>
+            <div class="status-right">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="nav-header">
+            <div class="nav-title">发现</div>
+            <div class="nav-actions">
+                <button class="nav-btn" onclick="window.location.href='settings.html'">
+                    <i class="fas fa-map-marker-alt"></i>
+                </button>
+                <button class="nav-btn" onclick="window.location.href='settings.html'">
+                    <i class="fas fa-filter"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="搜索无障碍地点、设施、经验分享..." id="searchInput">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+        </div>
+        
+        <!-- Filter Tabs -->
+        <div class="filter-section">
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="switchTab(this, 'nearby')">附近</button>
+                <button class="filter-tab" onclick="switchTab(this, 'accessible')">无障碍友好</button>
+                <button class="filter-tab" onclick="switchTab(this, 'maternal')">母婴友好</button>
+                <button class="filter-tab" onclick="switchTab(this, 'elderly')">长者友好</button>
+                <button class="filter-tab" onclick="switchTab(this, 'recent')">最新发布</button>
+            </div>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Nearby Locations Grid -->
+            <div class="location-grid">
+                <div class="location-card hover-card" onclick="window.location.href='post_detail.html'">
+                    <div style="position: relative;">
+                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=240&fit=crop" alt="万达广场" class="location-image">
+                        <div class="distance-badge">500m</div>
+                    </div>
+                    <div class="location-info">
+                        <div class="location-name">万达广场</div>
+                        <div class="location-address">建国路93号</div>
+                        <div class="location-rating">
+                            <span class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></span>
+                            <span class="rating-text">4.2 (89)</span>
+                        </div>
+                        <div class="location-features">
+                            <span class="feature-tag accessible">♿ 坡道</span>
+                            <span class="feature-tag elevator">🛗 电梯</span>
+                            <span class="feature-tag toilet">🚻 无障碍厕所</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="location-card hover-card" onclick="window.location.href='post_detail.html'">
+                    <div style="position: relative;">
+                        <img src="https://images.unsplash.com/photo-1588681573688-82d89a067e6c?w=300&h=240&fit=crop" alt="市民中心" class="location-image">
+                        <div class="distance-badge">800m</div>
+                    </div>
+                    <div class="location-info">
+                        <div class="location-name">市民中心</div>
+                        <div class="location-address">解放大道1号</div>
+                        <div class="location-rating">
+                            <span class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
+                            <span class="rating-text">4.8 (156)</span>
+                        </div>
+                        <div class="location-features">
+                            <span class="feature-tag accessible">♿ 坡道</span>
+                            <span class="feature-tag parking">🅿️ 专用停车</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="location-card hover-card" onclick="window.location.href='post_detail.html'">
+                    <div style="position: relative;">
+                        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3cac?w=300&h=240&fit=crop" alt="中山公园" class="location-image">
+                        <div class="distance-badge">1.2km</div>
+                    </div>
+                    <div class="location-info">
+                        <div class="location-name">中山公园</div>
+                        <div class="location-address">中山大道100号</div>
+                        <div class="location-rating">
+                            <span class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></span>
+                            <span class="rating-text">4.0 (67)</span>
+                        </div>
+                        <div class="location-features">
+                            <span class="feature-tag accessible">♿ 盲道</span>
+                            <span class="feature-tag toilet">🚻 无障碍厕所</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="location-card hover-card" onclick="window.location.href='post_detail.html'">
+                    <div style="position: relative;">
+                        <img src="https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=300&h=240&fit=crop" alt="市人民医院" class="location-image">
+                        <div class="distance-badge">1.5km</div>
+                    </div>
+                    <div class="location-info">
+                        <div class="location-name">市人民医院</div>
+                        <div class="location-address">健康路1号</div>
+                        <div class="location-rating">
+                            <span class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
+                            <span class="rating-text">4.9 (234)</span>
+                        </div>
+                        <div class="location-features">
+                            <span class="feature-tag accessible">♿ 专用通道</span>
+                            <span class="feature-tag elevator">🛗 电梯</span>
+                            <span class="feature-tag toilet">🚻 无障碍厕所</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Nearby Recommendations -->
+            <div class="nearby-section">
+                <h3 class="section-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    附近推荐
+                </h3>
+                
+                <div class="nearby-list">
+                    <div class="nearby-item" onclick="window.location.href='route_preview.html'">
+                        <div class="nearby-icon">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <div class="nearby-info">
+                            <div class="nearby-name">无障碍路线规划</div>
+                            <div class="nearby-desc">智能推荐最佳通行路径</div>
+                        </div>
+                        <div class="nearby-distance"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    
+                    <div class="nearby-item" onclick="window.location.href='report_issue.html'">
+                        <div class="nearby-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="nearby-info">
+                            <div class="nearby-name">上报问题</div>
+                            <div class="nearby-desc">发现无障碍设施问题及时上报</div>
+                        </div>
+                        <div class="nearby-distance"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    
+                    <div class="nearby-item" onclick="window.location.href='explore.html'">
+                        <div class="nearby-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="nearby-info">
+                            <div class="nearby-name">社区协作</div>
+                            <div class="nearby-desc">与其他用户分享经验</div>
+                        </div>
+                        <div class="nearby-distance"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item" onclick="window.location.href='home.html'">
+                <i class="fas fa-home nav-icon"></i>
+                <span>首页</span>
+            </button>
+            
+            <button class="nav-item active" onclick="window.location.href='explore.html'">
+                <i class="fas fa-compass nav-icon"></i>
+                <span>发现</span>
+            </button>
+            
+            <button class="nav-item ripple-btn" onclick="window.location.href='create_post.html'" data-ripple="true">
+                <i class="fas fa-plus-circle nav-icon"></i>
+                <span>发布</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='messages.html'">
+                <i class="fas fa-comment-dots nav-icon"></i>
+                <span>消息</span>
+            </button>
+            
+            <button class="nav-item" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user nav-icon"></i>
+                <span>我的</span>
+            </button>
+        </nav>
+    </div>
+    
+    <script>
+        function switchTab(element, category) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            element.classList.add('active');
+            
+            // Filter content based on category
+            filterContent(category);
+        }
+        
+        function filterContent(category) {
+            const locations = document.querySelectorAll('.location-card');
+            const nearbyItems = document.querySelectorAll('.nearby-item');
+            
+            // Simple filtering logic - in real app, this would be more sophisticated
+            locations.forEach(location => {
+                const features = location.querySelectorAll('.feature-tag');
+                let shouldShow = true;
+                
+                if (category === 'accessible') {
+                    shouldShow = Array.from(features).some(feature => 
+                        feature.classList.contains('accessible')
+                    );
+                } else if (category === 'maternal') {
+                    shouldShow = location.textContent.includes('母婴') || 
+                                location.textContent.includes('婴儿');
+                } else if (category === 'elderly') {
+                    shouldShow = location.textContent.includes('长者') || 
+                                location.textContent.includes('老年');
+                }
+                
+                location.style.display = shouldShow ? 'block' : 'none';
+            });
+            
+            // Show/hide nearby recommendations based on category
+            const nearbySection = document.querySelector('.nearby-section');
+            if (category === 'recent' || category === 'accessible') {
+                nearbySection.style.display = 'block';
+            } else {
+                nearbySection.style.display = 'none';
+            }
+        }
+        
+        function searchLocations() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const locations = document.querySelectorAll('.location-card');
+            
+            locations.forEach(location => {
+                const name = location.querySelector('.location-name').textContent.toLowerCase();
+                const address = location.querySelector('.location-address').textContent.toLowerCase();
+                const features = Array.from(location.querySelectorAll('.feature-tag'))
+                    .map(tag => tag.textContent.toLowerCase()).join(' ');
+                
+                const matches = name.includes(searchTerm) || 
+                               address.includes(searchTerm) || 
+                               features.includes(searchTerm);
+                
+                location.style.display = matches ? 'block' : 'none';
+            });
+        }
+        
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', searchLocations);
+        
+        // Get user's location (with permission)
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        console.log('User location:', position.coords);
+                        // Update distance badges based on actual location
+                        updateDistances(position.coords);
+                    },
+                    (error) => {
+                        console.log('Location access denied');
+                    }
+                );
+            }
+        }
+        
+        function updateDistances(userCoords) {
+            // This would calculate actual distances in a real app
+            // For now, we'll just show that we have location access
+            const distanceBadges = document.querySelectorAll('.distance-badge');
+            distanceBadges.forEach(badge => {
+                badge.style.background = 'rgba(59, 130, 246, 0.9)';
+            });
+        }
+        
+        // Request location on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            getUserLocation();
+        });
+        
+        // Handle location card clicks
+        document.querySelectorAll('.location-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const locationName = this.querySelector('.location-name').textContent;
+                console.log('Selected location:', locationName);
+                // Navigate to detail page or show more info
+            });
+        });
+    </script>
+</body>
+</html>

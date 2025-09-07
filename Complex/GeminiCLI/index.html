@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无障碍社区 - 原型仪表盘</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 40px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 40px;
+            justify-items: center;
+        }
+        .iframe-container {
+            position: relative;
+            width: 413px; /* 393 + 10*2 border */
+            height: 872px; /* 852 + 10*2 border */
+            border-radius: 10px;
+            background: #fff;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .iframe-container h2 {
+            font-size: 14px;
+            text-align: center;
+            margin: 5px 0 15px;
+            color: #555;
+            font-weight: 500;
+        }
+        iframe {
+            width: 393px;
+            height: 852px;
+            border: none;
+            border-radius: 28px; /* Match device spec */
+            transform-origin: top left;
+        }
+    </style>
+</head>
+<body>
+    <h1>无障碍社区 - 原型仪表盘</h1>
+    <div class="dashboard-grid">
+        <div class="iframe-container">
+            <h2>screens/onboarding.html</h2>
+            <iframe src="screens/onboarding.html"></iframe>
+        </div>
+        <div class="iframe-container">
+            <h2>screens/login.html</h2>
+            <iframe src="screens/login.html"></iframe>
+        </div>
+        <div class="iframe-container">
+            <h2>screens/home.html</h2>
+            <iframe src="screens/home.html"></iframe>
+        </div>
+        <div class="iframe-container">
+            <h2>screens/explore.html</h2>
+            <iframe src="screens/explore.html"></iframe>
+        </div>
+        <div class="iframe-container">
+            <h2>screens/post_detail.html</h2>
+            <iframe src="screens/post_detail.html"></iframe>
+        </div>
+        <div class="iframe-container">
+            <h2>screens/create_post.html</h2>
+            <iframe src="screens/create_post.html"></iframe>
+        </div>
+        <div class="iframe-container">
+            <h2>screens/notifications.html</h2>
+            <iframe src="screens/notifications.html"></iframe>
+        </div>
+        <div class="iframe-container">
+            <h2>screens/messages.html</h2>
+            <iframe src="screens/messages.html"></iframe>
+        </div>
+        <div class="iframe-container">
+            <h2>screens/profile.html</h2>
+            <iframe src="screens/profile.html"></iframe>
+        </div>
+        <div class="iframe-container">
+            <h2>screens/settings.html</h2>
+            <iframe src="screens/settings.html"></iframe>
+        </div>
+        <div class="iframe-container">
+            <h2>screens/report_issue.html</h2>
+            <iframe src="screens/report_issue.html"></iframe>
+        </div>
+        <div class="iframe-container">
+            <h2>screens/route_preview.html</h2>
+            <iframe src="screens/route_preview.html"></iframe>
+        </div>
+    </div>
+</body>
+</html>

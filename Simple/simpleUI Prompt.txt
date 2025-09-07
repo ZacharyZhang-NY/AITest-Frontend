@@ -1,0 +1,310 @@
+我正在开发「城市无障碍导航（Accessibility Navigator）」平台的官网首页。
+请以交互设计师 + 动效设计师 + 前端工程师的视角，用原生 Web 能力（不使用 GSAP、jQuery、第三方滚动库）构建页面，并在本地生成多文件：
+
+./index.html
+
+./styles.css
+
+./app.js（核心交互与滚动驱动）
+
+./qa.js（运行时自检与状态浮标）
+
+./assets/（图片；使用真实可访问 URL，禁止占位符）
+
+禁止：SVG、Lottie、WebGL、任何第三方动画库。
+允许：HTML/CSS、位图（PNG/JPG/WebP）、原生 CSS Scroll-Linked Animations（@scroll-timeline / animation-timeline）、IntersectionObserver、Web Animations API（WAAPI）、CSS @keyframes、View Transitions API（可选，需降级）。
+输出要求：不要在消息中回显代码；只在本地保存上述文件，成功后回一句“已生成全部文件，自检通过”。
+
+0）工程与运行约束（必须遵守）
+
+无 GSAP、无第三方动画/滚动库；只用原生 API。
+
+无 SVG/Lottie：所有遮罩与形变改用 clip-path、mask-image: linear-gradient()、3D transform、滤镜（filter）。
+
+分层解耦：
+
+app.js：滚动进度、分章控制、交互逻辑、降级。
+
+qa.js：自检与状态浮标，仅暴露 runQA()。
+
+可访问性/降级：满足 prefers-reduced-motion、无 ScrollTimeline 支持、脚本失败等情形下内容可读。
+
+性能红线：首屏渲染流畅（无长任务 > 200ms），图片懒加载，关键动画合成层（will-change: transform 仅在动画前设置，结束后移除）。
+
+1）视觉基调与资产（必须具体落地）
+
+配色：#111827（深灰蓝）/ #0EA5E9（强调蓝）/ #22C55E（可达绿）/ #F8FAFC（浅背景）。
+
+字体：系统栈或 Inter（CDN）。
+
+图片（真实 URL）：从 Unsplash/Pexels 选 3–5 张与“坡道、电梯、无障碍通道、导盲道、地铁电梯”相关的可直链图片。
+
+示例主题关键词：wheelchair ramp, accessible elevator, tactile paving, city sidewalk night.
+
+图片均 loading="lazy"，并有宽高/aspect-ratio 以防 Cumulative Layout Shift。
+
+图标：PNG/WebP 或 Emoji（🧭 🦽 🛗 🚻），大小与像素密度成套（1x/2x）。
+
+2）页面信息结构与文件架构
+
+导航结构：Hero → About → Journey(A/B/C) → Map Teasers → Features → Community → FAQ → CTA。
+
+HTML 语义：<header> / <main> / <section> / <footer>，每个 section 有唯一 id 和 <h2>。
+
+文件：
+
+index.html：完整 DOM + 必需 meta（viewport、color-scheme、theme-color）。
+
+styles.css：变量（颜色、间距、阴影）、栅格与断点、scroll-timeline 定义、关键帧与实用类。
+
+app.js：滚动驱动（ScrollTimeline 或 IO+WAAPI 回退）、视差/计数器/手风琴/hover 3D、进度条、View Transitions。
+
+qa.js：0 错误自检（见第 6 节）。
+
+3）分区内容与高级特效（逐节硬性规范）
+
+滚动驱动准则：
+
+有支持时用 CSS Scroll-Linked Animations（@scroll-timeline + animation-timeline）绑定到容器；
+
+无支持时，用 IntersectionObserver + 请求动画帧（rAF）计算局部进度（0→1），写入 --progress CSS 变量，CSS 利用 calc()/var() 插值变换；
+
+需要“章节停留（pin）”效果时，用 position: sticky; top: 0 实现，外层给出足量高度（“滚动剧场”）。
+
+(1) Hero（#sec-hero）
+
+内容
+
+H1「Move Freely, Access Easily」+ 副标语（突出“坡度、电梯、无障碍卫生间优化”）。
+
+Primary CTA「Plan an Accessible Route」；Secondary CTA「How it works」。
+
+右侧/下方大型实景图 + 顶角角标：“18,000+ intersections mapped”。
+
+特效
+
+入场：文本组 位移+淡入（20px → 0 / 0→1）；背景图 模糊→清晰（filter: blur(8px)→0）。
+
+微视差：容器滚动时，背景图 y 平移至 -10%，文案 +5%（基于 --progress）。
+
+磁性按钮：鼠标进入主 CTA，按钮中心朝光标偏移（限制在 8px 内），阴影随偏移变化，移出后回弹。
+
+进度条：顶端 2px，使用 scaleX 随页面总进度更新。
+
+(2) About（#sec-about）
+
+内容
+
+标题：为什么无障碍导航重要
+
+三大数据点：18,000+ 路口 / 3,200+ 建筑入口 / 社区校验每日更新
+
+辅图一张 + 顶部细说明条（数据来源）
+
+特效
+
+卡片瀑布：网格卡片按 DOM 顺序延迟弹入（scale: .96→1，opacity: 0→1）。
+
+背景视差：背景层 y:-8%，卡片 y:+4%。
+
+说明条：clip-path: inset(0 0 100% 0)→inset(0 0 0 0) 拉幕式显现。
+
+(3) Journey（#sec-journey · 三幕剧）
+
+每一幕是一个 sticky 剧场：内部有“前景层（文案/卡片）+ 背景层（实景图/纹理）”，外层容器高度为 150–200vh，必须滚完当前幕才进入下一幕。
+
+幕 A（起点可达性）
+
+内容：判定卡片“入口 OK/Not OK”；若 Not OK，提示最近可达入口距离（米）。
+
+特效：
+
+开场 卷轴拉幕：容器 mask-image: linear-gradient 由 0→100% 展开；
+
+判定卡片 自底进入（24px→0 + 弹性）；
+
+Not OK 分支：卡片边框 两次脉冲（阴影/边线宽度轻微涨落）。
+
+幕 B（路段坡度）
+
+内容：数字指示牌展示“最大坡度 x% / 替代路段 y 米”；侧栏小卡列“路缘、盲道、路面材质”。
+
+特效：
+
+数字计数器：WAAPI/rAF 从 0→目标值（带 easeOutCubic），千分位格式化；
+
+小卡 网格弹出；
+
+底部“替代路径建议” 从左滑入，并伴随轻微 高亮呼吸 2 次。
+
+幕 C（目的地设施）
+
+内容：勾选清单“门宽≥xx cm / 电梯 / 无障碍卫生间”+ 实景图。
+
+特效：
+
+勾选项 依次 tick（scale .8→1 + 透明度）；
+
+右侧图 1.02→1 温和缩放入场；
+
+“Proceed to plan” 按钮 双次呼吸光影（阴影/亮度）。
+
+(4) Map Teasers（#sec-map）
+
+内容
+
+三卡：① 坡度优先 ② 电梯优先 ③ 就近卫生间。每卡：标题、两行解释、PNG 图标、相关位图。
+
+特效
+
+水平滑入：各卡从 x:40px → 0 依次进场；
+
+悬浮摇摆：停留时 y 在 -4px↔0px 之间 yoyo 两次；
+
+渐变背景动画：线性渐变角度随滚动从 30deg → 75deg（通过 CSS 自定义属性插值）。
+
+(5) Features（#sec-features）
+
+内容
+
+4–6 张功能卡（坡度阈值、路缘识别、语音提示、离线包、设施提醒、社区纠错）。
+
+特效
+
+瀑布入场：延迟步进 0.08s；
+
+3D 倾斜：鼠标移动时卡片基于容器中心产生 3D 倾角（最大 6deg），阴影随之变化；移动端禁用倾斜，仅保留 hover 高亮。
+
+(6) Community（#sec-crowd）
+
+内容
+
+水平三步：上传照片 → 审核 → 地图更新；右侧实景图。
+
+特效
+
+时间轴填充：横向进度条宽度随滚动 0→100%；
+
+步骤揭示：每步卡片透明度与位移联动；
+
+提示浮签：小气泡（如“模糊车牌/人脸”）从 0→1 弹出。
+
+(7) FAQ（#sec-faq）
+
+内容
+
+5–7 个手风琴：数据准确性、纠错、离线、隐私、电量优化等。
+
+特效
+
+柔性展开：用 WAAPI 或 element.animate() 对 max-height/opacity 组合补间，避免闪跳；
+
+键盘可用：Enter/Space 展开，Tab 顺序合理，aria-expanded 同步。
+
+(8) CTA（#sec-cta）
+
+内容
+
+强调语 + 主按钮“Start planning now” + 次按钮“Share a report”；背景强对比实景图。
+
+特效
+
+对比度渐升：背景 filter: contrast(.9→1)；
+
+整体上浮：容器 y: 12px 过渡；
+
+按钮脉冲：两次呼吸光影后静止。
+
+4）滚动与状态驱动（实现细节）
+
+优先：CSS @scroll-timeline（为每个 section 定义 timeline，子元素 animation-timeline 绑定对应时间轴）。
+
+回退：若浏览器不支持，app.js 中用 IntersectionObserver 监听各 section，计算本段滚动进度（进入视口到离开视口的比例），写入 style.setProperty('--progress', t)；CSS 与 WAAPI 均从 --progress 读取。
+
+进度条：监听页面滚动距离，计算总进度 0–1，更新 #scroll-progress 的 transform: scaleX()。
+
+sticky pin：Journey 三幕、Hero 实现“章节停留”靠 position: sticky; top: 0 + 外层高度；小屏降级（禁用 sticky，仅淡入）。
+
+5）响应式与无障碍（必须实现）
+
+断点：≥1280px 桌面；1024–1279px 缩短 Journey 每幕剧场高度 15%；640–1023px 将 Journey 合并为两幕（A、C），B 的指标合并进 A；<640px 禁用 sticky，仅保留淡入位移。
+
+可访问性：
+
+语义化标题：页面 1 个 <h1>，每节 <h2>；
+
+所有交互（CTA、手风琴）可用键盘操作，焦点可见；
+
+颜色对比 ≥ 4.5:1；
+
+prefers-reduced-motion: reduce 时禁用大位移、sticky、3D 倾斜，仅保留不影响信息获取的过渡。
+
+View Transitions API（可选）：若可用，用于锚点跳转/手风琴开合过渡；否则静默退化。
+
+6）发布前 QA / 自检到 0 错误（qa.js 必须实现）
+
+运行时自检包含自动化与人工核查两部分；任何一项未通过，必须修复并重跑。
+
+A. 自动化运行时自检（页面加载后自动执行）
+
+Console 0 错误：捕获 window.onerror / unhandledrejection，统计为 0。
+
+网络 0 失败：遍历 <img> 检查 naturalWidth > 0；失败高亮相关卡片，加标题“Image failed”。
+
+滚动系统可用：
+
+若支持 ScrollTimeline：CSS.supports('animation-timeline: auto') === true；
+
+否则回退路径生效：document.documentElement 上存在 --progress 更新（可抽样 3 次变化 > 0）。
+
+章节齐备：#sec-hero～#sec-cta 均存在；且 sticky 区（Hero、Journey A/B/C）在 ≥1024px 下 position: sticky 实测生效。
+
+动画计数：关键元素（Hero 文本、About 卡片、Journey 勾选、Map 卡片）在进入视区后 opacity == 1 且 transform 不为初值。
+
+可访问性快检：存在 <h1> 与各 <h2>；主 CTA 可 tab 聚焦；aria-expanded 在 FAQ 切换时变更。
+
+降级可用：模拟不支持 ScrollTimeline 时（将 supports 返回 false），内容仍可读、CTA 可点。
+
+状态浮标：右下角浮标（绿=全部通过；红=失败并显示首个失败原因），点击展开查看详细清单；失败项 DOM 加红色 outline。
+
+B. 人工核查（清单渲染在页面底部“Debug Panel”，默认隐藏）
+
+桌面 Chrome：Hero→CTA 连续滚动，无闪烁/跳帧。
+
+prefers-reduced-motion: reduce：明显降级，阅读不受影响。
+
+iOS/Android（或模拟器）宽 375–430：无溢出、手风琴顺畅、CTA 可点击。
+
+慢网/断网：懒加载不破版，文本不被遮挡。
+
+Lighthouse（或等效）目标：Performance ≥ 90 / Accessibility ≥ 90 / Best Practices ≥ 90（SEO 非必达）。
+
+文案数值一致（18,000+ / 3,200+ / updated daily）。
+
+锚点/按钮跳转正确，焦点管理合理（返回顶部后焦点不丢失）。
+
+最终回执：全部自动化与人工清单通过后，仅返回“已生成全部文件，自检通过”。
+
+7）交付与目录
+
+不要在消息中回显任何源码。
+
+在本地生成：
+
+index.html（含所有 section 与真实图片 URL）
+
+styles.css（颜色变量、断点、滚动时间线、clip-path 与关键帧）
+
+app.js（滚动进度、视差、计数器、3D 倾斜、手风琴、进度条、降级逻辑）
+
+qa.js（上文所有自检逻辑与状态浮标）
+
+assets/（所用图片，如为远程 URL 亦在此备份或留文件列表）
+
+8）质量优先工作模式
+
+允许使用任意时间进行step-by-step 深思（ultrathink mode）。
+
+先粗版 → 精修 → 回归 → 自检全绿 → 交付声明。
+
+不接受敷衍：任何警告、缺图、动画失效、可访问性错误都必须解决。

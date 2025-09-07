@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN" data-fontscale="base">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>上报问题 · 无障碍社区</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="../styles/global.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style> body { font-family: Inter, ui-sans-serif, system-ui; } .okbar{height:8px;background:linear-gradient(90deg,#10b981,var(--accent));width:0;border-radius:9999px} </style>
+</head>
+<body data-theme="light" data-current-tab="profile" class="bg-[color:var(--bg)] text-[color:var(--fg)]">
+  <div class="device" role="form" aria-label="上报问题">
+    <div class="dynamic-island" aria-hidden="true"></div>
+    <div class="status-bar"><div>9:41</div><div class="right">📶 📡 🔋</div></div>
+
+    <header class="title-bar">
+      <a class="btn" aria-label="返回" href="settings.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title">上报问题</div>
+      <div></div>
+    </header>
+
+    <main class="content p-3 space-y-3">
+      <form class="card p-3 space-y-3" onsubmit="event.preventDefault(); submitIssue()">
+        <label class="block text-sm">类型
+          <select id="issueType" class="mt-1 w-full px-3 py-2 border rounded-xl bg-[color:var(--bg)]">
+            <option>电梯停运</option>
+            <option>路缘过高</option>
+            <option>盲道被占</option>
+            <option>设施损坏</option>
+          </select>
+        </label>
+        <label class="block text-sm">位置
+          <input id="issuePlace" class="mt-1 w-full px-3 py-2 border rounded-xl bg-[color:var(--bg)]" placeholder="示例：××地铁站南口"/>
+        </label>
+        <label class="block text-sm">描述
+          <textarea class="mt-1 w-full px-3 py-2 border rounded-xl bg-[color:var(--bg)]" rows="3" placeholder="简述问题与影响"></textarea>
+        </label>
+        <label class="block text-sm">上传照片
+          <input type="file" accept="image/*" multiple />
+        </label>
+        <button class="w-full py-2 rounded-xl bg-[color:var(--accent)] text-white ripple" type="submit">提交</button>
+      </form>
+      <div class="card p-3">
+        <div id="ack" class="hidden text-[color:var(--accent)]"><i class="fa-solid fa-circle-check"></i> 已接收，我们会尽快处理</div>
+        <div class="h-1 bg-gray-200 rounded overflow-hidden mt-2"><div id="okbar" class="okbar"></div></div>
+      </div>
+    </main>
+
+    <nav class="tab-bar" aria-label="底部导航">
+      <a class="tab-item" data-tab="home" href="home.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+      <a class="tab-item" data-tab="explore" href="explore.html"><i class="fa-regular fa-compass"></i><span>Explore</span></a>
+      <a class="tab-item" data-tab="create" href="create_post.html"><i class="fa-solid fa-circle-plus"></i><span>Create</span></a>
+      <a class="tab-item" data-tab="inbox" href="messages.html"><i class="fa-regular fa-message"></i><span>Inbox</span></a>
+      <a class="tab-item" data-tab="profile" href="profile.html"><i class="fa-regular fa-user"></i><span>Profile</span></a>
+    </nav>
+  </div>
+
+  <script>
+    async function submitIssue(){
+      const bar = document.getElementById('okbar');
+      bar.animate([{width:'0%'},{width:'100%'}],{duration:800,fill:'forwards',easing:'ease-in-out'});
+      await new Promise(r=>setTimeout(r,850));
+      document.getElementById('ack').classList.remove('hidden');
+    }
+  </script>
+  <script src="../scripts/observer.js" defer></script>
+  <script src="../scripts/waapi.js" defer></script>
+  <script src="../scripts/app.js" defer></script>
+</body>
+</html>
+

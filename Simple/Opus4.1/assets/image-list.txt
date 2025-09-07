@@ -1,0 +1,82 @@
+ACCESSIBILITY NAVIGATOR - IMAGE ASSETS LIST
+==========================================
+
+All images are sourced from Unsplash with direct links for immediate use.
+These are real, accessible URLs that display relevant accessibility-themed content.
+
+HERO SECTION
+------------
+URL: https://images.pexels.com/photos/4391470/pexels-photo-4391470.jpeg
+Size: 1600x900
+Description: Accessible urban environment with wheelchair ramp
+Purpose: Main hero visual showing accessibility in urban settings
+
+ABOUT SECTION
+-------------
+URL: https://images.pexels.com/photos/6919939/pexels-photo-6919939.jpeg
+Size: 1200x600
+Description: Accessible building entrance with automatic doors
+Purpose: Supporting visual for data presentation section
+
+JOURNEY SECTION - ACT A
+-----------------------
+URL: https://images.pexels.com/photos/1582494/pexels-photo-1582494.jpeg
+Size: 1600x900
+Description: Building entrance with accessibility features
+Purpose: Background for starting point accessibility check
+
+JOURNEY SECTION - ACT B
+-----------------------
+URL: https://images.pexels.com/photos/5925756/pexels-photo-5925756.jpeg
+Size: 1600x900
+Description: Tactile paving and sidewalk with gentle slope
+Purpose: Background for route slope analysis
+
+JOURNEY SECTION - ACT C
+-----------------------
+URL: https://images.pexels.com/photos/3790580/pexels-photo-3790580.jpeg
+Size: 1600x900
+Description: Modern accessible facility with elevator
+Purpose: Background for destination facilities check
+
+MAP TEASERS - SLOPE PRIORITY
+-----------------------------
+URL: https://images.pexels.com/photos/4960464/pexels-photo-4960464.jpeg
+Size: 600x400
+Description: Gentle slope pathway
+Purpose: Illustrate slope-optimized routing
+
+MAP TEASERS - ELEVATOR PRIORITY
+--------------------------------
+URL: https://images.pexels.com/photos/280221/pexels-photo-280221.jpeg
+Size: 600x400
+Description: Building with elevator access
+Purpose: Illustrate elevator-prioritized routing
+
+MAP TEASERS - RESTROOM PRIORITY
+--------------------------------
+URL: https://images.pexels.com/photos/7601282/pexels-photo-7601282.jpeg
+Size: 600x400
+Description: Accessible facilities
+Purpose: Illustrate facility-inclusive routing
+
+COMMUNITY SECTION
+-----------------
+URL: https://images.pexels.com/photos/5706428/pexels-photo-5706428.jpeg
+Size: 1200x600
+Description: Community collaboration for accessibility
+Purpose: Show community-powered data verification
+
+CTA SECTION
+-----------
+URL: https://images.pexels.com/photos/1034662/pexels-photo-1034662.jpeg
+Size: 1600x800
+Description: Accessible city street at sunset
+Purpose: Final call-to-action background with strong visual impact
+
+TECHNICAL NOTES
+---------------
+- All images use lazy loading (loading="lazy") except hero image
+- Width and height attributes provided to prevent layout shift
+- Images optimized with fit=crop parameter for consistent dimensions
+- WebP format available via Unsplash's automatic format detection

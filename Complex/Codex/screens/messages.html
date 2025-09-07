@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN" data-fontscale="base">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>私信 · 无障碍社区</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="../styles/global.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style> body { font-family: Inter, ui-sans-serif, system-ui; } .bubble{max-width:70%;padding:.5rem .75rem;border-radius:14px;} .left{background:var(--card);border:1px solid var(--border);} .right{background:var(--accent);color:#fff;margin-left:auto;} </style>
+</head>
+<body data-theme="light" data-current-tab="inbox" class="bg-[color:var(--bg)] text-[color:var(--fg)]">
+  <div class="device" role="application" aria-label="私信">
+    <div class="dynamic-island" aria-hidden="true"></div>
+    <div class="status-bar"><div>9:41</div><div class="right">📶 📡 🔋</div></div>
+
+    <header class="title-bar">
+      <a class="btn" aria-label="返回" href="home.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title">私信</div>
+      <div class="flex items-center gap-1 justify-end">
+        <a class="btn" href="notifications.html" aria-label="通知"><i class="fa-regular fa-bell"></i></a>
+      </div>
+    </header>
+
+    <main class="content flex">
+      <aside class="w-full p-3 border-r" aria-label="会话列表">
+        <ul class="divide-y">
+          <li><a class="flex items-center gap-3 p-2" href="#" onclick="openChat('志愿者A')"><img class="w-9 h-9 rounded-full object-cover" src="https://source.unsplash.com/100x100/?person,volunteer" alt="头像"/><div><div class="font-semibold">志愿者A</div><div class="text-xs text-[color:var(--muted)]">谢谢你的反馈</div></div></a></li>
+          <li><a class="flex items-center gap-3 p-2" href="#" onclick="openChat('城市管理员')"><img class="w-9 h-9 rounded-full object-cover" src="https://source.unsplash.com/100x100/?person,city" alt="头像"/><div><div class="font-semibold">城市管理员</div><div class="text-xs text-[color:var(--muted)]">问题已转交维护</div></div></a></li>
+        </ul>
+      </aside>
+      <section class="hidden flex-1 flex-col" id="chatPane" aria-label="会话">
+        <header class="p-2 border-b font-semibold" id="chatTitle">会话</header>
+        <div id="chatBody" class="flex-1 p-3 space-y-2 overflow-y-auto">
+          <div class="bubble left">你好，我是站务志愿者。</div>
+          <div class="bubble right">你好，电梯今晚恢复了吗？</div>
+        </div>
+        <form class="p-2 border-t flex items-center gap-2" onsubmit="event.preventDefault(); sendMsg()">
+          <input id="chatInput" class="flex-1 px-3 py-2 border rounded-xl bg-[color:var(--bg)]" placeholder="输入消息…"/>
+          <button class="px-3 py-2 rounded-xl bg-[color:var(--accent)] text-white">发送</button>
+        </form>
+      </section>
+    </main>
+
+    <nav class="tab-bar" aria-label="底部导航">
+      <a class="tab-item" data-tab="home" href="home.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+      <a class="tab-item" data-tab="explore" href="explore.html"><i class="fa-regular fa-compass"></i><span>Explore</span></a>
+      <a class="tab-item" data-tab="create" href="create_post.html"><i class="fa-solid fa-circle-plus"></i><span>Create</span></a>
+      <a class="tab-item active" data-tab="inbox" href="messages.html" aria-current="page"><i class="fa-regular fa-message"></i><span>Inbox</span></a>
+      <a class="tab-item" data-tab="profile" href="profile.html"><i class="fa-regular fa-user"></i><span>Profile</span></a>
+    </nav>
+  </div>
+
+  <script>
+    function openChat(name){
+      document.getElementById('chatPane').classList.remove('hidden');
+      document.getElementById('chatTitle').textContent = name;
+    }
+    function sendMsg(){
+      const input = document.getElementById('chatInput');
+      const body = document.getElementById('chatBody');
+      if(!input.value.trim()) return;
+      const div = document.createElement('div'); div.className='bubble right'; div.textContent=input.value; body.appendChild(div); input.value=''; body.scrollTop = body.scrollHeight;
+    }
+  </script>
+  <script src="../scripts/observer.js" defer></script>
+  <script src="../scripts/waapi.js" defer></script>
+  <script src="../scripts/app.js" defer></script>
+</body>
+</html>
+

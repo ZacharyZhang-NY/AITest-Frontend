@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>私信 - Accessibility Navigator</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  
+  <style>
+    .messages-container {
+      height: calc(100vh - var(--status-bar-height) - var(--nav-bar-height));
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .conversation-list {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg-primary);
+    }
+    
+    .conversation-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-lg) var(--space-md);
+      cursor: pointer;
+      transition: background var(--duration-fast) var(--ease-out);
+      position: relative;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .conversation-item:hover {
+      background: var(--bg-secondary);
+    }
+    
+    .conversation-item.unread {
+      background: rgba(0, 122, 255, 0.05);
+    }
+    
+    .conversation-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      position: relative;
+    }
+    
+    .online-indicator {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 12px;
+      height: 12px;
+      background: var(--accent-green);
+      border: 2px solid white;
+      border-radius: 50%;
+    }
+    
+    .conversation-content {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .conversation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-xs);
+    }
+    
+    .conversation-name {
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .conversation-time {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+    
+    .conversation-preview {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .conversation-preview.unread {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .unread-badge {
+      position: absolute;
+      top: var(--space-md);
+      right: var(--space-md);
+      background: var(--accent-blue);
+      color: white;
+      border-radius: 10px;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 600;
+      min-width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .chat-view {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-primary);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+    }
+    
+    .chat-view.show {
+      display: flex;
+    }
+    
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: var(--status-bar-height);
+    }
+    
+    .chat-back {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: none;
+      border: none;
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    
+    .chat-user-info {
+      flex: 1;
+    }
+    
+    .chat-user-name {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .chat-user-status {
+      font-size: var(--font-size-sm);
+      color: var(--accent-green);
+    }
+    
+    .chat-actions {
+      display: flex;
+      gap: var(--space-sm);
+    }
+    
+    .chat-action {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: none;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    
+    .messages-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-md);
+      background: var(--bg-secondary);
+    }
+    
+    .message-group {
+      margin-bottom: var(--space-lg);
+    }
+    
+    .message-date {
+      text-align: center;
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      background: var(--card-bg);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: 12px;
+      margin: var(--space-lg) auto;
+      display: inline-block;
+    }
+    
+    .message-item {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+      align-items: flex-end;
+    }
+    
+    .message-item.sent {
+      flex-direction: row-reverse;
+    }
+    
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    
+    .message-content {
+      max-width: 70%;
+      position: relative;
+    }
+    
+    .message-bubble {
+      padding: var(--space-md);
+      border-radius: 18px;
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-relaxed);
+      position: relative;
+      word-wrap: break-word;
+    }
+    
+    .message-item:not(.sent) .message-bubble {
+      background: var(--card-bg);
+      color: var(--text-primary);
+      border-bottom-left-radius: 6px;
+    }
+    
+    .message-item.sent .message-bubble {
+      background: var(--accent-blue);
+      color: white;
+      border-bottom-right-radius: 6px;
+    }
+    
+    .message-time {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      margin-top: var(--space-xs);
+      text-align: center;
+    }
+    
+    .message-status {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      margin-top: var(--space-xs);
+      text-align: right;
+    }
+    
+    .message-status i {
+      margin-left: 4px;
+    }
+    
+    .message-image {
+      max-width: 200px;
+      border-radius: 12px;
+      margin-bottom: var(--space-sm);
+      cursor: pointer;
+    }
+    
+    .message-location {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: var(--space-md);
+      margin-bottom: var(--space-sm);
+      cursor: pointer;
+    }
+    
+    .location-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .location-icon {
+      color: var(--accent-blue);
+    }
+    
+    .location-name {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .location-address {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+    
+    .chat-input-area {
+      background: var(--card-bg);
+      border-top: 1px solid var(--border-color);
+      padding: var(--space-md);
+      padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom, 0px));
+    }
+    
+    .chat-input-wrapper {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: flex-end;
+    }
+    
+    .chat-attachments {
+      display: flex;
+      gap: var(--space-sm);
+    }
+    
+    .attachment-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: none;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .attachment-btn:hover {
+      background: var(--bg-tertiary);
+      transform: scale(1.05);
+    }
+    
+    .chat-input {
+      flex: 1;
+      max-height: 100px;
+      padding: var(--space-md);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      background: var(--bg-secondary);
+      font-size: var(--font-size-md);
+      color: var(--text-primary);
+      resize: none;
+      font-family: var(--font-system);
+    }
+    
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      background: var(--bg-primary);
+    }
+    
+    .send-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .send-button:hover {
+      background: #0056cc;
+      transform: scale(1.05);
+    }
+    
+    .send-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+    
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+    }
+    
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-tertiary);
+      animation: typingPulse 1.4s infinite;
+    }
+    
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes typingPulse {
+      0%, 60%, 100% { opacity: 0.3; }
+      30% { opacity: 1; }
+    }
+    
+    .typing-text {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-indicators">
+        <i class="fas fa-signal" style="font-size: 12px;"></i>
+        <i class="fas fa-wifi" style="font-size: 12px;"></i>
+        <i class="fas fa-battery-three-quarters" style="font-size: 12px;"></i>
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="nav-bar">
+      <button class="nav-button" onclick="history.back()" aria-label="返回">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="nav-title">私信</div>
+      <button class="nav-button" onclick="newMessage()" aria-label="新建对话">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+    
+    <!-- Content -->
+    <div class="content">
+      <div class="messages-container">
+        <!-- Conversation List -->
+        <div class="conversation-list">
+          <div class="conversation-item unread" onclick="openChat('王磊')">
+            <div class="conversation-avatar">
+              <img 
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+                alt="王磊的头像"
+              >
+              <div class="online-indicator"></div>
+            </div>
+            <div class="conversation-content">
+              <div class="conversation-header">
+                <span class="conversation-name">王磊</span>
+                <span class="conversation-time">5分钟前</span>
+              </div>
+              <div class="conversation-preview unread">
+                谢谢您的详细介绍！我准备明天去国贸站体验一下
+              </div>
+            </div>
+            <div class="unread-badge">2</div>
+          </div>
+          
+          <div class="conversation-item" onclick="openChat('李华')">
+            <div class="conversation-avatar">
+              <img 
+                src="https://images.unsplash.com/photo-1494790108755-2616b612b096?w=100&h=100&fit=crop&crop=face"
+                alt="李华的头像"
+              >
+            </div>
+            <div class="conversation-content">
+              <div class="conversation-header">
+                <span class="conversation-name">李华</span>
+                <span class="conversation-time">2小时前</span>
+              </div>
+              <div class="conversation-preview">
+                您分享的万达广场信息很有用，已经收藏了
+              </div>
+            </div>
+          </div>
+          
+          <div class="conversation-item" onclick="openChat('陈小雨')">
+            <div class="conversation-avatar">
+              <img 
+                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face"
+                alt="陈小雨的头像"
+              >
+              <div class="online-indicator"></div>
+            </div>
+            <div class="conversation-content">
+              <div class="conversation-header">
+                <span class="conversation-name">陈小雨</span>
+                <span class="conversation-time">昨天</span>
+              </div>
+              <div class="conversation-preview">
+                [图片] 这是我昨天拍的医院新设施
+              </div>
+            </div>
+          </div>
+          
+          <div class="conversation-item" onclick="openChat('系统消息')">
+            <div class="conversation-avatar">
+              <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--accent-blue); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
+                <i class="fas fa-robot"></i>
+              </div>
+            </div>
+            <div class="conversation-content">
+              <div class="conversation-header">
+                <span class="conversation-name">系统消息</span>
+                <span class="conversation-time">3天前</span>
+              </div>
+              <div class="conversation-preview">
+                欢迎使用无障碍导航！这里是使用指南...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Chat View -->
+    <div class="chat-view" id="chatView">
+      <!-- Chat Status Bar -->
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-indicators">
+          <i class="fas fa-signal" style="font-size: 12px;"></i>
+          <i class="fas fa-wifi" style="font-size: 12px;"></i>
+          <i class="fas fa-battery-three-quarters" style="font-size: 12px;"></i>
+        </div>
+      </div>
+      
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <button class="chat-back" onclick="closeChat()">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="chat-user-info">
+          <div class="chat-user-name" id="chatUserName">王磊</div>
+          <div class="chat-user-status">在线</div>
+        </div>
+        <div class="chat-actions">
+          <button class="chat-action" onclick="audioCall()" aria-label="语音通话">
+            <i class="fas fa-phone"></i>
+          </button>
+          <button class="chat-action" onclick="videoCall()" aria-label="视频通话">
+            <i class="fas fa-video"></i>
+          </button>
+          <button class="chat-action" onclick="chatSettings()" aria-label="聊天设置">
+            <i class="fas fa-ellipsis-vertical"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Messages -->
+      <div class="messages-list" id="messagesList">
+        <div class="message-date">今天</div>
+        
+        <div class="message-group">
+          <div class="message-item">
+            <img 
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face"
+              alt="王磊的头像"
+              class="message-avatar"
+            >
+            <div class="message-content">
+              <div class="message-bubble">
+                您好！看到您分享的国贸地铁站无障碍设施信息，很有用！
+              </div>
+              <div class="message-time">14:30</div>
+            </div>
+          </div>
+          
+          <div class="message-item">
+            <img 
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face"
+              alt="王磊的头像"
+              class="message-avatar"
+            >
+            <div class="message-content">
+              <div class="message-bubble">
+                我也是轮椅用户，一直担心地铁站的无障碍通行问题
+              </div>
+              <div class="message-time">14:31</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="message-group">
+          <div class="message-item sent">
+            <div class="message-content">
+              <div class="message-bubble">
+                您好！很高兴能帮到您 😊
+              </div>
+              <div class="message-status">
+                已读 <i class="fas fa-check-double"></i>
+              </div>
+            </div>
+            <img 
+              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face"
+              alt="我的头像"
+              class="message-avatar"
+            >
+          </div>
+          
+          <div class="message-item sent">
+            <div class="message-content">
+              <div class="message-bubble">
+                国贸站的改造确实做得很不错，建议您从A出口进入，那里的设施最完善
+              </div>
+              <div class="message-status">
+                已读 <i class="fas fa-check-double"></i>
+              </div>
+            </div>
+            <img 
+              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face"
+              alt="我的头像"
+              class="message-avatar"
+            >
+          </div>
+        </div>
+        
+        <div class="message-group">
+          <div class="message-item">
+            <img 
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face"
+              alt="王磊的头像"
+              class="message-avatar"
+            >
+            <div class="message-content">
+              <div class="message-location" onclick="showLocation()">
+                <div class="location-header">
+                  <i class="fas fa-map-marker-alt location-icon"></i>
+                  <span class="location-name">国贸地铁站 A 出口</span>
+                </div>
+                <div class="location-address">北京市朝阳区建外大街</div>
+              </div>
+              <div class="message-bubble">
+                这个位置对吗？我准备明天过去看看
+              </div>
+              <div class="message-time">14:45</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="message-group">
+          <div class="message-item sent">
+            <div class="message-content">
+              <img 
+                src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&h=200&fit=crop"
+                alt="地铁站无障碍设施"
+                class="message-image"
+                onclick="showImageFullscreen(this)"
+              >
+              <div class="message-bubble">
+                对的！这是入口的照片，可以看到坡道很平缓
+              </div>
+              <div class="message-status">
+                已送达 <i class="fas fa-check"></i>
+              </div>
+            </div>
+            <img 
+              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face"
+              alt="我的头像"
+              class="message-avatar"
+            >
+          </div>
+        </div>
+        
+        <div class="message-group">
+          <div class="message-item">
+            <img 
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face"
+              alt="王磊的头像"
+              class="message-avatar"
+            >
+            <div class="message-content">
+              <div class="message-bubble">
+                太好了！谢谢您的详细介绍
+              </div>
+              <div class="message-time">刚刚</div>
+            </div>
+          </div>
+          
+          <div class="message-item">
+            <img 
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face"
+              alt="王磊的头像"
+              class="message-avatar"
+            >
+            <div class="message-content">
+              <div class="message-bubble">
+                我准备明天去国贸站体验一下，到时候给您反馈！
+              </div>
+              <div class="message-time">刚刚</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+          <img 
+            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face"
+            alt="王磊的头像"
+            class="message-avatar"
+          >
+          <div class="typing-dots">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+          <div class="typing-text">正在输入...</div>
+        </div>
+      </div>
+      
+      <!-- Chat Input -->
+      <div class="chat-input-area">
+        <div class="chat-input-wrapper">
+          <div class="chat-attachments">
+            <button class="attachment-btn" onclick="sendImage()" aria-label="发送图片">
+              <i class="fas fa-camera"></i>
+            </button>
+            <button class="attachment-btn" onclick="sendLocation()" aria-label="发送位置">
+              <i class="fas fa-map-marker-alt"></i>
+            </button>
+          </div>
+          <textarea 
+            class="chat-input" 
+            placeholder="输入消息..."
+            id="chatInput"
+            rows="1"
+            oninput="handleInputChange()"
+            onkeydown="handleKeyDown(event)"
+          ></textarea>
+          <button class="send-button" id="sendButton" onclick="sendMessage()" disabled aria-label="发送">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../scripts/app.js"></script>
+  <script>
+    let currentChat = null;
+    
+    function openChat(userName) {
+      currentChat = userName;
+      document.getElementById('chatUserName').textContent = userName;
+      document.getElementById('chatView').classList.add('show');
+      
+      // Focus input
+      setTimeout(() => {
+        document.getElementById('chatInput').focus();
+      }, 300);
+      
+      // Mark as read
+      const conversationItem = event.currentTarget;
+      conversationItem.classList.remove('unread');
+      const preview = conversationItem.querySelector('.conversation-preview');
+      if (preview) {
+        preview.classList.remove('unread');
+      }
+      const badge = conversationItem.querySelector('.unread-badge');
+      if (badge) {
+        badge.remove();
+      }
+      
+      // Scroll to bottom
+      scrollToBottom();
+    }
+    
+    function closeChat() {
+      document.getElementById('chatView').classList.remove('show');
+      currentChat = null;
+    }
+    
+    function handleInputChange() {
+      const input = document.getElementById('chatInput');
+      const sendButton = document.getElementById('sendButton');
+      
+      // Auto-resize textarea
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+      
+      // Enable/disable send button
+      sendButton.disabled = input.value.trim().length === 0;
+      
+      // Show typing indicator
+      if (input.value.trim().length > 0) {
+        showTypingIndicator();
+      } else {
+        hideTypingIndicator();
+      }
+    }
+    
+    function handleKeyDown(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    }
+    
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      
+      if (!message) return;
+      
+      // Add message to chat
+      addMessage(message, true);
+      
+      // Clear input
+      input.value = '';
+      input.style.height = 'auto';
+      document.getElementById('sendButton').disabled = true;
+      
+      // Hide typing indicator
+      hideTypingIndicator();
+      
+      // Simulate response
+      setTimeout(() => {
+        simulateResponse(message);
+      }, 1000 + Math.random() * 2000);
+    }
+    
+    function addMessage(content, isSent = false) {
+      const messagesList = document.getElementById('messagesList');
+      const messageGroup = document.createElement('div');
+      messageGroup.className = 'message-group';
+      
+      const messageItem = document.createElement('div');
+      messageItem.className = 'message-item' + (isSent ? ' sent' : '');
+      
+      const currentTime = new Date().toLocaleTimeString('zh-CN', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      
+      if (isSent) {
+        messageItem.innerHTML = `
+          <div class="message-content">
+            <div class="message-bubble">${content}</div>
+            <div class="message-status">已送达 <i class="fas fa-check"></i></div>
+          </div>
+          <img 
+            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face"
+            alt="我的头像"
+            class="message-avatar"
+          >
+        `;
+      } else {
+        messageItem.innerHTML = `
+          <img 
+            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face"
+            alt="${currentChat}的头像"
+            class="message-avatar"
+          >
+          <div class="message-content">
+            <div class="message-bubble">${content}</div>
+            <div class="message-time">${currentTime}</div>
+          </div>
+        `;
+      }
+      
+      messageGroup.appendChild(messageItem);
+      messagesList.appendChild(messageGroup);
+      
+      scrollToBottom();
+    }
+    
+    function simulateResponse(originalMessage) {
+      const responses = [
+        "好的，谢谢您的建议！",
+        "这个信息很有用，我会去试试的",
+        "您的分享真的帮了大忙",
+        "明白了，我记下了",
+        "非常感谢您的详细回复！"
+      ];
+      
+      const response = responses[Math.floor(Math.random() * responses.length)];
+      addMessage(response, false);
+    }
+    
+    function showTypingIndicator() {
+      const indicator = document.getElementById('typingIndicator');
+      indicator.style.display = 'flex';
+      scrollToBottom();
+    }
+    
+    function hideTypingIndicator() {
+      const indicator = document.getElementById('typingIndicator');
+      indicator.style.display = 'none';
+    }
+    
+    function scrollToBottom() {
+      const messagesList = document.getElementById('messagesList');
+      setTimeout(() => {
+        messagesList.scrollTop = messagesList.scrollHeight;
+      }, 100);
+    }
+    
+    function sendImage() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (file) {
+          // Simulate image upload
+          addMessage(`[图片: ${file.name}]`, true);
+        }
+      };
+      input.click();
+    }
+    
+    function sendLocation() {
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude.toFixed(4);
+            const lng = position.coords.longitude.toFixed(4);
+            addMessage(`[位置: ${lat}, ${lng}]`, true);
+          },
+          () => {
+            addMessage('[位置: 当前位置]', true);
+          }
+        );
+      } else {
+        addMessage('[位置: 当前位置]', true);
+      }
+    }
+    
+    function showLocation() {
+      alert('打开地图：显示国贸地铁站 A 出口位置');
+    }
+    
+    function showImageFullscreen(img) {
+      // Create fullscreen overlay
+      const overlay = document.createElement('div');
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        cursor: pointer;
+      `;
+      
+      const fullImg = document.createElement('img');
+      fullImg.src = img.src;
+      fullImg.style.cssText = `
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+      `;
+      
+      overlay.appendChild(fullImg);
+      document.body.appendChild(overlay);
+      
+      overlay.onclick = () => {
+        document.body.removeChild(overlay);
+      };
+    }
+    
+    function audioCall() {
+      alert('发起语音通话');
+    }
+    
+    function videoCall() {
+      alert('发起视频通话');
+    }
+    
+    function chatSettings() {
+      alert('聊天设置：清空聊天记录、设置免打扰等');
+    }
+    
+    function newMessage() {
+      alert('新建对话：搜索用户开始新的对话');
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Auto-scroll to bottom on load
+      scrollToBottom();
+    });
+    
+    // Handle back button
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && currentChat) {
+        closeChat();
+      }
+    });
+  </script>
+</body>
+</html>

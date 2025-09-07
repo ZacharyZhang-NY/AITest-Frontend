@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>帖子详情 - Accessibility Navigator</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  
+  <style>
+    .post-media {
+      position: relative;
+      width: 100%;
+      height: 280px;
+      background: var(--bg-secondary);
+    }
+    
+    .post-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .post-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform var(--duration-normal) var(--ease-out);
+    }
+    
+    .post-image.zoomed {
+      transform: scale(2);
+      cursor: zoom-out;
+    }
+    
+    .media-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.7));
+      padding: var(--space-lg) var(--space-md) var(--space-md);
+      color: white;
+    }
+    
+    .play-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: opacity var(--duration-fast) var(--ease-out);
+    }
+    
+    .play-overlay.show {
+      opacity: 1;
+    }
+    
+    .play-button {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      border: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    
+    .facility-tags {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-md);
+    }
+    
+    .facility-tag {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-size: var(--font-size-xs);
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .post-content {
+      padding: var(--space-lg);
+    }
+    
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+    
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border-color);
+    }
+    
+    .user-info {
+      flex: 1;
+    }
+    
+    .user-name {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    
+    .post-meta {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .follow-button {
+      padding: var(--space-sm) var(--space-lg);
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .follow-button:hover {
+      background: #0056cc;
+    }
+    
+    .follow-button.following {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+    
+    .post-title {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+      line-height: var(--line-height-tight);
+    }
+    
+    .post-description {
+      font-size: var(--font-size-md);
+      color: var(--text-primary);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--space-lg);
+    }
+    
+    .location-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-md);
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      margin-bottom: var(--space-lg);
+      cursor: pointer;
+      transition: background var(--duration-fast) var(--ease-out);
+    }
+    
+    .location-info:hover {
+      background: var(--bg-tertiary);
+    }
+    
+    .location-icon {
+      color: var(--accent-blue);
+      font-size: 18px;
+    }
+    
+    .location-text {
+      flex: 1;
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .accessibility-rating {
+      margin-bottom: var(--space-lg);
+    }
+    
+    .rating-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .rating-items {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+    }
+    
+    .rating-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: var(--space-lg);
+      text-align: center;
+    }
+    
+    .rating-label {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .rating-stars {
+      font-size: 18px;
+      color: var(--accent-orange);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .rating-text {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+    }
+    
+    .post-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-lg);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      background: var(--card-bg);
+      position: sticky;
+      bottom: calc(var(--tab-bar-height));
+      z-index: 10;
+    }
+    
+    .action-group {
+      display: flex;
+      gap: var(--space-lg);
+    }
+    
+    .action-button {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: var(--font-size-sm);
+      padding: var(--space-sm);
+      border-radius: 20px;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .action-button:hover {
+      background: var(--bg-secondary);
+    }
+    
+    .action-button.active {
+      color: var(--accent-red);
+    }
+    
+    .action-button.active.bookmark {
+      color: var(--accent-orange);
+    }
+    
+    .go-button {
+      background: var(--accent-blue);
+      color: white;
+      padding: var(--space-md) var(--space-xl);
+      border-radius: 24px;
+      border: none;
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .go-button:hover {
+      background: #0056cc;
+      transform: translateY(-1px);
+    }
+    
+    .comments-section {
+      background: var(--bg-primary);
+    }
+    
+    .comments-header {
+      padding: var(--space-lg) var(--space-md);
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .comment-input-area {
+      padding: var(--space-md);
+      background: var(--card-bg);
+      border-bottom: 8px solid var(--bg-secondary);
+    }
+    
+    .comment-input-wrapper {
+      display: flex;
+      gap: var(--space-md);
+      align-items: flex-start;
+    }
+    
+    .comment-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    
+    .comment-input {
+      flex: 1;
+      padding: var(--space-md);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      background: var(--bg-secondary);
+      font-size: var(--font-size-md);
+      color: var(--text-primary);
+      resize: none;
+      min-height: 40px;
+      max-height: 120px;
+    }
+    
+    .comment-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      background: var(--bg-primary);
+    }
+    
+    .comment-submit {
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .comment-submit:hover {
+      background: #0056cc;
+    }
+    
+    .comment-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .comment-item {
+      padding: var(--space-lg) var(--space-md);
+      border-bottom: 1px solid var(--border-color);
+      background: var(--card-bg);
+    }
+    
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .comment-user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .comment-user-name {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .comment-time {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      margin-left: auto;
+    }
+    
+    .comment-content {
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .comment-actions {
+      display: flex;
+      gap: var(--space-lg);
+    }
+    
+    .comment-action {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      background: none;
+      border: none;
+      color: var(--text-tertiary);
+      font-size: var(--font-size-xs);
+      cursor: pointer;
+      padding: 4px;
+    }
+    
+    .comment-action:hover {
+      color: var(--text-secondary);
+    }
+    
+    .comment-action.active {
+      color: var(--accent-red);
+    }
+    
+    .reply-indent {
+      margin-left: var(--space-xl);
+      border-left: 2px solid var(--border-color);
+      padding-left: var(--space-md);
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-indicators">
+        <i class="fas fa-signal" style="font-size: 12px;"></i>
+        <i class="fas fa-wifi" style="font-size: 12px;"></i>
+        <i class="fas fa-battery-three-quarters" style="font-size: 12px;"></i>
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="nav-bar">
+      <button class="nav-button" onclick="history.back()" aria-label="返回">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="nav-title">帖子详情</div>
+      <button class="nav-button" onclick="showMoreOptions()" aria-label="更多选项">
+        <i class="fas fa-ellipsis-vertical"></i>
+      </button>
+    </div>
+    
+    <!-- Content -->
+    <div class="content">
+      <!-- Media Section -->
+      <div class="post-media">
+        <video 
+          id="postVideo"
+          class="post-video" 
+          muted 
+          loop 
+          poster="https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&h=280&fit=crop"
+          onclick="togglePlay()"
+        >
+          <source src="https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_2mb.mp4" type="video/mp4">
+          您的浏览器不支持视频播放。
+        </video>
+        
+        <div class="play-overlay show" id="playOverlay" onclick="togglePlay()">
+          <div class="play-button">
+            <i class="fas fa-play" id="playIcon"></i>
+          </div>
+        </div>
+        
+        <div class="media-controls">
+          <div class="facility-tags">
+            <span class="facility-tag">
+              <i class="fas fa-wheelchair"></i>
+              轮椅通行
+            </span>
+            <span class="facility-tag">
+              <i class="fas fa-elevator"></i>
+              电梯可用
+            </span>
+            <span class="facility-tag">
+              <i class="fas fa-volume-up"></i>
+              语音提示
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Post Content -->
+      <div class="post-content">
+        <!-- User Header -->
+        <div class="post-header">
+          <img 
+            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" 
+            alt="张明的头像" 
+            class="user-avatar"
+          >
+          <div class="user-info">
+            <div class="user-name">张明</div>
+            <div class="post-meta">
+              <span>轮椅用户</span>
+              <span>•</span>
+              <span>2小时前</span>
+              <span>•</span>
+              <i class="fas fa-map-marker-alt"></i>
+              <span>北京市朝阳区</span>
+            </div>
+          </div>
+          <button class="follow-button" onclick="toggleFollow(this)">
+            + 关注
+          </button>
+        </div>
+        
+        <!-- Post Title -->
+        <h1 class="post-title">国贸地铁站新增无障碍设施体验分享</h1>
+        
+        <!-- Post Description -->
+        <p class="post-description">
+          今天体验了国贸站新改造的无障碍通道，从地面到站台全程无障碍，电梯宽敞且有语音提示，轮椅用户出行很方便！
+          
+          整个通道设计得很贴心，坡度控制在1:12以内，非常平缓。电梯按钮位置适中，盲文标识清晰。最让我印象深刻的是语音播报系统，会及时提醒楼层信息和安全注意事项。
+          
+          希望更多地铁站都能有这样的无障碍改造，让我们的出行更加便利！
+        </p>
+        
+        <!-- Location -->
+        <div class="location-info" onclick="showLocation()">
+          <i class="fas fa-map-marker-alt location-icon"></i>
+          <span class="location-text">国贸地铁站 A 出口</span>
+          <i class="fas fa-chevron-right" style="color: var(--text-tertiary);"></i>
+        </div>
+        
+        <!-- Accessibility Rating -->
+        <div class="accessibility-rating">
+          <div class="rating-title">
+            <i class="fas fa-star"></i>
+            无障碍评分
+          </div>
+          <div class="rating-items">
+            <div class="rating-item">
+              <div class="rating-label">坡度友好度</div>
+              <div class="rating-stars">★★★★★</div>
+              <div class="rating-text">优秀 (≤5%)</div>
+            </div>
+            <div class="rating-item">
+              <div class="rating-label">路缘高度</div>
+              <div class="rating-stars">★★★★★</div>
+              <div class="rating-text">优秀 (≤2cm)</div>
+            </div>
+            <div class="rating-item">
+              <div class="rating-label">通道宽度</div>
+              <div class="rating-stars">★★★★☆</div>
+              <div class="rating-text">良好 (≥90cm)</div>
+            </div>
+            <div class="rating-item">
+              <div class="rating-label">设施完备</div>
+              <div class="rating-stars">★★★★★</div>
+              <div class="rating-text">完备齐全</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Actions -->
+      <div class="post-actions">
+        <div class="action-group">
+          <button class="action-button ripple" onclick="toggleLike(this)" aria-label="点赞">
+            <i class="far fa-heart"></i>
+            <span>234</span>
+          </button>
+          <button class="action-button" onclick="focusComment()" aria-label="评论">
+            <i class="far fa-comment"></i>
+            <span>45</span>
+          </button>
+          <button class="action-button" onclick="sharePost()" aria-label="分享">
+            <i class="fas fa-share"></i>
+          </button>
+          <button class="action-button bookmark ripple" onclick="toggleBookmark(this)" aria-label="收藏">
+            <i class="far fa-bookmark"></i>
+          </button>
+        </div>
+        <button class="go-button" onclick="showRoute()">去这里</button>
+      </div>
+      
+      <!-- Comments Section -->
+      <div class="comments-section">
+        <div class="comments-header">
+          <i class="fas fa-comment"></i>
+          全部评论 (45)
+        </div>
+        
+        <!-- Comment Input -->
+        <div class="comment-input-area">
+          <div class="comment-input-wrapper">
+            <img 
+              src="https://images.unsplash.com/photo-1494790108755-2616b612b096?w=72&h=72&fit=crop&crop=face"
+              alt="我的头像"
+              class="comment-avatar"
+            >
+            <textarea 
+              class="comment-input" 
+              placeholder="分享您的想法..."
+              id="commentInput"
+              oninput="updateSubmitButton()"
+              onkeydown="handleCommentKeyDown(event)"
+            ></textarea>
+            <button class="comment-submit" id="commentSubmit" onclick="submitComment()" disabled>
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Comments List -->
+        <div class="comment-item">
+          <div class="comment-header">
+            <img 
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face"
+              alt="王磊的头像"
+              class="comment-user-avatar"
+            >
+            <span class="comment-user-name">王磊</span>
+            <span class="comment-time">1小时前</span>
+          </div>
+          <div class="comment-content">
+            谢谢分享！我也是轮椅用户，一直担心国贸站的无障碍设施。看到这个改造真的很开心，准备明天就去体验一下。
+          </div>
+          <div class="comment-actions">
+            <button class="comment-action" onclick="likeComment(this)">
+              <i class="far fa-heart"></i>
+              <span>12</span>
+            </button>
+            <button class="comment-action" onclick="replyComment('王磊')">
+              <i class="far fa-comment"></i>
+              <span>回复</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Reply -->
+        <div class="comment-item reply-indent">
+          <div class="comment-header">
+            <img 
+              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face"
+              alt="张明的头像"
+              class="comment-user-avatar"
+            >
+            <span class="comment-user-name">张明</span>
+            <span class="comment-time">30分钟前</span>
+          </div>
+          <div class="comment-content">
+            <span style="color: var(--accent-blue);">@王磊</span> 建议工作日下午去，人相对少一些，体验会更好。记得从A出口进，那里的坡道最平缓！
+          </div>
+          <div class="comment-actions">
+            <button class="comment-action" onclick="likeComment(this)">
+              <i class="far fa-heart"></i>
+              <span>8</span>
+            </button>
+            <button class="comment-action" onclick="replyComment('张明')">
+              <i class="far fa-comment"></i>
+              <span>回复</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="comment-item">
+          <div class="comment-header">
+            <img 
+              src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=64&h=64&fit=crop&crop=face"
+              alt="李华的头像"
+              class="comment-user-avatar"
+            >
+            <span class="comment-user-name">李华</span>
+            <span class="comment-time">2小时前</span>
+          </div>
+          <div class="comment-content">
+            终于有人详细介绍国贸站的无障碍设施了！我妈妈行动不便，一直不敢带她坐地铁。这个分享太及时了👍
+          </div>
+          <div class="comment-actions">
+            <button class="comment-action active" onclick="likeComment(this)">
+              <i class="fas fa-heart"></i>
+              <span>25</span>
+            </button>
+            <button class="comment-action" onclick="replyComment('李华')">
+              <i class="far fa-comment"></i>
+              <span>回复</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- More comments indicator -->
+        <div style="padding: var(--space-lg); text-align: center;">
+          <button onclick="loadMoreComments()" style="color: var(--accent-blue); background: none; border: none; font-size: var(--font-size-sm);">
+            查看更多评论 (32条)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../scripts/app.js"></script>
+  <script>
+    // Video controls
+    function togglePlay() {
+      const video = document.getElementById('postVideo');
+      const overlay = document.getElementById('playOverlay');
+      const icon = document.getElementById('playIcon');
+      
+      if (video.paused) {
+        video.play();
+        overlay.classList.remove('show');
+      } else {
+        video.pause();
+        overlay.classList.add('show');
+      }
+    }
+    
+    // Follow button
+    function toggleFollow(button) {
+      if (button.classList.contains('following')) {
+        button.classList.remove('following');
+        button.textContent = '+ 关注';
+      } else {
+        button.classList.add('following');
+        button.textContent = '已关注';
+      }
+    }
+    
+    // Like functionality
+    function toggleLike(button) {
+      const icon = button.querySelector('i');
+      const count = button.querySelector('span');
+      const currentCount = parseInt(count.textContent);
+      
+      if (button.classList.contains('active')) {
+        button.classList.remove('active');
+        icon.className = 'far fa-heart';
+        count.textContent = currentCount - 1;
+      } else {
+        button.classList.add('active');
+        icon.className = 'fas fa-heart';
+        count.textContent = currentCount + 1;
+        
+        // Animate
+        if (window.accessibilityApp) {
+          window.accessibilityApp.animateLike(button);
+        }
+      }
+    }
+    
+    // Bookmark functionality
+    function toggleBookmark(button) {
+      const icon = button.querySelector('i');
+      
+      if (button.classList.contains('active')) {
+        button.classList.remove('active');
+        icon.className = 'far fa-bookmark';
+      } else {
+        button.classList.add('active');
+        icon.className = 'fas fa-bookmark';
+        
+        // Animate
+        if (window.accessibilityApp) {
+          window.accessibilityApp.animateCollect(button);
+        }
+      }
+    }
+    
+    // Comment functionality
+    function updateSubmitButton() {
+      const input = document.getElementById('commentInput');
+      const button = document.getElementById('commentSubmit');
+      
+      button.disabled = input.value.trim().length === 0;
+    }
+    
+    function handleCommentKeyDown(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        submitComment();
+      }
+    }
+    
+    function submitComment() {
+      const input = document.getElementById('commentInput');
+      const content = input.value.trim();
+      
+      if (!content) return;
+      
+      // Add comment to list (simulate)
+      const comment = createCommentElement('我', content, '刚刚');
+      const commentsList = document.querySelector('.comments-section');
+      const inputArea = commentsList.querySelector('.comment-input-area');
+      
+      inputArea.insertAdjacentElement('afterend', comment);
+      
+      // Clear input
+      input.value = '';
+      updateSubmitButton();
+      
+      // Update comment count
+      const commentCount = document.querySelector('.comments-header');
+      const currentCount = parseInt(commentCount.textContent.match(/\d+/)[0]);
+      commentCount.innerHTML = `<i class="fas fa-comment"></i> 全部评论 (${currentCount + 1})`;
+      
+      // Update action button count
+      const actionCount = document.querySelector('.action-button[onclick="focusComment()"] span');
+      actionCount.textContent = parseInt(actionCount.textContent) + 1;
+    }
+    
+    function createCommentElement(name, content, time) {
+      const div = document.createElement('div');
+      div.className = 'comment-item';
+      div.innerHTML = `
+        <div class="comment-header">
+          <img 
+            src="https://images.unsplash.com/photo-1494790108755-2616b612b096?w=64&h=64&fit=crop&crop=face"
+            alt="${name}的头像"
+            class="comment-user-avatar"
+          >
+          <span class="comment-user-name">${name}</span>
+          <span class="comment-time">${time}</span>
+        </div>
+        <div class="comment-content">${content}</div>
+        <div class="comment-actions">
+          <button class="comment-action" onclick="likeComment(this)">
+            <i class="far fa-heart"></i>
+            <span>0</span>
+          </button>
+          <button class="comment-action" onclick="replyComment('${name}')">
+            <i class="far fa-comment"></i>
+            <span>回复</span>
+          </button>
+        </div>
+      `;
+      return div;
+    }
+    
+    function focusComment() {
+      document.getElementById('commentInput').focus();
+    }
+    
+    function likeComment(button) {
+      const icon = button.querySelector('i');
+      const count = button.querySelector('span');
+      const currentCount = parseInt(count.textContent);
+      
+      if (button.classList.contains('active')) {
+        button.classList.remove('active');
+        icon.className = 'far fa-heart';
+        count.textContent = currentCount - 1;
+      } else {
+        button.classList.add('active');
+        icon.className = 'fas fa-heart';
+        count.textContent = currentCount + 1;
+      }
+    }
+    
+    function replyComment(username) {
+      const input = document.getElementById('commentInput');
+      input.value = `@${username} `;
+      input.focus();
+      // Move cursor to end
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
+    
+    function loadMoreComments() {
+      alert('加载更多评论...');
+    }
+    
+    // Other actions
+    function showMoreOptions() {
+      alert('更多选项：举报、分享到其他平台等');
+    }
+    
+    function sharePost() {
+      if (navigator.share) {
+        navigator.share({
+          title: '国贸地铁站新增无障碍设施体验分享',
+          text: '发现了一个很棒的无障碍设施改造！',
+          url: window.location.href
+        });
+      } else {
+        alert('分享链接已复制到剪贴板');
+      }
+    }
+    
+    function showLocation() {
+      alert('打开地图：查看国贸地铁站 A 出口位置');
+    }
+    
+    function showRoute() {
+      window.location.href = 'route_preview.html';
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Auto-play video on load (if allowed)
+      const video = document.getElementById('postVideo');
+      video.play().catch(e => {
+        console.log('Auto-play prevented');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>注册 - Accessibility Navigator</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  
+  <style>
+    .signup-container {
+      padding: var(--space-lg);
+      min-height: calc(100vh - var(--status-bar-height));
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    }
+    
+    .signup-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+      padding-top: var(--space-lg);
+    }
+    
+    .app-logo {
+      width: 80px;
+      height: 80px;
+      background: var(--accent-green);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: white;
+      margin: 0 auto var(--space-lg);
+      box-shadow: 0 10px 30px rgba(48, 209, 88, 0.3);
+    }
+    
+    .signup-title {
+      font-size: var(--font-size-xxl);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .signup-subtitle {
+      font-size: var(--font-size-md);
+      color: var(--text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+    
+    .signup-form {
+      max-width: 360px;
+      margin: 0 auto;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+    
+    .form-row .form-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+    
+    .form-group {
+      margin-bottom: var(--space-lg);
+      position: relative;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: var(--space-md) var(--space-lg);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--card-bg);
+      color: var(--text-primary);
+      font-size: var(--font-size-md);
+      transition: all var(--duration-fast) var(--ease-out);
+      min-height: 52px;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 4px rgba(48, 209, 88, 0.1);
+      background: var(--bg-primary);
+    }
+    
+    .form-input.error {
+      border-color: var(--accent-red);
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: var(--space-md);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-tertiary);
+      font-size: var(--font-size-md);
+      pointer-events: none;
+    }
+    
+    .form-input.with-icon {
+      padding-left: 48px;
+    }
+    
+    .password-strength {
+      margin-top: var(--space-sm);
+      height: 4px;
+      background: var(--border-color);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .strength-bar {
+      height: 100%;
+      width: 0;
+      transition: all var(--duration-normal) var(--ease-out);
+      border-radius: 2px;
+    }
+    
+    .strength-weak { background: var(--accent-red); width: 33%; }
+    .strength-medium { background: var(--accent-orange); width: 66%; }
+    .strength-strong { background: var(--accent-green); width: 100%; }
+    
+    .strength-text {
+      font-size: var(--font-size-xs);
+      margin-top: var(--space-xs);
+      color: var(--text-tertiary);
+    }
+    
+    .accessibility-preferences {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+    
+    .preferences-title {
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .preference-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) 0;
+    }
+    
+    .preference-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      flex: 1;
+    }
+    
+    .preference-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+    }
+    
+    .wheelchair { background: var(--accent-blue); }
+    .visual { background: var(--accent-orange); }
+    .hearing { background: var(--accent-red); }
+    .mobility { background: var(--accent-green); }
+    
+    .preference-label {
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+    }
+    
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--card-bg);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      position: relative;
+    }
+    
+    .checkbox:checked {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+    }
+    
+    .checkbox:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .terms-agreement {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      padding: var(--space-md);
+      background: var(--bg-secondary);
+      border-radius: 8px;
+    }
+    
+    .terms-text {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+    
+    .terms-text a {
+      color: var(--accent-blue);
+      text-decoration: none;
+    }
+    
+    .signup-button {
+      width: 100%;
+      padding: var(--space-lg);
+      background: var(--accent-green);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      margin-bottom: var(--space-lg);
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+    }
+    
+    .signup-button:hover:not(:disabled) {
+      background: #28cd41;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(48, 209, 88, 0.3);
+    }
+    
+    .signup-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .login-link {
+      text-align: center;
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+    
+    .login-link a {
+      color: var(--accent-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .error-message {
+      background: rgba(255, 69, 58, 0.1);
+      border: 1px solid rgba(255, 69, 58, 0.2);
+      color: var(--accent-red);
+      padding: var(--space-md);
+      border-radius: 8px;
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-lg);
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+    }
+    
+    .field-error {
+      font-size: var(--font-size-xs);
+      color: var(--accent-red);
+      margin-top: var(--space-xs);
+      display: none;
+    }
+    
+    .field-error.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-indicators">
+        <i class="fas fa-signal" style="font-size: 12px;"></i>
+        <i class="fas fa-wifi" style="font-size: 12px;"></i>
+        <i class="fas fa-battery-three-quarters" style="font-size: 12px;"></i>
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="nav-bar">
+      <button class="nav-button" onclick="history.back()" aria-label="返回">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="nav-title">注册账户</div>
+      <div style="width: 44px;"></div>
+    </div>
+    
+    <!-- Content -->
+    <div class="content">
+      <div class="signup-container">
+        <div class="signup-header">
+          <div class="app-logo" role="img" aria-label="无障碍导航应用图标">
+            ♿
+          </div>
+          <h1 class="signup-title">加入我们</h1>
+          <p class="signup-subtitle">创建账户，开始您的无障碍探索之旅</p>
+        </div>
+        
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage" role="alert" aria-live="polite">
+          <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+          <span id="errorText"></span>
+        </div>
+        
+        <!-- Signup Form -->
+        <form class="signup-form" id="signupForm" novalidate>
+          <!-- Name Fields -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="firstName" class="form-label">姓氏</label>
+              <input
+                type="text"
+                id="firstName"
+                class="form-input"
+                placeholder="姓氏"
+                required
+                autocomplete="family-name"
+              >
+              <div class="field-error" id="firstNameError"></div>
+            </div>
+            
+            <div class="form-group">
+              <label for="lastName" class="form-label">名字</label>
+              <input
+                type="text"
+                id="lastName"
+                class="form-input"
+                placeholder="名字"
+                required
+                autocomplete="given-name"
+              >
+              <div class="field-error" id="lastNameError"></div>
+            </div>
+          </div>
+          
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email" class="form-label">邮箱地址</label>
+            <div class="input-container">
+              <i class="fas fa-envelope input-icon" aria-hidden="true"></i>
+              <input
+                type="email"
+                id="email"
+                class="form-input with-icon"
+                placeholder="请输入邮箱地址"
+                required
+                autocomplete="email"
+              >
+            </div>
+            <div class="field-error" id="emailError"></div>
+          </div>
+          
+          <!-- Password -->
+          <div class="form-group">
+            <label for="password" class="form-label">密码</label>
+            <div class="input-container">
+              <i class="fas fa-lock input-icon" aria-hidden="true"></i>
+              <input
+                type="password"
+                id="password"
+                class="form-input with-icon"
+                placeholder="请输入密码"
+                required
+                autocomplete="new-password"
+                minlength="8"
+              >
+            </div>
+            <div class="password-strength">
+              <div class="strength-bar" id="strengthBar"></div>
+            </div>
+            <div class="strength-text" id="strengthText">密码强度：未设置</div>
+            <div class="field-error" id="passwordError"></div>
+          </div>
+          
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label for="confirmPassword" class="form-label">确认密码</label>
+            <div class="input-container">
+              <i class="fas fa-lock input-icon" aria-hidden="true"></i>
+              <input
+                type="password"
+                id="confirmPassword"
+                class="form-input with-icon"
+                placeholder="请再次输入密码"
+                required
+                autocomplete="new-password"
+              >
+            </div>
+            <div class="field-error" id="confirmPasswordError"></div>
+          </div>
+          
+          <!-- Accessibility Preferences -->
+          <div class="accessibility-preferences">
+            <div class="preferences-title">
+              <i class="fas fa-universal-access"></i>
+              无障碍需求（可选）
+            </div>
+            
+            <div class="preference-item">
+              <div class="preference-info">
+                <div class="preference-icon wheelchair">
+                  <i class="fas fa-wheelchair"></i>
+                </div>
+                <div class="preference-label">轮椅使用者</div>
+              </div>
+              <input type="checkbox" class="checkbox" id="wheelchair" name="accessibility[]" value="wheelchair">
+            </div>
+            
+            <div class="preference-item">
+              <div class="preference-info">
+                <div class="preference-icon visual">
+                  <i class="fas fa-eye-slash"></i>
+                </div>
+                <div class="preference-label">视觉障碍</div>
+              </div>
+              <input type="checkbox" class="checkbox" id="visual" name="accessibility[]" value="visual">
+            </div>
+            
+            <div class="preference-item">
+              <div class="preference-info">
+                <div class="preference-icon hearing">
+                  <i class="fas fa-deaf"></i>
+                </div>
+                <div class="preference-label">听觉障碍</div>
+              </div>
+              <input type="checkbox" class="checkbox" id="hearing" name="accessibility[]" value="hearing">
+            </div>
+            
+            <div class="preference-item">
+              <div class="preference-info">
+                <div class="preference-icon mobility">
+                  <i class="fas fa-walking"></i>
+                </div>
+                <div class="preference-label">行动不便</div>
+              </div>
+              <input type="checkbox" class="checkbox" id="mobility" name="accessibility[]" value="mobility">
+            </div>
+          </div>
+          
+          <!-- Terms Agreement -->
+          <div class="terms-agreement">
+            <input type="checkbox" class="checkbox" id="termsAgree" required>
+            <div class="terms-text">
+              我已阅读并同意 <a href="#" onclick="showTerms()">服务条款</a> 和 <a href="#" onclick="showPrivacy()">隐私政策</a>，同意接收产品更新和无障碍设施信息。
+            </div>
+          </div>
+          
+          <button type="submit" class="signup-button ripple" id="signupButton" disabled>
+            <span class="button-text">创建账户</span>
+          </button>
+        </form>
+        
+        <!-- Login Link -->
+        <div class="login-link">
+          已有账户？ <a href="login.html">立即登录</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../scripts/app.js"></script>
+  <script>
+    // Form elements
+    const form = document.getElementById('signupForm');
+    const inputs = {
+      firstName: document.getElementById('firstName'),
+      lastName: document.getElementById('lastName'),
+      email: document.getElementById('email'),
+      password: document.getElementById('password'),
+      confirmPassword: document.getElementById('confirmPassword'),
+      termsAgree: document.getElementById('termsAgree')
+    };
+    
+    const signupButton = document.getElementById('signupButton');
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
+    
+    // Validation state
+    const validation = {
+      firstName: false,
+      lastName: false,
+      email: false,
+      password: false,
+      confirmPassword: false,
+      termsAgree: false
+    };
+    
+    // Email regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    // Real-time validation
+    Object.keys(inputs).forEach(field => {
+      inputs[field].addEventListener('input', () => validateField(field));
+      inputs[field].addEventListener('blur', () => validateField(field));
+    });
+    
+    function validateField(field) {
+      const input = inputs[field];
+      const value = input.value.trim();
+      let isValid = false;
+      let errorMessage = '';
+      
+      switch (field) {
+        case 'firstName':
+        case 'lastName':
+          isValid = value.length >= 1;
+          errorMessage = isValid ? '' : '请输入姓名';
+          break;
+          
+        case 'email':
+          isValid = value && emailRegex.test(value);
+          errorMessage = isValid ? '' : '请输入有效的邮箱地址';
+          break;
+          
+        case 'password':
+          isValid = value.length >= 8;
+          errorMessage = getPasswordError(value);
+          updatePasswordStrength(value);
+          // Re-validate confirm password when password changes
+          if (inputs.confirmPassword.value) {
+            validateField('confirmPassword');
+          }
+          break;
+          
+        case 'confirmPassword':
+          isValid = value && value === inputs.password.value;
+          errorMessage = isValid ? '' : '两次输入的密码不一致';
+          break;
+          
+        case 'termsAgree':
+          isValid = input.checked;
+          break;
+      }
+      
+      validation[field] = isValid;
+      
+      // Update UI
+      if (field !== 'termsAgree') {
+        input.classList.toggle('error', !isValid && value);
+        const errorElement = document.getElementById(field + 'Error');
+        if (errorElement) {
+          errorElement.textContent = errorMessage;
+          errorElement.classList.toggle('show', !isValid && value);
+        }
+      }
+      
+      updateSubmitButton();
+    }
+    
+    function getPasswordError(password) {
+      if (password.length === 0) return '';
+      if (password.length < 8) return '密码至少需要8个字符';
+      
+      const checks = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /\d/.test(password),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+      };
+      
+      const score = Object.values(checks).filter(Boolean).length;
+      if (score < 3) return '密码强度较弱，建议包含大小写字母、数字和特殊字符';
+      
+      return '';
+    }
+    
+    function updatePasswordStrength(password) {
+      if (!password) {
+        strengthBar.className = 'strength-bar';
+        strengthText.textContent = '密码强度：未设置';
+        return;
+      }
+      
+      const checks = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /\d/.test(password),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+      };
+      
+      const score = Object.values(checks).filter(Boolean).length;
+      
+      if (score <= 2) {
+        strengthBar.className = 'strength-bar strength-weak';
+        strengthText.textContent = '密码强度：弱';
+      } else if (score <= 3) {
+        strengthBar.className = 'strength-bar strength-medium';
+        strengthText.textContent = '密码强度：中等';
+      } else {
+        strengthBar.className = 'strength-bar strength-strong';
+        strengthText.textContent = '密码强度：强';
+      }
+    }
+    
+    function updateSubmitButton() {
+      const isFormValid = Object.values(validation).every(Boolean);
+      signupButton.disabled = !isFormValid;
+    }
+    
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (signupButton.disabled) return;
+      
+      // Show loading state
+      signupButton.innerHTML = '<div class="loading-spinner"></div>';
+      signupButton.disabled = true;
+      
+      try {
+        // Collect form data
+        const formData = {
+          firstName: inputs.firstName.value.trim(),
+          lastName: inputs.lastName.value.trim(),
+          email: inputs.email.value.trim(),
+          password: inputs.password.value,
+          accessibility: getSelectedAccessibilityPreferences()
+        };
+        
+        // Simulate API call
+        await simulateSignup(formData);
+        
+        // Success
+        showSuccessMessage();
+        
+      } catch (error) {
+        showError(error.message);
+      } finally {
+        signupButton.innerHTML = '<span class="button-text">创建账户</span>';
+        updateSubmitButton();
+      }
+    });
+    
+    function getSelectedAccessibilityPreferences() {
+      const checkboxes = document.querySelectorAll('input[name="accessibility[]"]:checked');
+      return Array.from(checkboxes).map(cb => cb.value);
+    }
+    
+    async function simulateSignup(data) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Simulate different scenarios
+      if (data.email === 'existing@example.com') {
+        throw new Error('该邮箱地址已被注册');
+      }
+      
+      if (data.email.includes('invalid')) {
+        throw new Error('邮箱地址格式不正确');
+      }
+      
+      // Success
+      return { success: true, userId: 'user123' };
+    }
+    
+    function showError(message) {
+      const errorMessage = document.getElementById('errorMessage');
+      const errorText = document.getElementById('errorText');
+      
+      errorText.textContent = message;
+      errorMessage.classList.add('show');
+      
+      setTimeout(() => {
+        errorMessage.classList.remove('show');
+      }, 5000);
+    }
+    
+    function showSuccessMessage() {
+      const container = document.querySelector('.signup-container');
+      
+      container.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px;">
+          <div style="width: 100px; height: 100px; background: var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; animation: successPulse 1s ease-in-out;">
+            <i class="fas fa-check" style="font-size: 40px; color: white;"></i>
+          </div>
+          <h2 style="font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px;">注册成功！</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 40px; line-height: 1.5;">欢迎加入无障碍导航社区！我们已向您的邮箱发送了验证邮件，请查收并完成验证。</p>
+          <button class="btn btn-primary" onclick="window.location.href='login.html'" style="width: 200px; margin: 0 auto;">
+            前往登录
+          </button>
+        </div>
+      `;
+      
+      // Add success animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes successPulse {
+          0% { transform: scale(0.8); opacity: 0; }
+          50% { transform: scale(1.1); }
+          100% { transform: scale(1); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    function showTerms() {
+      alert('服务条款：这里是服务条款的详细内容...');
+    }
+    
+    function showPrivacy() {
+      alert('隐私政策：这里是隐私政策的详细内容...');
+    }
+    
+    // Auto-focus first input
+    setTimeout(() => {
+      inputs.firstName.focus();
+    }, 100);
+  </script>
+</body>
+</html>

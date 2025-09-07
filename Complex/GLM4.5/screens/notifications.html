@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知 - Accessibility Navigator</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .notifications-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .content-wrapper {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            right: 0;
+            bottom: 83px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+        
+        .notification-tabs {
+            display: flex;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .notification-tab {
+            flex: 1;
+            padding: 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .notification-tab.active {
+            color: var(--accent);
+        }
+        
+        .notification-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 16px;
+            min-width: 20px;
+            height: 20px;
+            background: var(--danger);
+            color: white;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 6px;
+        }
+        
+        .notification-list {
+            padding: 16px;
+        }
+        
+        .notification-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .notification-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+        
+        .notification-item.unread {
+            background: linear-gradient(to right, var(--bg-tertiary), var(--card-bg));
+            border-left: 4px solid var(--accent);
+        }
+        
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 12px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+        
+        .notification-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .notification-icon.like {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+        
+        .notification-icon.comment {
+            background: rgba(0, 102, 204, 0.1);
+            color: var(--accent);
+        }
+        
+        .notification-icon.follow {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+        
+        .notification-icon.system {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+        
+        .notification-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+        
+        .notification-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+        }
+        
+        .notification-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+        
+        .notification-preview {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .notification-preview img {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .notification-action {
+            padding: 4px 12px;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 16px;
+            font-size: 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .notification-action:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--text-tertiary);
+        }
+        
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        
+        .clear-all-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .clear-all-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+        
+        @media (max-width: 393px) {
+            .notification-item {
+                padding: 12px;
+            }
+            
+            .notification-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="status-bar">
+            <div class="status-time">9:41</div>
+            <div class="status-icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="dynamic-island"></div>
+        
+        <div class="header">
+            <button class="header-back" onclick="goBack()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h1 class="header-title">通知</h1>
+            <button class="clear-all-btn" onclick="clearAllNotifications()">全部已读</button>
+        </div>
+        
+        <div class="notifications-container">
+            <div class="notification-tabs">
+                <button class="notification-tab active" onclick="switchTab('all')">
+                    全部
+                    <span class="notification-badge">12</span>
+                </button>
+                <button class="notification-tab" onclick="switchTab('mentions')">
+                    提及我
+                    <span class="notification-badge">3</span>
+                </button>
+                <button class="notification-tab" onclick="switchTab('system')">
+                    系统通知
+                    <span class="notification-badge">2</span>
+                </button>
+            </div>
+            
+            <div class="content-wrapper">
+                <div class="notification-list" id="notificationList">
+                    <!-- Like Notification -->
+                    <div class="notification-item unread" onclick="openNotification('like', 1)">
+                        <div class="notification-icon like">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <div class="notification-title">无障碍探索者 赞了你的帖子</div>
+                                <div class="notification-time">2分钟前</div>
+                            </div>
+                            <div class="notification-text">"人民广场地铁站新增的无障碍电梯"</div>
+                            <div class="notification-preview">
+                                <img src="https://images.unsplash.com/photo-1589829545860-935d04ac94b9?w=100&h=100&fit=crop" alt="帖子预览">
+                                <span>电梯真的太方便了！空间很大，操作简单...</span>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="notification-action" onclick="event.stopPropagation(); viewPost(1)">查看帖子</button>
+                                <button class="notification-action" onclick="event.stopPropagation(); viewProfile('explorer')">查看用户</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Comment Notification -->
+                    <div class="notification-item unread" onclick="openNotification('comment', 2)">
+                        <div class="notification-icon comment">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <div class="notification-title">助老志愿者 评论了你的帖子</div>
+                                <div class="notification-time">15分钟前</div>
+                            </div>
+                            <div class="notification-text">"确实很方便！我昨天带老人去体验了，电梯很宽敞，按钮也够大，老人操作起来很方便。"</div>
+                            <div class="notification-actions">
+                                <button class="notification-action" onclick="event.stopPropagation(); viewPost(1)">查看评论</button>
+                                <button class="notification-action" onclick="event.stopPropagation(); replyComment()">回复</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Follow Notification -->
+                    <div class="notification-item unread" onclick="openNotification('follow', 3)">
+                        <div class="notification-icon follow">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <div class="notification-title">城市观察员 关注了你</div>
+                                <div class="notification-time">1小时前</div>
+                            </div>
+                            <div class="notification-text">感谢你的关注！一起为无障碍城市建设贡献力量</div>
+                            <div class="notification-actions">
+                                <button class="notification-action" onclick="event.stopPropagation(); viewProfile('observer')">回关</button>
+                                <button class="notification-action" onclick="event.stopPropagation(); viewProfile('observer')">查看主页</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- System Notification -->
+                    <div class="notification-item" onclick="openNotification('system', 4)">
+                        <div class="notification-icon system">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <div class="notification-title">系统通知</div>
+                                <div class="notification-time">2小时前</div>
+                            </div>
+                            <div class="notification-text">你的帖子"图书馆无障碍卫生间设施"已被管理员推荐到首页</div>
+                            <div class="notification-actions">
+                                <button class="notification-action" onclick="event.stopPropagation(); viewPost(2)">查看详情</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Like Notification -->
+                    <div class="notification-item" onclick="openNotification('like', 5)">
+                        <div class="notification-icon like">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <div class="notification-title">无障碍设计师 赞了你的评论</div>
+                                <div class="notification-time">3小时前</div>
+                            </div>
+                            <div class="notification-text">"从设计角度来说，这个电梯做得很好。按钮高度、盲文标识、语音提示都考虑得很周到。"</div>
+                            <div class="notification-actions">
+                                <button class="notification-action" onclick="event.stopPropagation(); viewPost(1)">查看评论</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mention Notification -->
+                    <div class="notification-item unread" onclick="openNotification('mention', 6)">
+                        <div class="notification-icon comment">
+                            <i class="fas fa-at"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <div class="notification-title">城市无障碍 在评论中提到了你</div>
+                                <div class="notification-time">4小时前</div>
+                            </div>
+                            <div class="notification-text">"@用户 感谢分享！这个信息对其他用户也很有帮助"</div>
+                            <div class="notification-actions">
+                                <button class="notification-action" onclick="event.stopPropagation(); viewPost(1)">查看提及</button>
+                                <button class="notification-action" onclick="event.stopPropagation(); replyComment()">回复</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <a href="home.html" class="tab-item">
+                    <i class="fas fa-home tab-icon"></i>
+                    <span class="tab-label">首页</span>
+                </a>
+                <a href="explore.html" class="tab-item">
+                    <i class="fas fa-compass tab-icon"></i>
+                    <span class="tab-label">发现</span>
+                </a>
+                <a href="create_post.html" class="tab-item">
+                    <i class="fas fa-plus-square tab-icon"></i>
+                    <span class="tab-label">发布</span>
+                </a>
+                <a href="notifications.html" class="tab-item active">
+                    <i class="fas fa-bell tab-icon"></i>
+                    <span class="tab-label">通知</span>
+                </a>
+                <a href="profile.html" class="tab-item">
+                    <i class="fas fa-user tab-icon"></i>
+                    <span class="tab-label">我的</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentTab = 'all';
+        
+        // Sample notification data
+        const notifications = {
+            all: [
+                { id: 1, type: 'like', unread: true, user: '无障碍探索者', action: '赞了你的帖子', content: '人民广场地铁站新增的无障碍电梯', time: '2分钟前' },
+                { id: 2, type: 'comment', unread: true, user: '助老志愿者', action: '评论了你的帖子', content: '确实很方便！我昨天带老人去体验了...', time: '15分钟前' },
+                { id: 3, type: 'follow', unread: true, user: '城市观察员', action: '关注了你', content: '感谢你的关注！一起为无障碍城市建设贡献力量', time: '1小时前' },
+                { id: 4, type: 'system', unread: false, user: '系统', action: '通知', content: '你的帖子已被管理员推荐到首页', time: '2小时前' },
+                { id: 5, type: 'like', unread: false, user: '无障碍设计师', action: '赞了你的评论', content: '从设计角度来说，这个电梯做得很好', time: '3小时前' },
+                { id: 6, type: 'mention', unread: true, user: '城市无障碍', action: '在评论中提到了你', content: '@用户 感谢分享！这个信息对其他用户也很有帮助', time: '4小时前' }
+            ],
+            mentions: [
+                { id: 6, type: 'mention', unread: true, user: '城市无障碍', action: '在评论中提到了你', content: '@用户 感谢分享！这个信息对其他用户也很有帮助', time: '4小时前' },
+                { id: 7, type: 'mention', unread: false, user: '志愿者小李', action: '在帖子中提到了你', content: '@用户 你的建议很有价值，我们已经在实施中', time: '1天前' },
+                { id: 8, type: 'mention', unread: false, user: '城市规划师', action: '在评论中提到了你', content: '@用户 谢谢你的详细反馈，我们会考虑改进', time: '2天前' }
+            ],
+            system: [
+                { id: 4, type: 'system', unread: false, user: '系统', action: '通知', content: '你的帖子已被管理员推荐到首页', time: '2小时前' },
+                { id: 9, type: 'system', unread: true, user: '系统', action: '更新', content: '应用已更新到最新版本，新增了多项无障碍功能', time: '1天前' },
+                { id: 10, type: 'system', unread: false, user: '系统', action: '提醒', content: '你的个人资料需要完善，请添加更多无障碍需求信息', time: '3天前' }
+            ]
+        };
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.notification-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update notification list
+            renderNotifications(tab);
+        }
+        
+        function renderNotifications(tab) {
+            const notificationList = document.getElementById('notificationList');
+            const items = notifications[tab] || [];
+            
+            if (items.length === 0) {
+                notificationList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>暂无通知</h3>
+                        <p>当有新通知时，我们会在这里显示</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            notificationList.innerHTML = items.map(notification => {
+                const iconClass = getNotificationIcon(notification.type);
+                const unreadClass = notification.unread ? 'unread' : '';
+                
+                return `
+                    <div class="notification-item ${unreadClass}" onclick="openNotification('${notification.type}', ${notification.id})">
+                        <div class="notification-icon ${iconClass.class}">
+                            <i class="fas fa-${iconClass.icon}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <div class="notification-title">${notification.user} ${notification.action}</div>
+                                <div class="notification-time">${notification.time}</div>
+                            </div>
+                            <div class="notification-text">${notification.content}</div>
+                            ${getNotificationActions(notification)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function getNotificationIcon(type) {
+            const icons = {
+                like: { class: 'like', icon: 'heart' },
+                comment: { class: 'comment', icon: 'comment' },
+                follow: { class: 'follow', icon: 'user-plus' },
+                mention: { class: 'comment', icon: 'at' },
+                system: { class: 'system', icon: 'bullhorn' }
+            };
+            return icons[type] || { class: 'system', icon: 'bell' };
+        }
+        
+        function getNotificationActions(notification) {
+            if (notification.type === 'like' || notification.type === 'comment') {
+                return `
+                    <div class="notification-actions">
+                        <button class="notification-action" onclick="event.stopPropagation(); viewPost(${notification.id})">查看帖子</button>
+                        <button class="notification-action" onclick="event.stopPropagation(); viewProfile('${notification.user}')">查看用户</button>
+                    </div>
+                `;
+            } else if (notification.type === 'follow') {
+                return `
+                    <div class="notification-actions">
+                        <button class="notification-action" onclick="event.stopPropagation(); followBack('${notification.user}')">回关</button>
+                        <button class="notification-action" onclick="event.stopPropagation(); viewProfile('${notification.user}')">查看主页</button>
+                    </div>
+                `;
+            } else if (notification.type === 'mention') {
+                return `
+                    <div class="notification-actions">
+                        <button class="notification-action" onclick="event.stopPropagation(); viewPost(${notification.id})">查看提及</button>
+                        <button class="notification-action" onclick="event.stopPropagation(); replyComment()">回复</button>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="notification-actions">
+                        <button class="notification-action" onclick="event.stopPropagation(); viewDetails(${notification.id})">查看详情</button>
+                    </div>
+                `;
+            }
+        }
+        
+        function openNotification(type, id) {
+            // Mark as read
+            const notification = document.querySelector(`.notification-item:nth-child(${id})`);
+            if (notification) {
+                notification.classList.remove('unread');
+            }
+            
+            // Handle navigation based on type
+            switch (type) {
+                case 'like':
+                case 'comment':
+                case 'mention':
+                    viewPost(id);
+                    break;
+                case 'follow':
+                    viewProfile('follower');
+                    break;
+                case 'system':
+                    viewDetails(id);
+                    break;
+            }
+        }
+        
+        function viewPost(postId) {
+            window.location.href = `post_detail.html?id=${postId}`;
+        }
+        
+        function viewProfile(username) {
+            window.location.href = `profile.html?user=${username}`;
+        }
+        
+        function followBack(username) {
+            showToast(`已关注 ${username}`);
+            viewProfile(username);
+        }
+        
+        function replyComment() {
+            showToast('跳转到评论页面');
+        }
+        
+        function viewDetails(id) {
+            showToast('查看通知详情');
+        }
+        
+        function clearAllNotifications() {
+            if (confirm('确定要将所有通知标记为已读吗？')) {
+                document.querySelectorAll('.notification-item').forEach(item => {
+                    item.classList.remove('unread');
+                });
+                
+                // Clear badges
+                document.querySelectorAll('.notification-badge').forEach(badge => {
+                    badge.textContent = '0';
+                    badge.style.display = 'none';
+                });
+                
+                showToast('所有通知已标记为已读');
+            }
+        }
+        
+        function goBack() {
+            window.history.back();
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 2000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderNotifications('all');
+        });
+    </script>
+</body>
+</html>

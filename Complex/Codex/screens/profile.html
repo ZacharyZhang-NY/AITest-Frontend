@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN" data-fontscale="base">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>个人主页 · 无障碍社区</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="../styles/global.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style> body { font-family: Inter, ui-sans-serif, system-ui; } .cover{height:180px;background-size:cover;background-position:center;} </style>
+</head>
+<body data-theme="light" data-current-tab="profile" class="bg-[color:var(--bg)] text-[color:var(--fg)]">
+  <div class="device" role="application" aria-label="个人主页">
+    <div class="dynamic-island" aria-hidden="true"></div>
+    <div class="status-bar"><div>9:41</div><div class="right">📶 📡 🔋</div></div>
+
+    <header class="title-bar">
+      <a class="btn" aria-label="返回" href="home.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title">个人主页</div>
+      <div class="flex items-center gap-1 justify-end">
+        <a class="btn" href="settings.html" aria-label="设置"><i class="fa-solid fa-gear"></i></a>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="relative" data-parallax="0.06">
+        <div class="cover" style="background-image:url('https://source.unsplash.com/1200x600/?city,skyline')"></div>
+        <img class="w-20 h-20 rounded-full object-cover border-4 border-[color:var(--bg)] absolute -bottom-10 left-4" src="https://source.unsplash.com/200x200/?person,wheelchair" alt="头像"/>
+      </section>
+      <div class="pt-12 px-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-lg font-bold">无障碍探索者</div>
+            <div class="text-sm text-[color:var(--muted)]">粉丝 128 · 关注 56</div>
+          </div>
+          <button class="px-3 py-1 border rounded-xl ripple">编辑资料</button>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <span class="badge">🏅 坡度标记者 Lv.3</span>
+          <span class="badge">🔧 电梯修复线索达人</span>
+        </div>
+
+        <div class="mt-4">
+          <div class="segment" data-index="0" role="tablist">
+            <div class="thumb"></div>
+            <button role="tab" aria-selected="true">作品</button>
+            <button role="tab">收藏</button>
+            <button role="tab">足迹</button>
+          </div>
+        </div>
+
+        <section class="mt-3 grid grid-cols-3 gap-2 pb-20">
+          <img class="w-full h-28 object-cover rounded-lg" src="https://source.unsplash.com/400x300/?accessible,elevator" alt="作品1"/>
+          <img class="w-full h-28 object-cover rounded-lg" src="https://source.unsplash.com/400x300/?wheelchair,ramp" alt="作品2"/>
+          <img class="w-full h-28 object-cover rounded-lg" src="https://source.unsplash.com/400x300/?tactile,paving" alt="作品3"/>
+          <img class="w-full h-28 object-cover rounded-lg" src="https://source.unsplash.com/400x300/?accessible,toilet" alt="作品4"/>
+          <img class="w-full h-28 object-cover rounded-lg" src="https://source.unsplash.com/400x300/?metro,elevator" alt="作品5"/>
+        </section>
+      </div>
+    </main>
+
+    <nav class="tab-bar" aria-label="底部导航">
+      <a class="tab-item" data-tab="home" href="home.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+      <a class="tab-item" data-tab="explore" href="explore.html"><i class="fa-regular fa-compass"></i><span>Explore</span></a>
+      <a class="tab-item" data-tab="create" href="create_post.html"><i class="fa-solid fa-circle-plus"></i><span>Create</span></a>
+      <a class="tab-item" data-tab="inbox" href="messages.html"><i class="fa-regular fa-message"></i><span>Inbox</span></a>
+      <a class="tab-item active" data-tab="profile" href="profile.html" aria-current="page"><i class="fa-regular fa-user"></i><span>Profile</span></a>
+    </nav>
+  </div>
+
+  <script src="../scripts/observer.js" defer></script>
+  <script src="../scripts/waapi.js" defer></script>
+  <script src="../scripts/app.js" defer></script>
+</body>
+</html>
+

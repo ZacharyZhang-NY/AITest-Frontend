@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>个人主页 - Accessibility Navigator</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  
+  <style>
+    .profile-header {
+      position: relative;
+      height: 200px;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-green) 100%);
+      overflow: hidden;
+    }
+    
+    .header-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=200&fit=crop');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.3;
+    }
+    
+    .profile-content {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: var(--space-lg);
+      color: white;
+    }
+    
+    .profile-avatar-container {
+      position: relative;
+      align-self: center;
+      margin-bottom: var(--space-md);
+    }
+    
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid white;
+      object-fit: cover;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    .avatar-edit {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      color: white;
+      border: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .profile-name {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 4px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .profile-bio {
+      text-align: center;
+      opacity: 0.9;
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-md);
+    }
+    
+    .profile-badges {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+    
+    .badge-item {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      font-size: var(--font-size-xs);
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+    
+    .profile-stats {
+      display: flex;
+      background: var(--card-bg);
+      border-radius: 16px;
+      margin: -20px var(--space-md) var(--space-lg);
+      box-shadow: 0 8px 30px var(--shadow-color);
+      border: 1px solid var(--border-color);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .stat-item {
+      flex: 1;
+      text-align: center;
+      padding: var(--space-lg) var(--space-md);
+      cursor: pointer;
+      transition: background var(--duration-fast) var(--ease-out);
+    }
+    
+    .stat-item:not(:last-child) {
+      border-right: 1px solid var(--border-color);
+    }
+    
+    .stat-item:hover {
+      background: var(--bg-secondary);
+    }
+    
+    .stat-number {
+      font-size: var(--font-size-lg);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    
+    .stat-label {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    .profile-tabs {
+      display: flex;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: calc(var(--status-bar-height) + var(--nav-bar-height));
+      z-index: 10;
+    }
+    
+    .tab-button {
+      flex: 1;
+      padding: var(--space-md);
+      text-align: center;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      position: relative;
+    }
+    
+    .tab-button.active {
+      color: var(--accent-blue);
+    }
+    
+    .tab-button.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 2px;
+      background: var(--accent-blue);
+      border-radius: 1px;
+    }
+    
+    .tab-content {
+      padding-bottom: calc(var(--tab-bar-height) + var(--space-md));
+    }
+    
+    .tab-panel {
+      display: none;
+    }
+    
+    .tab-panel.active {
+      display: block;
+    }
+    
+    .post-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      padding: var(--space-sm);
+    }
+    
+    .grid-item {
+      aspect-ratio: 1;
+      background: var(--bg-secondary);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    
+    .grid-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--duration-normal) var(--ease-out);
+    }
+    
+    .grid-item:hover img {
+      transform: scale(1.05);
+    }
+    
+    .grid-item-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: var(--space-sm);
+      opacity: 0;
+      transition: opacity var(--duration-fast) var(--ease-out);
+    }
+    
+    .grid-item:hover .grid-item-overlay {
+      opacity: 1;
+    }
+    
+    .overlay-stats {
+      display: flex;
+      gap: var(--space-md);
+      color: white;
+      font-size: var(--font-size-xs);
+    }
+    
+    .overlay-stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .video-indicator {
+      position: absolute;
+      top: var(--space-sm);
+      right: var(--space-sm);
+      background: rgba(0,0,0,0.7);
+      color: white;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    
+    .achievement-list {
+      padding: var(--space-md);
+    }
+    
+    .achievement-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-lg);
+      background: var(--card-bg);
+      border-radius: 16px;
+      margin-bottom: var(--space-md);
+      border: 1px solid var(--border-color);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+    
+    .achievement-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px var(--shadow-color);
+    }
+    
+    .achievement-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+    }
+    
+    .achievement-gold { background: linear-gradient(135deg, #ffd700, #ffb700); }
+    .achievement-silver { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); }
+    .achievement-bronze { background: linear-gradient(135deg, #cd7f32, #b8751a); }
+    
+    .achievement-info {
+      flex: 1;
+    }
+    
+    .achievement-title {
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    
+    .achievement-desc {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xs);
+    }
+    
+    .achievement-progress {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .progress-bar {
+      flex: 1;
+      height: 4px;
+      background: var(--border-color);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-blue);
+      border-radius: 2px;
+      transition: width var(--duration-normal) var(--ease-out);
+    }
+    
+    .progress-text {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    .location-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--card-bg);
+      border-radius: 12px;
+      margin-bottom: var(--space-sm);
+      border: 1px solid var(--border-color);
+    }
+    
+    .location-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: var(--accent-blue);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .location-info {
+      flex: 1;
+    }
+    
+    .location-name {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    
+    .location-time {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+    
+    .location-rating {
+      color: var(--accent-orange);
+      font-size: var(--font-size-sm);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: var(--space-xl);
+      color: var(--text-secondary);
+    }
+    
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: var(--space-md);
+      color: var(--text-tertiary);
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-indicators">
+        <i class="fas fa-signal" style="font-size: 12px;"></i>
+        <i class="fas fa-wifi" style="font-size: 12px;"></i>
+        <i class="fas fa-battery-three-quarters" style="font-size: 12px;"></i>
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="nav-bar">
+      <button class="nav-button" onclick="history.back()" aria-label="返回">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="nav-title">个人主页</div>
+      <button class="nav-button" onclick="showSettings()" aria-label="设置">
+        <i class="fas fa-cog"></i>
+      </button>
+    </div>
+    
+    <!-- Content -->
+    <div class="content">
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <div class="header-bg"></div>
+        <div class="profile-content">
+          <div class="profile-avatar-container">
+            <img 
+              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop&crop=face"
+              alt="张明的头像"
+              class="profile-avatar"
+            >
+            <button class="avatar-edit" onclick="editAvatar()" aria-label="编辑头像">
+              <i class="fas fa-camera"></i>
+            </button>
+          </div>
+          
+          <h1 class="profile-name">张明</h1>
+          <p class="profile-bio">轮椅用户 · 无障碍体验分享者 · 让城市更友好</p>
+          
+          <div class="profile-badges">
+            <span class="badge-item">🥇 金牌贡献者</span>
+            <span class="badge-item">📍 北京探索者</span>
+            <span class="badge-item">♿ 轮椅用户</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stats -->
+      <div class="profile-stats">
+        <div class="stat-item" onclick="showFollowers()">
+          <div class="stat-number">1.2K</div>
+          <div class="stat-label">粉丝</div>
+        </div>
+        <div class="stat-item" onclick="showFollowing()">
+          <div class="stat-number">328</div>
+          <div class="stat-label">关注</div>
+        </div>
+        <div class="stat-item" onclick="showLikes()">
+          <div class="stat-number">8.9K</div>
+          <div class="stat-label">获赞</div>
+        </div>
+      </div>
+      
+      <!-- Tabs -->
+      <div class="profile-tabs">
+        <button class="tab-button active" onclick="switchTab('posts', this)">作品</button>
+        <button class="tab-button" onclick="switchTab('collections', this)">收藏</button>
+        <button class="tab-button" onclick="switchTab('footprints', this)">足迹</button>
+      </div>
+      
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Posts Tab -->
+        <div class="tab-panel active" id="postsPanel">
+          <div class="post-grid">
+            <div class="grid-item" onclick="openPost(1)">
+              <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&h=200&fit=crop" alt="商场无障碍设施">
+              <div class="grid-item-overlay">
+                <div class="overlay-stats">
+                  <div class="overlay-stat">
+                    <i class="fas fa-heart"></i>
+                    <span>234</span>
+                  </div>
+                  <div class="overlay-stat">
+                    <i class="fas fa-comment"></i>
+                    <span>56</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="grid-item" onclick="openPost(2)">
+              <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop" alt="地铁站设施">
+              <div class="video-indicator">
+                <i class="fas fa-play"></i>
+              </div>
+              <div class="grid-item-overlay">
+                <div class="overlay-stats">
+                  <div class="overlay-stat">
+                    <i class="fas fa-heart"></i>
+                    <span>456</span>
+                  </div>
+                  <div class="overlay-stat">
+                    <i class="fas fa-comment"></i>
+                    <span>89</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="grid-item" onclick="openPost(3)">
+              <img src="https://images.unsplash.com/photo-1551076805-e1869033e561?w=200&h=200&fit=crop" alt="医院无障碍设施">
+              <div class="grid-item-overlay">
+                <div class="overlay-stats">
+                  <div class="overlay-stat">
+                    <i class="fas fa-heart"></i>
+                    <span>178</span>
+                  </div>
+                  <div class="overlay-stat">
+                    <i class="fas fa-comment"></i>
+                    <span>34</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="grid-item" onclick="openPost(4)">
+              <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=200&h=200&fit=crop" alt="公园步道">
+              <div class="grid-item-overlay">
+                <div class="overlay-stats">
+                  <div class="overlay-stat">
+                    <i class="fas fa-heart"></i>
+                    <span>312</span>
+                  </div>
+                  <div class="overlay-stat">
+                    <i class="fas fa-comment"></i>
+                    <span>67</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="grid-item" onclick="openPost(5)">
+              <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=200&h=200&fit=crop" alt="学校设施">
+              <div class="grid-item-overlay">
+                <div class="overlay-stats">
+                  <div class="overlay-stat">
+                    <i class="fas fa-heart"></i>
+                    <span>267</span>
+                  </div>
+                  <div class="overlay-stat">
+                    <i class="fas fa-comment"></i>
+                    <span>45</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="grid-item" onclick="openPost(6)">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" alt="图书馆设施">
+              <div class="grid-item-overlay">
+                <div class="overlay-stats">
+                  <div class="overlay-stat">
+                    <i class="fas fa-heart"></i>
+                    <span>189</span>
+                  </div>
+                  <div class="overlay-stat">
+                    <i class="fas fa-comment"></i>
+                    <span>28</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Collections Tab -->
+        <div class="tab-panel" id="collectionsPanel">
+          <div class="achievement-list">
+            <div class="achievement-item">
+              <div class="achievement-icon achievement-gold">
+                <i class="fas fa-trophy"></i>
+              </div>
+              <div class="achievement-info">
+                <div class="achievement-title">无障碍探索者</div>
+                <div class="achievement-desc">发现并分享100个无障碍设施</div>
+                <div class="achievement-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%;"></div>
+                  </div>
+                  <div class="progress-text">100/100</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="achievement-item">
+              <div class="achievement-icon achievement-silver">
+                <i class="fas fa-heart"></i>
+              </div>
+              <div class="achievement-info">
+                <div class="achievement-title">社区之星</div>
+                <div class="achievement-desc">获得1000个点赞</div>
+                <div class="achievement-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 89%;"></div>
+                  </div>
+                  <div class="progress-text">890/1000</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="achievement-item">
+              <div class="achievement-icon achievement-bronze">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div class="achievement-info">
+                <div class="achievement-title">地区专家</div>
+                <div class="achievement-desc">在北京地区发布50条内容</div>
+                <div class="achievement-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 76%;"></div>
+                  </div>
+                  <div class="progress-text">38/50</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Footprints Tab -->
+        <div class="tab-panel" id="footprintsPanel">
+          <div style="padding: var(--space-md);">
+            <div class="location-item">
+              <div class="location-icon">
+                <i class="fas fa-subway"></i>
+              </div>
+              <div class="location-info">
+                <div class="location-name">国贸地铁站 A 出口</div>
+                <div class="location-time">2小时前访问</div>
+              </div>
+              <div class="location-rating">★★★★★</div>
+            </div>
+            
+            <div class="location-item">
+              <div class="location-icon">
+                <i class="fas fa-shopping-cart"></i>
+              </div>
+              <div class="location-info">
+                <div class="location-name">万达广场</div>
+                <div class="location-time">1天前访问</div>
+              </div>
+              <div class="location-rating">★★★★☆</div>
+            </div>
+            
+            <div class="location-item">
+              <div class="location-icon">
+                <i class="fas fa-hospital"></i>
+              </div>
+              <div class="location-info">
+                <div class="location-name">协和医院</div>
+                <div class="location-time">3天前访问</div>
+              </div>
+              <div class="location-rating">★★★★★</div>
+            </div>
+            
+            <div class="location-item">
+              <div class="location-icon">
+                <i class="fas fa-tree"></i>
+              </div>
+              <div class="location-info">
+                <div class="location-name">中山公园</div>
+                <div class="location-time">1周前访问</div>
+              </div>
+              <div class="location-rating">★★★★☆</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab Bar -->
+    <nav class="tab-bar" role="tablist" aria-label="主导航">
+      <a href="home.html" class="tab-item" role="tab">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+      </a>
+      <a href="explore.html" class="tab-item" role="tab">
+        <i class="fas fa-compass"></i>
+        <span>发现</span>
+      </a>
+      <a href="create_post.html" class="tab-item" role="tab">
+        <i class="fas fa-plus-circle"></i>
+        <span>发布</span>
+      </a>
+      <a href="notifications.html" class="tab-item" role="tab">
+        <i class="fas fa-bell"></i>
+        <span>通知</span>
+      </a>
+      <a href="profile.html" class="tab-item active" role="tab">
+        <i class="fas fa-user"></i>
+        <span>我的</span>
+      </a>
+    </nav>
+  </div>
+  
+  <script src="../scripts/app.js"></script>
+  <script>
+    // Tab switching
+    function switchTab(tabName, button) {
+      // Update tab buttons
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      button.classList.add('active');
+      
+      // Update tab panels
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+      document.getElementById(tabName + 'Panel').classList.add('active');
+    }
+    
+    // Profile interactions
+    function editAvatar() {
+      alert('选择新头像：相机拍摄或从相册选择');
+    }
+    
+    function showSettings() {
+      window.location.href = 'settings.html';
+    }
+    
+    function showFollowers() {
+      alert('粉丝列表：查看关注您的用户');
+    }
+    
+    function showFollowing() {
+      alert('关注列表：查看您关注的用户');
+    }
+    
+    function showLikes() {
+      alert('获赞统计：查看您收到的所有点赞');
+    }
+    
+    function openPost(postId) {
+      window.location.href = `post_detail.html?id=${postId}`;
+    }
+    
+    // Initialize animations
+    document.addEventListener('DOMContentLoaded', () => {
+      // Animate stats on load
+      const statNumbers = document.querySelectorAll('.stat-number');
+      statNumbers.forEach(stat => {
+        const finalValue = stat.textContent;
+        stat.textContent = '0';
+        animateNumber(stat, finalValue, 1000);
+      });
+      
+      // Animate progress bars
+      setTimeout(() => {
+        const progressBars = document.querySelectorAll('.progress-fill');
+        progressBars.forEach(bar => {
+          const width = bar.style.width;
+          bar.style.width = '0%';
+          setTimeout(() => {
+            bar.style.width = width;
+          }, 100);
+        });
+      }, 500);
+    });
+    
+    function animateNumber(element, target, duration) {
+      const start = 0;
+      const increment = target.includes('K') ? 
+        parseFloat(target) * 1000 / (duration / 16) : 
+        parseInt(target) / (duration / 16);
+      
+      let current = start;
+      const timer = setInterval(() => {
+        current += increment;
+        
+        if (target.includes('K')) {
+          const value = Math.min(current / 1000, parseFloat(target));
+          element.textContent = value.toFixed(1) + 'K';
+          if (value >= parseFloat(target)) {
+            clearInterval(timer);
+          }
+        } else {
+          const value = Math.min(Math.floor(current), parseInt(target));
+          element.textContent = value.toString();
+          if (value >= parseInt(target)) {
+            clearInterval(timer);
+          }
+        }
+      }, 16);
+    }
+  </script>
+</body>
+</html>

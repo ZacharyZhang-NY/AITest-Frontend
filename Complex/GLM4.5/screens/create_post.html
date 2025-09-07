@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建帖子 - Accessibility Navigator</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .create-post-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .content-wrapper {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            right: 0;
+            bottom: 83px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+            padding: 20px;
+        }
+        
+        .form-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            color: var(--accent);
+        }
+        
+        .media-upload {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .media-upload:hover {
+            border-color: var(--accent);
+            background: rgba(0, 102, 204, 0.05);
+        }
+        
+        .media-upload.has-media {
+            border-style: solid;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+        }
+        
+        .upload-text {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .upload-subtext {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+        
+        .media-preview {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        
+        .media-preview img,
+        .media-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .media-remove {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .media-remove:hover {
+            background: rgba(220, 53, 69, 0.9);
+            transform: scale(1.1);
+        }
+        
+        .media-type-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .media-type-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .media-type-btn:hover {
+            border-color: var(--accent);
+        }
+        
+        .media-type-btn.active {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+        
+        .text-input {
+            width: 100%;
+            min-height: 120px;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .text-input::placeholder {
+            color: var(--text-tertiary);
+        }
+        
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 8px;
+        }
+        
+        .location-input {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        
+        .location-input .input {
+            padding-left: 48px;
+        }
+        
+        .location-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            font-size: 18px;
+        }
+        
+        .location-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-top: 4px;
+            box-shadow: 0 4px 12px var(--shadow);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .location-suggestions.show {
+            display: block;
+        }
+        
+        .location-suggestion {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .location-suggestion:last-child {
+            border-bottom: none;
+        }
+        
+        .location-suggestion:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .suggestion-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        
+        .suggestion-address {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .accessibility-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-item:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .feature-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .feature-icon {
+            font-size: 18px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+        }
+        
+        .feature-item:hover .feature-icon {
+            background: white;
+            color: var(--accent);
+        }
+        
+        .feature-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .feature-toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-toggle.active {
+            background: var(--accent);
+        }
+        
+        .feature-toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .feature-toggle.active .feature-toggle-slider {
+            transform: translateX(20px);
+        }
+        
+        .feature-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .feature-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .feature-unit {
+            font-size: 14px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        
+        .template-selector {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            margin-bottom: 16px;
+        }
+        
+        .template-selector::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .template-item {
+            flex: 0 0 auto;
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .template-item:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .post-settings {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+        }
+        
+        .setting-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .setting-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 16px;
+        }
+        
+        .setting-text {
+            flex: 1;
+        }
+        
+        .setting-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        
+        .setting-description {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .setting-toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .setting-toggle.active {
+            background: var(--accent);
+        }
+        
+        .setting-toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .setting-toggle.active .setting-toggle-slider {
+            transform: translateX(20px);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            padding: 20px 0;
+        }
+        
+        .btn-cancel {
+            flex: 1;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cancel:hover {
+            background: var(--border-color);
+        }
+        
+        .btn-publish {
+            flex: 2;
+            padding: 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-publish:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+        
+        .btn-publish:disabled {
+            background: var(--text-tertiary);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .progress-overlay.show {
+            display: flex;
+        }
+        
+        .progress-modal {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 300px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .progress-icon {
+            font-size: 48px;
+            color: var(--accent);
+            margin-bottom: 16px;
+            animation: rotate 2s linear infinite;
+        }
+        
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+        
+        .progress-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .success-icon {
+            font-size: 48px;
+            color: var(--success);
+            margin-bottom: 16px;
+        }
+        
+        @media (max-width: 393px) {
+            .content-wrapper {
+                padding: 16px;
+            }
+            
+            .accessibility-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="status-bar">
+            <div class="status-time">9:41</div>
+            <div class="status-icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <div class="dynamic-island"></div>
+        
+        <div class="header">
+            <button class="header-back" onclick="goBack()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h1 class="header-title">创建帖子</h1>
+            <div style="width: 40px;"></div>
+        </div>
+        
+        <div class="create-post-container">
+            <div class="content-wrapper">
+                <form id="createPostForm">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-image"></i>
+                            媒体内容
+                        </h3>
+                        
+                        <div class="media-type-selector">
+                            <button type="button" class="media-type-btn active" onclick="selectMediaType(this, 'image')">
+                                <i class="fas fa-image"></i>
+                                图片
+                            </button>
+                            <button type="button" class="media-type-btn" onclick="selectMediaType(this, 'video')">
+                                <i class="fas fa-video"></i>
+                                视频
+                            </button>
+                            <button type="button" class="media-type-btn" onclick="selectMediaType(this, 'none')">
+                                <i class="fas fa-file-text"></i>
+                                纯文本
+                            </button>
+                        </div>
+                        
+                        <div class="media-upload" id="mediaUpload" onclick="selectMedia()">
+                            <div class="upload-content" id="uploadContent">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <div class="upload-text">点击上传媒体</div>
+                                <div class="upload-subtext">支持 JPG、PNG、MP4 格式，最大 50MB</div>
+                            </div>
+                        </div>
+                        
+                        <input type="file" id="mediaInput" accept="image/*,video/*" style="display: none;" onchange="handleMediaSelect(event)">
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-pen"></i>
+                            描述内容
+                        </h3>
+                        
+                        <textarea class="text-input" placeholder="分享您的无障碍体验..." id="postContent" maxlength="500"></textarea>
+                        <div class="char-counter">
+                            <span id="charCount">0</span>/500
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-map-marker-alt"></i>
+                            位置信息
+                        </h3>
+                        
+                        <div class="location-input">
+                            <i class="fas fa-search location-icon"></i>
+                            <input type="text" class="input" placeholder="搜索地点或使用当前位置" id="locationInput">
+                            <div class="location-suggestions" id="locationSuggestions">
+                                <div class="location-suggestion" onclick="selectLocation('人民广场地铁站', '黄浦区人民广场')">
+                                    <div class="suggestion-name">人民广场地铁站</div>
+                                    <div class="suggestion-address">黄浦区人民广场</div>
+                                </div>
+                                <div class="location-suggestion" onclick="selectLocation('上海图书馆', '淮海中路1555号')">
+                                    <div class="suggestion-name">上海图书馆</div>
+                                    <div class="suggestion-address">淮海中路1555号</div>
+                                </div>
+                                <div class="location-suggestion" onclick="selectLocation('港汇恒隆广场', '虹桥路1号')">
+                                    <div class="suggestion-name">港汇恒隆广场</div>
+                                    <div class="suggestion-address">虹桥路1号</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn-secondary" onclick="useCurrentLocation()">
+                            <i class="fas fa-location-arrow"></i>
+                            使用当前位置
+                        </button>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-universal-access"></i>
+                            无障碍设施
+                        </h3>
+                        
+                        <div class="template-selector">
+                            <div class="template-item" onclick="applyTemplate('subway')">
+                                <i class="fas fa-subway"></i>
+                                地铁站通行
+                            </div>
+                            <div class="template-item" onclick="applyTemplate('mall')">
+                                <i class="fas fa-shopping-mall"></i>
+                                商场入口
+                            </div>
+                            <div class="template-item" onclick="applyTemplate('hospital')">
+                                <i class="fas fa-hospital"></i>
+                                医院设施
+                            </div>
+                            <div class="template-item" onclick="applyTemplate('park')">
+                                <i class="fas fa-tree"></i>
+                                公园路径
+                            </div>
+                        </div>
+                        
+                        <div class="accessibility-features">
+                            <div class="feature-item">
+                                <div class="feature-info">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-wheelchair"></i>
+                                    </div>
+                                    <div class="feature-name">轮椅友好</div>
+                                </div>
+                                <div class="feature-toggle" onclick="toggleFeature(this)">
+                                    <div class="feature-toggle-slider"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <div class="feature-info">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-elevator"></i>
+                                    </div>
+                                    <div class="feature-name">电梯</div>
+                                </div>
+                                <div class="feature-toggle" onclick="toggleFeature(this)">
+                                    <div class="feature-toggle-slider"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <div class="feature-info">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-restroom"></i>
+                                    </div>
+                                    <div class="feature-name">无障碍卫生间</div>
+                                </div>
+                                <div class="feature-toggle" onclick="toggleFeature(this)">
+                                    <div class="feature-toggle-slider"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <div class="feature-info">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div class="feature-name">坡道</div>
+                                </div>
+                                <div class="feature-toggle active" onclick="toggleFeature(this)">
+                                    <div class="feature-toggle-slider"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item" id="slopeFeature">
+                                <div class="feature-info">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-percentage"></i>
+                                    </div>
+                                    <div class="feature-name">坡度</div>
+                                </div>
+                                <div class="feature-input-group">
+                                    <input type="number" class="feature-input" placeholder="0" min="0" max="100" id="slopeInput">
+                                    <span class="feature-unit">%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item" id="doorWidthFeature">
+                                <div class="feature-info">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-door-open"></i>
+                                    </div>
+                                    <div class="feature-name">门宽</div>
+                                </div>
+                                <div class="feature-input-group">
+                                    <input type="number" class="feature-input" placeholder="0" min="0" max="200" id="doorWidthInput">
+                                    <span class="feature-unit">cm</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <div class="feature-info">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-blind"></i>
+                                    </div>
+                                    <div class="feature-name">盲道</div>
+                                </div>
+                                <div class="feature-toggle" onclick="toggleFeature(this)">
+                                    <div class="feature-toggle-slider"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-item">
+                                <div class="feature-info">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-parking"></i>
+                                    </div>
+                                    <div class="feature-name">无障碍车位</div>
+                                </div>
+                                <div class="feature-toggle" onclick="toggleFeature(this)">
+                                    <div class="feature-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-cog"></i>
+                            发布设置
+                        </h3>
+                        
+                        <div class="post-settings">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-icon">
+                                        <i class="fas fa-user-secret"></i>
+                                    </div>
+                                    <div class="setting-text">
+                                        <div class="setting-title">匿名发布</div>
+                                        <div class="setting-description">隐藏您的个人信息</div>
+                                    </div>
+                                </div>
+                                <div class="setting-toggle" onclick="toggleSetting(this)">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-icon">
+                                        <i class="fas fa-map-marked-alt"></i>
+                                    </div>
+                                    <div class="setting-text">
+                                        <div class="setting-title">显示位置</div>
+                                        <div class="setting-description">在帖子中显示位置信息</div>
+                                    </div>
+                                </div>
+                                <div class="setting-toggle active" onclick="toggleSetting(this)">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-icon">
+                                        <i class="fas fa-comments"></i>
+                                    </div>
+                                    <div class="setting-text">
+                                        <div class="setting-title">允许评论</div>
+                                        <div class="setting-description">其他用户可以评论此帖子</div>
+                                    </div>
+                                </div>
+                                <div class="setting-toggle active" onclick="toggleSetting(this)">
+                                    <div class="setting-toggle-slider"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="action-buttons">
+                    <button type="button" class="btn-cancel" onclick="goBack()">
+                        取消
+                    </button>
+                    <button type="button" class="btn-publish" onclick="publishPost()">
+                        <i class="fas fa-paper-plane"></i>
+                        发布帖子
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <a href="home.html" class="tab-item">
+                    <i class="fas fa-home tab-icon"></i>
+                    <span class="tab-label">首页</span>
+                </a>
+                <a href="explore.html" class="tab-item">
+                    <i class="fas fa-compass tab-icon"></i>
+                    <span class="tab-label">发现</span>
+                </a>
+                <a href="create_post.html" class="tab-item active">
+                    <i class="fas fa-plus-square tab-icon"></i>
+                    <span class="tab-label">发布</span>
+                </a>
+                <a href="notifications.html" class="tab-item">
+                    <i class="fas fa-bell tab-icon"></i>
+                    <span class="tab-label">通知</span>
+                </a>
+                <a href="profile.html" class="tab-item">
+                    <i class="fas fa-user tab-icon"></i>
+                    <span class="tab-label">我的</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Progress Overlay -->
+        <div class="progress-overlay" id="progressOverlay">
+            <div class="progress-modal">
+                <div class="progress-icon" id="progressIcon">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div class="progress-text" id="progressText">正在上传...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedMediaType = 'image';
+        let selectedMedia = null;
+        let selectedLocation = null;
+        let accessibilityFeatures = {
+            wheelchair: false,
+            elevator: false,
+            restroom: false,
+            ramp: true,
+            slope: '',
+            doorWidth: '',
+            blind: false,
+            parking: false
+        };
+        let postSettings = {
+            anonymous: false,
+            showLocation: true,
+            allowComments: true
+        };
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupCharCounter();
+            setupLocationSearch();
+        });
+        
+        function setupCharCounter() {
+            const postContent = document.getElementById('postContent');
+            const charCount = document.getElementById('charCount');
+            
+            postContent.addEventListener('input', function() {
+                const count = this.value.length;
+                charCount.textContent = count;
+                
+                if (count > 450) {
+                    charCount.style.color = 'var(--danger)';
+                } else if (count > 400) {
+                    charCount.style.color = 'var(--warning)';
+                } else {
+                    charCount.style.color = 'var(--text-tertiary)';
+                }
+            });
+        }
+        
+        function setupLocationSearch() {
+            const locationInput = document.getElementById('locationInput');
+            const locationSuggestions = document.getElementById('locationSuggestions');
+            
+            locationInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                
+                if (query.length > 0) {
+                    locationSuggestions.classList.add('show');
+                } else {
+                    locationSuggestions.classList.remove('show');
+                }
+            });
+            
+            locationInput.addEventListener('focus', function() {
+                if (this.value.trim().length > 0) {
+                    locationSuggestions.classList.add('show');
+                }
+            });
+            
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!locationInput.contains(e.target) && !locationSuggestions.contains(e.target)) {
+                    locationSuggestions.classList.remove('show');
+                }
+            });
+        }
+        
+        function selectMediaType(button, type) {
+            document.querySelectorAll('.media-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+            
+            selectedMediaType = type;
+            
+            const mediaUpload = document.getElementById('mediaUpload');
+            
+            if (type === 'none') {
+                mediaUpload.style.display = 'none';
+            } else {
+                mediaUpload.style.display = 'block';
+                
+                // Update file input accept attribute
+                const mediaInput = document.getElementById('mediaInput');
+                if (type === 'image') {
+                    mediaInput.accept = 'image/*';
+                } else if (type === 'video') {
+                    mediaInput.accept = 'video/*';
+                }
+            }
+        }
+        
+        function selectMedia() {
+            document.getElementById('mediaInput').click();
+        }
+        
+        function handleMediaSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validate file type
+            if (selectedMediaType === 'image' && !file.type.startsWith('image/')) {
+                showToast('请选择图片文件');
+                return;
+            }
+            
+            if (selectedMediaType === 'video' && !file.type.startsWith('video/')) {
+                showToast('请选择视频文件');
+                return;
+            }
+            
+            // Validate file size (50MB)
+            if (file.size > 50 * 1024 * 1024) {
+                showToast('文件大小不能超过50MB');
+                return;
+            }
+            
+            selectedMedia = file;
+            
+            // Show preview
+            const mediaUpload = document.getElementById('mediaUpload');
+            const uploadContent = document.getElementById('uploadContent');
+            
+            mediaUpload.classList.add('has-media');
+            
+            if (selectedMediaType === 'image') {
+                uploadContent.innerHTML = `
+                    <div class="media-preview">
+                        <img src="${URL.createObjectURL(file)}" alt="预览">
+                        <button type="button" class="media-remove" onclick="removeMedia()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            } else if (selectedMediaType === 'video') {
+                uploadContent.innerHTML = `
+                    <div class="media-preview">
+                        <video src="${URL.createObjectURL(file)}" controls></video>
+                        <button type="button" class="media-remove" onclick="removeMedia()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        function removeMedia() {
+            selectedMedia = null;
+            
+            const mediaUpload = document.getElementById('mediaUpload');
+            const uploadContent = document.getElementById('uploadContent');
+            
+            mediaUpload.classList.remove('has-media');
+            uploadContent.innerHTML = `
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <div class="upload-text">点击上传媒体</div>
+                <div class="upload-subtext">支持 JPG、PNG、MP4 格式，最大 50MB</div>
+            `;
+            
+            // Clear file input
+            document.getElementById('mediaInput').value = '';
+        }
+        
+        function selectLocation(name, address) {
+            document.getElementById('locationInput').value = name;
+            document.getElementById('locationSuggestions').classList.remove('show');
+            
+            selectedLocation = { name, address };
+        }
+        
+        function useCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // In real app, this would reverse geocode to get address
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        document.getElementById('locationInput').value = '当前位置';
+                        selectedLocation = { 
+                            name: '当前位置', 
+                            address: `${lat.toFixed(6)}, ${lng.toFixed(6)}` 
+                        };
+                        
+                        showToast('已获取当前位置');
+                    },
+                    function(error) {
+                        showToast('无法获取位置信息');
+                    }
+                );
+            } else {
+                showToast('您的浏览器不支持地理位置');
+            }
+        }
+        
+        function applyTemplate(template) {
+            const templates = {
+                subway: {
+                    content: '地铁站的无障碍设施体验分享',
+                    features: ['elevator', 'ramp', 'blind'],
+                    slope: '5',
+                    doorWidth: '90'
+                },
+                mall: {
+                    content: '商场的无障碍入口和设施情况',
+                    features: ['wheelchair', 'ramp', 'restroom'],
+                    slope: '3',
+                    doorWidth: '120'
+                },
+                hospital: {
+                    content: '医院的无障碍设施和服务体验',
+                    features: ['wheelchair', 'elevator', 'restroom', 'parking'],
+                    slope: '2',
+                    doorWidth: '100'
+                },
+                park: {
+                    content: '公园的无障碍路径和休息设施',
+                    features: ['wheelchair', 'ramp', 'blind'],
+                    slope: '4',
+                    doorWidth: ''
+                }
+            };
+            
+            const selectedTemplate = templates[template];
+            if (selectedTemplate) {
+                // Fill content
+                document.getElementById('postContent').value = selectedTemplate.content;
+                document.getElementById('charCount').textContent = selectedTemplate.content.length;
+                
+                // Reset features
+                document.querySelectorAll('.feature-toggle').forEach(toggle => {
+                    toggle.classList.remove('active');
+                });
+                
+                // Apply template features
+                selectedTemplate.features.forEach(feature => {
+                    const toggle = document.querySelector(`[onclick="toggleFeature(this)"]`);
+                    if (toggle) {
+                        toggle.classList.add('active');
+                    }
+                });
+                
+                // Fill input values
+                if (selectedTemplate.slope) {
+                    document.getElementById('slopeInput').value = selectedTemplate.slope;
+                }
+                if (selectedTemplate.doorWidth) {
+                    document.getElementById('doorWidthInput').value = selectedTemplate.doorWidth;
+                }
+                
+                showToast(`已应用${template === 'subway' ? '地铁站' : template === 'mall' ? '商场' : template === 'hospital' ? '医院' : '公园'}模板`);
+            }
+        }
+        
+        function toggleFeature(toggle) {
+            toggle.classList.toggle('active');
+            
+            // Show/hide input fields for slope and door width
+            const slopeFeature = document.getElementById('slopeFeature');
+            const doorWidthFeature = document.getElementById('doorWidthFeature');
+            
+            if (toggle.closest('.feature-item').querySelector('.feature-name').textContent === '坡道') {
+                slopeFeature.style.display = toggle.classList.contains('active') ? 'flex' : 'none';
+            }
+            
+            if (toggle.closest('.feature-item').querySelector('.feature-name').textContent === '电梯') {
+                doorWidthFeature.style.display = toggle.classList.contains('active') ? 'flex' : 'none';
+            }
+        }
+        
+        function toggleSetting(toggle) {
+            toggle.classList.toggle('active');
+            
+            const settingName = toggle.closest('.setting-item').querySelector('.setting-title').textContent;
+            
+            if (settingName === '匿名发布') {
+                postSettings.anonymous = toggle.classList.contains('active');
+            } else if (settingName === '显示位置') {
+                postSettings.showLocation = toggle.classList.contains('active');
+            } else if (settingName === '允许评论') {
+                postSettings.allowComments = toggle.classList.contains('active');
+            }
+        }
+        
+        function validateForm() {
+            const content = document.getElementById('postContent').value.trim();
+            
+            if (!content) {
+                showToast('请输入帖子内容');
+                return false;
+            }
+            
+            if (!selectedLocation) {
+                showToast('请选择位置');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function publishPost() {
+            if (!validateForm()) {
+                return;
+            }
+            
+            const content = document.getElementById('postContent').value.trim();
+            const slope = document.getElementById('slopeInput').value;
+            const doorWidth = document.getElementById('doorWidthInput').value;
+            
+            // Collect accessibility features
+            const features = [];
+            document.querySelectorAll('.feature-toggle.active').forEach(toggle => {
+                const featureName = toggle.closest('.feature-item').querySelector('.feature-name').textContent;
+                features.push(featureName);
+            });
+            
+            // Show progress overlay
+            const progressOverlay = document.getElementById('progressOverlay');
+            const progressIcon = document.getElementById('progressIcon');
+            const progressText = document.getElementById('progressText');
+            const progressFill = document.getElementById('progressFill');
+            
+            progressOverlay.classList.add('show');
+            
+            // Simulate upload progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 100) progress = 100;
+                
+                progressFill.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    
+                    // Show success
+                    setTimeout(() => {
+                        progressIcon.innerHTML = '<i class="fas fa-check success-icon"></i>';
+                        progressText.textContent = '发布成功！';
+                        
+                        setTimeout(() => {
+                            progressOverlay.classList.remove('show');
+                            window.location.href = 'home.html';
+                        }, 1500);
+                    }, 500);
+                }
+            }, 200);
+            
+            // In real app, this would send data to server
+            console.log('Publishing post:', {
+                content,
+                media: selectedMedia,
+                location: selectedLocation,
+                features,
+                slope,
+                doorWidth,
+                settings: postSettings
+            });
+        }
+        
+        function goBack() {
+            if (confirm('确定要取消发布吗？未保存的内容将丢失。')) {
+                window.history.back();
+            }
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

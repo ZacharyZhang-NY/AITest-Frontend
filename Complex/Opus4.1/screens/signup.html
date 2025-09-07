@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册 - Accessibility Navigator</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .signup-container {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      padding: 60px 30px 40px;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 60px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+    }
+
+    .back-btn:active {
+      transform: scale(0.9);
+    }
+
+    .header-section {
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+
+    .header-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    .header-subtitle {
+      font-size: 14px;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .form-container {
+      background: white;
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 30px;
+    }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e5e5ea;
+      transition: all 0.3s;
+    }
+
+    .step-dot.active {
+      width: 24px;
+      border-radius: 4px;
+      background: #667eea;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-label {
+      font-size: 14px;
+      color: #86868b;
+      margin-bottom: 8px;
+      display: block;
+      font-weight: 500;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #86868b;
+      font-size: 18px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 16px 16px 16px 48px;
+      background: #f5f5f7;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      font-size: 16px;
+      color: #1d1d1f;
+      transition: all 0.3s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      background: white;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+    }
+
+    .form-input.error {
+      border-color: #ff3b30;
+      background: #fff5f5;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #86868b;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .verification-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .verification-input {
+      flex: 1;
+    }
+
+    .send-code-btn {
+      padding: 16px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.3s;
+    }
+
+    .send-code-btn:disabled {
+      background: #e5e5ea;
+      color: #86868b;
+      cursor: not-allowed;
+    }
+
+    .send-code-btn:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    .password-strength {
+      margin-top: 8px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .strength-bar {
+      flex: 1;
+      height: 4px;
+      background: #e5e5ea;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    .strength-bar.active {
+      background: #34c759;
+    }
+
+    .strength-bar.weak {
+      background: #ff9500;
+    }
+
+    .strength-bar.medium {
+      background: #ff9500;
+    }
+
+    .strength-bar.strong {
+      background: #34c759;
+    }
+
+    .strength-text {
+      font-size: 12px;
+      color: #86868b;
+      margin-top: 4px;
+    }
+
+    .user-type-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .user-type-card {
+      padding: 16px;
+      background: #f5f5f7;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .user-type-card.selected {
+      background: #f0f5ff;
+      border-color: #667eea;
+    }
+
+    .user-type-icon {
+      font-size: 32px;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    .user-type-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1d1d1f;
+      margin-bottom: 4px;
+    }
+
+    .user-type-desc {
+      font-size: 12px;
+      color: #86868b;
+    }
+
+    .agreement-section {
+      margin-bottom: 30px;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    .agreement-text {
+      font-size: 13px;
+      color: #515154;
+      line-height: 1.5;
+    }
+
+    .agreement-link {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .signup-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 20px;
+    }
+
+    .signup-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .signup-btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .login-prompt {
+      text-align: center;
+      font-size: 14px;
+      color: #515154;
+    }
+
+    .login-link {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: #86868b;
+      margin-top: 4px;
+    }
+
+    .success-message {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .success-message.show {
+      display: flex;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <div class="notch"></div>
+    <div class="status-bar">
+      <div class="time">9:41</div>
+      <div class="status-icons">
+        <i class="fas fa-signal"></i>
+        <i class="fas fa-wifi"></i>
+        <i class="fas fa-battery-full"></i>
+      </div>
+    </div>
+
+    <div class="signup-container">
+      <div class="back-btn" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i>
+      </div>
+
+      <div class="header-section">
+        <h1 class="header-title">创建账号</h1>
+        <p class="header-subtitle">加入我们，共建无障碍社区</p>
+      </div>
+
+      <div class="form-container">
+        <div class="step-indicator">
+          <span class="step-dot active"></span>
+          <span class="step-dot"></span>
+          <span class="step-dot"></span>
+        </div>
+
+        <div class="success-message" id="successMessage">
+          <i class="fas fa-check-circle"></i>
+          <span>验证码已发送</span>
+        </div>
+
+        <form id="signupForm">
+          <div class="input-group">
+            <label class="input-label" for="phone">手机号</label>
+            <div class="input-wrapper">
+              <i class="fas fa-mobile-alt input-icon"></i>
+              <input type="tel" id="phone" class="form-input" placeholder="请输入手机号" pattern="[0-9]{11}" required>
+            </div>
+            <p class="help-text">手机号将用于账号登录和找回密码</p>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="verificationCode">验证码</label>
+            <div class="verification-row">
+              <div class="input-wrapper verification-input">
+                <i class="fas fa-shield-alt input-icon"></i>
+                <input type="text" id="verificationCode" class="form-input" placeholder="请输入验证码" pattern="[0-9]{6}" maxlength="6" required>
+              </div>
+              <button type="button" class="send-code-btn" id="sendCodeBtn" onclick="sendVerificationCode()">
+                获取验证码
+              </button>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="username">用户名</label>
+            <div class="input-wrapper">
+              <i class="fas fa-user input-icon"></i>
+              <input type="text" id="username" class="form-input" placeholder="请输入用户名（3-20个字符）" minlength="3" maxlength="20" required>
+            </div>
+            <p class="help-text">用户名创建后不可修改</p>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="password">密码</label>
+            <div class="input-wrapper">
+              <i class="fas fa-lock input-icon"></i>
+              <input type="password" id="password" class="form-input" placeholder="请设置密码（8-20位）" minlength="8" maxlength="20" required>
+              <i class="fas fa-eye password-toggle" id="passwordToggle"></i>
+            </div>
+            <div class="password-strength" id="passwordStrength">
+              <div class="strength-bar"></div>
+              <div class="strength-bar"></div>
+              <div class="strength-bar"></div>
+              <div class="strength-bar"></div>
+            </div>
+            <p class="strength-text" id="strengthText">密码强度：弱</p>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">选择用户类型</label>
+            <div class="user-type-selector">
+              <div class="user-type-card selected" data-type="individual">
+                <i class="fas fa-user user-type-icon"></i>
+                <div class="user-type-title">个人用户</div>
+                <div class="user-type-desc">分享体验，互助出行</div>
+              </div>
+              <div class="user-type-card" data-type="volunteer">
+                <i class="fas fa-hands-helping user-type-icon"></i>
+                <div class="user-type-title">志愿者</div>
+                <div class="user-type-desc">贡献力量，帮助他人</div>
+              </div>
+              <div class="user-type-card" data-type="organization">
+                <i class="fas fa-building user-type-icon"></i>
+                <div class="user-type-title">机构组织</div>
+                <div class="user-type-desc">官方认证，权威发布</div>
+              </div>
+              <div class="user-type-card" data-type="government">
+                <i class="fas fa-landmark user-type-icon"></i>
+                <div class="user-type-title">政府部门</div>
+                <div class="user-type-desc">城市管理，设施维护</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="agreement-section">
+            <div class="checkbox-wrapper">
+              <input type="checkbox" id="agreement" required>
+              <label for="agreement" class="agreement-text">
+                我已阅读并同意
+                <a href="#" class="agreement-link">《用户协议》</a>
+                和
+                <a href="#" class="agreement-link">《隐私政策》</a>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="signup-btn" id="signupBtn">立即注册</button>
+        </form>
+
+        <div class="login-prompt">
+          已有账号？
+          <a href="login.html" class="login-link">立即登录</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const passwordToggle = document.getElementById('passwordToggle');
+    const passwordInput = document.getElementById('password');
+    const signupForm = document.getElementById('signupForm');
+    const sendCodeBtn = document.getElementById('sendCodeBtn');
+    const successMessage = document.getElementById('successMessage');
+    const userTypeCards = document.querySelectorAll('.user-type-card');
+    
+    passwordToggle.addEventListener('click', () => {
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        passwordToggle.classList.remove('fa-eye');
+        passwordToggle.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        passwordToggle.classList.remove('fa-eye-slash');
+        passwordToggle.classList.add('fa-eye');
+      }
+    });
+
+    passwordInput.addEventListener('input', () => {
+      const password = passwordInput.value;
+      const strengthBars = document.querySelectorAll('.strength-bar');
+      const strengthText = document.getElementById('strengthText');
+      
+      strengthBars.forEach(bar => bar.className = 'strength-bar');
+      
+      if (password.length >= 8) {
+        strengthBars[0].classList.add('active', 'weak');
+        strengthText.textContent = '密码强度：弱';
+        
+        if (/[A-Z]/.test(password) && /[a-z]/.test(password)) {
+          strengthBars[1].classList.add('active', 'medium');
+          strengthText.textContent = '密码强度：中';
+        }
+        
+        if (/[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) {
+          strengthBars[2].classList.add('active', 'strong');
+          strengthBars[3].classList.add('active', 'strong');
+          strengthText.textContent = '密码强度：强';
+        }
+      }
+    });
+
+    userTypeCards.forEach(card => {
+      card.addEventListener('click', () => {
+        userTypeCards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+      });
+    });
+
+    function sendVerificationCode() {
+      const phone = document.getElementById('phone').value;
+      
+      if (!/^1[3-9]\d{9}$/.test(phone)) {
+        document.getElementById('phone').classList.add('error');
+        return;
+      }
+      
+      document.getElementById('phone').classList.remove('error');
+      
+      let countdown = 60;
+      sendCodeBtn.disabled = true;
+      sendCodeBtn.textContent = `${countdown}秒后重试`;
+      
+      successMessage.classList.add('show');
+      setTimeout(() => {
+        successMessage.classList.remove('show');
+      }, 3000);
+      
+      const timer = setInterval(() => {
+        countdown--;
+        sendCodeBtn.textContent = `${countdown}秒后重试`;
+        
+        if (countdown === 0) {
+          clearInterval(timer);
+          sendCodeBtn.disabled = false;
+          sendCodeBtn.textContent = '获取验证码';
+        }
+      }, 1000);
+    }
+
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const agreement = document.getElementById('agreement').checked;
+      
+      if (!agreement) {
+        alert('请同意用户协议和隐私政策');
+        return;
+      }
+      
+      const btn = document.getElementById('signupBtn');
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 注册中...';
+      
+      setTimeout(() => {
+        window.location.href = 'home.html';
+      }, 1500);
+    });
+
+    function goBack() {
+      window.history.back();
+    }
+  </script>
+</body>
+</html>

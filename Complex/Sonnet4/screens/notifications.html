@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>通知 - Accessibility Navigator</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  
+  <style>
+    .notification-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      padding: var(--space-lg) var(--space-md);
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: background var(--duration-fast) var(--ease-out);
+      position: relative;
+    }
+    
+    .notification-item:hover {
+      background: var(--bg-secondary);
+    }
+    
+    .notification-item.unread {
+      background: rgba(0, 122, 255, 0.05);
+      border-left: 3px solid var(--accent-blue);
+    }
+    
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: white;
+      flex-shrink: 0;
+    }
+    
+    .icon-like { background: var(--accent-red); }
+    .icon-comment { background: var(--accent-blue); }
+    .icon-follow { background: var(--accent-green); }
+    .icon-system { background: var(--accent-orange); }
+    
+    .notification-content {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .notification-text {
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+      margin-bottom: var(--space-xs);
+      line-height: var(--line-height-relaxed);
+    }
+    
+    .notification-time {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+    
+    .notification-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: var(--space-sm);
+      vertical-align: middle;
+    }
+    
+    .unread-indicator {
+      position: absolute;
+      top: var(--space-md);
+      right: var(--space-md);
+      width: 8px;
+      height: 8px;
+      background: var(--accent-blue);
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="device-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-indicators">
+        <i class="fas fa-signal" style="font-size: 12px;"></i>
+        <i class="fas fa-wifi" style="font-size: 12px;"></i>
+        <i class="fas fa-battery-three-quarters" style="font-size: 12px;"></i>
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="nav-bar">
+      <button class="nav-button" onclick="history.back()" aria-label="返回">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <div class="nav-title">通知</div>
+      <button class="nav-button" onclick="markAllRead()" aria-label="全部已读">
+        <i class="fas fa-check-double"></i>
+      </button>
+    </div>
+    
+    <!-- Content -->
+    <div class="content" style="padding-bottom: calc(var(--tab-bar-height) + var(--space-md));">
+      <!-- Notification Items -->
+      <div class="notification-item unread" onclick="openNotification(1)">
+        <div class="notification-icon icon-like">
+          <i class="fas fa-heart"></i>
+        </div>
+        <div class="notification-content">
+          <div class="notification-text">
+            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b096?w=32&h=32&fit=crop&crop=face" alt="李华" class="notification-avatar">
+            <strong>李华</strong> 赞了您的帖子 "国贸地铁站新增无障碍设施体验分享"
+          </div>
+          <div class="notification-time">2小时前</div>
+        </div>
+        <div class="unread-indicator"></div>
+      </div>
+      
+      <div class="notification-item unread" onclick="openNotification(2)">
+        <div class="notification-icon icon-comment">
+          <i class="fas fa-comment"></i>
+        </div>
+        <div class="notification-content">
+          <div class="notification-text">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" alt="王磊" class="notification-avatar">
+            <strong>王磊</strong> 评论了您的帖子："谢谢分享，这个信息很有用！"
+          </div>
+          <div class="notification-time">3小时前</div>
+        </div>
+        <div class="unread-indicator"></div>
+      </div>
+      
+      <div class="notification-item unread" onclick="openNotification(3)">
+        <div class="notification-icon icon-follow">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <div class="notification-content">
+          <div class="notification-text">
+            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face" alt="陈小雨" class="notification-avatar">
+            <strong>陈小雨</strong> 开始关注您
+          </div>
+          <div class="notification-time">5小时前</div>
+        </div>
+        <div class="unread-indicator"></div>
+      </div>
+      
+      <div class="notification-item" onclick="openNotification(4)">
+        <div class="notification-icon icon-system">
+          <i class="fas fa-bullhorn"></i>
+        </div>
+        <div class="notification-content">
+          <div class="notification-text">
+            系统消息：您附近的新世界大丸百货完成了无障碍改造，快去看看吧！
+          </div>
+          <div class="notification-time">1天前</div>
+        </div>
+      </div>
+      
+      <div class="notification-item" onclick="openNotification(5)">
+        <div class="notification-icon icon-like">
+          <i class="fas fa-heart"></i>
+        </div>
+        <div class="notification-content">
+          <div class="notification-text">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face" alt="刘建国" class="notification-avatar">
+            <strong>刘建国</strong> 和其他5人赞了您的帖子
+          </div>
+          <div class="notification-time">2天前</div>
+        </div>
+      </div>
+      
+      <div class="notification-item" onclick="openNotification(6)">
+        <div class="notification-icon icon-system">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <div class="notification-content">
+          <div class="notification-text">
+            恭喜！您获得了"无障碍探索者"徽章，已发现并分享100个无障碍设施！
+          </div>
+          <div class="notification-time">3天前</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab Bar -->
+    <nav class="tab-bar" role="tablist" aria-label="主导航">
+      <a href="home.html" class="tab-item" role="tab">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+      </a>
+      <a href="explore.html" class="tab-item" role="tab">
+        <i class="fas fa-compass"></i>
+        <span>发现</span>
+      </a>
+      <a href="create_post.html" class="tab-item" role="tab">
+        <i class="fas fa-plus-circle"></i>
+        <span>发布</span>
+      </a>
+      <a href="notifications.html" class="tab-item active" role="tab">
+        <i class="fas fa-bell"></i>
+        <span>通知</span>
+      </a>
+      <a href="profile.html" class="tab-item" role="tab">
+        <i class="fas fa-user"></i>
+        <span>我的</span>
+      </a>
+    </nav>
+  </div>
+  
+  <script src="../scripts/app.js"></script>
+  <script>
+    function openNotification(id) {
+      // Mark as read
+      const item = event.currentTarget;
+      item.classList.remove('unread');
+      const indicator = item.querySelector('.unread-indicator');
+      if (indicator) {
+        indicator.remove();
+      }
+      
+      // Open relevant page
+      if (id <= 3) {
+        window.location.href = 'post_detail.html';
+      } else {
+        console.log('Opening notification:', id);
+      }
+    }
+    
+    function markAllRead() {
+      document.querySelectorAll('.notification-item.unread').forEach(item => {
+        item.classList.remove('unread');
+        const indicator = item.querySelector('.unread-indicator');
+        if (indicator) {
+          indicator.remove();
+        }
+      });
+    }
+  </script>
+</body>
+</html>

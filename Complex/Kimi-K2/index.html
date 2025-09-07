@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility Community - 无障碍社区</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .preview-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .preview-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .preview-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .preview-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-right: 10px;
+        }
+        
+        .preview-tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            height: 852px;
+            overflow: hidden;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            background: #000;
+        }
+        
+        .iframe-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        
+        iframe {
+            width: 393px;
+            height: 852px;
+            border: none;
+            transform: scale(0.9);
+            transform-origin: center;
+            border-radius: 24px;
+        }
+        
+        .nav-menu {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 10px 15px;
+            margin: 5px 0;
+            text-decoration: none;
+            color: #333;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-item:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: static;
+                transform: none;
+                margin-bottom: 20px;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦽 无障碍社区 - 原型预览</h1>
+        
+        <nav class="nav-menu">
+            <a href="#onboarding" class="nav-item">📱 引导页</a>
+            <a href="#auth" class="nav-item">🔐 登录注册</a>
+            <a href="#home" class="nav-item">🏠 首页</a>
+            <a href="#explore" class="nav-item">🔍 发现</a>
+            <a href="#post" class="nav-item">📝 帖子详情</a>
+            <a href="#create" class="nav-item">➕ 发布</a>
+            <a href="#notifications" class="nav-item">🔔 通知</a>
+            <a href="#messages" class="nav-item">💬 私信</a>
+            <a href="#profile" class="nav-item">👤 个人主页</a>
+            <a href="#settings" class="nav-item">⚙️ 设置</a>
+            <a href="#report" class="nav-item">⚠️ 上报问题</a>
+            <a href="#route" class="nav-item">🗺️ 路线预览</a>
+        </nav>
+        
+        <div class="grid">
+            <div class="preview-card" id="onboarding">
+                <div class="preview-header">
+                    <h3 class="preview-title">引导页</h3>
+                    <span class="preview-tag">Onboarding</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="screens/onboarding.html"></iframe>
+                </div>
+            </div>
+            
+            <div class="preview-card" id="auth">
+                <div class="preview-header">
+                    <h3 class="preview-title">登录注册</h3>
+                    <span class="preview-tag">Auth</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="screens/login.html"></iframe>
+                </div>
+            </div>
+            
+            <div class="preview-card" id="home">
+                <div class="preview-header">
+                    <h3 class="preview-title">首页</h3>
+                    <span class="preview-tag">Home</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="screens/home.html"></iframe>
+                </div>
+            </div>
+            
+            <div class="preview-card" id="explore">
+                <div class="preview-header">
+                    <h3 class="preview-title">发现页</h3>
+                    <span class="preview-tag">Explore</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="screense/explore.html"></iframe>
+                </div>
+            </div>
+            
+            <div class="preview-card" id="post">
+                <div class="preview-header">
+                    <h3 class="preview-title">帖子详情</h3>
+                    <span class="preview-tag">Post Detail</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="screens/post_detail.html"></iframe>
+                </div>
+            </div>
+            
+            <div class="preview-card" id="create">
+                <div class="preview-header">
+                    <h3 class="preview-title">发布页面</h3>
+                    <span class="preview-tag">Create</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="screens/create_post.html"></iframe>
+                </div>
+            </div>
+            
+            <div class="preview-card" id="notifications">
+                <div class="preview-header">
+                    <h3 class="preview-title">通知中心</h3>
+                    <span class="preview-tag">Notifications</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="screens/notifications.html"></iframe>
+                </div>
+            </div>
+            
+            <div class="preview-card" id="messages">
+                <div class="preview-header">
+                    <h3 class="preview-title">私信列表</h3>
+                    <span class="preview-tag">Messages</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="screens/messages.html"></iframe>
+                </div>
+            </div>
+            
+            <div class="preview-card" id="profile">
+                <div class="preview-header">
+                    <h3 class="preview-title">个人主页</h3>
+                    <span class="preview-tag">Profile</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="screens/profile.html"></iframe>
+                </div>
+            </div>
+            
+            <div class="preview-card" id="settings">
+                <div class="preview-header">
+                    <h3 class="preview-title">设置页面</h3>
+                    <span class="preview-tag">Settings</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="screens/settings.html"></iframe>
+                </div>
+            </div>
+            
+            <div class="preview-card" id="report">
+                <div class="preview-header">
+                    <h3 class="preview-title">问题上报</h3>
+                    <span class="preview-tag">Report</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="screens/report_issue.html"></iframe>
+                </div>
+            </div>
+            
+            <div class="preview-card" id="route">
+                <div class="preview-header">
+                    <h3 class="preview-title">路线预览</h3>
+                    <span class="preview-tag">Route</span>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="screens/route_preview.html"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
